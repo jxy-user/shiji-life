@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { describe, expect, it } from 'vitest'
 
+import { createInitialSave } from '@/game/saveSchema'
 import { SAVE_KEY } from '@/services/storage'
 import StartPage from './StartPage'
 
@@ -32,7 +33,17 @@ describe('StartPage', () => {
   })
 
   it('存在存档时提供继续入口', () => {
-    window.localStorage.setItem(SAVE_KEY, JSON.stringify({ chapterId: 'chapter_01' }))
+    window.localStorage.setItem(
+      SAVE_KEY,
+      JSON.stringify(
+        createInitialSave({
+          nickname: '小满',
+          avatarId: 'sun',
+          lifeStage: null,
+          explorationTopic: null,
+        }),
+      ),
+    )
     renderStart()
 
     expect(screen.getByRole('link', { name: '继续旅程' })).toHaveAttribute(

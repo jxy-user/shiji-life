@@ -1,48 +1,29 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 
+import CityPage from '@/pages/CityPage'
+import CreatePage from '@/pages/CreatePage'
 import PlaceholderPage from '@/pages/PlaceholderPage'
+import ProloguePage from '@/pages/ProloguePage'
+import ScenePage from '@/pages/ScenePage'
 import StartPage from '@/pages/StartPage'
 
 /**
- * 路由表（M0）
- * 完整页面按 M1–M5 逐步替换占位页，路由路径先固定下来，
- * 避免后续页面跳转反复改名。
+ * 路由表
+ *
+ * 已实现：开始页、开场、角色创建、城市、区域场景。
+ * 仍在建造：人生档案、日记、现实行动、设置（M3–M5）。
+ * 地址形态为 #/path，原因见 main.tsx。
  */
 export default function App() {
   return (
     <Routes>
       <Route path="/" element={<StartPage />} />
 
-      <Route
-        path="/prologue"
-        element={
-          <PlaceholderPage
-            kicker="开场"
-            title="一封没有寄出的信"
-            description="雨声、陌生的房间、没有写完的句子。你会在这里第一次听见这座城市的呼吸。"
-          />
-        }
-      />
-      <Route
-        path="/create"
-        element={
-          <PlaceholderPage
-            kicker="角色"
-            title="你想怎样被称呼"
-            description="昵称、形象，以及此刻的你。所有问题都可以跳过，全部作答也不是义务。"
-          />
-        }
-      />
-      <Route
-        path="/city"
-        element={
-          <PlaceholderPage
-            kicker="城市"
-            title="未完成之城"
-            description="中央广场、家、校园、街区、工作室、公园、远方。有些地方亮着灯，有些还在建造。"
-          />
-        }
-      />
+      <Route path="/prologue" element={<ProloguePage />} />
+      <Route path="/create" element={<CreatePage />} />
+      <Route path="/city" element={<CityPage />} />
+      <Route path="/scene/:sceneId" element={<ScenePage />} />
+
       <Route
         path="/archive"
         element={

@@ -6,21 +6,40 @@
  * 命名只描述用途，不描述情绪（情绪不是好/坏分数）。
  */
 @theme {
+  /*
+   * Qoder Sites 设计工作台变量契约。
+   * 默认值与原始视觉完全一致，仅用于工作台调整全局外观 / 圆角 / 间距 / 字号 / 动效。
+   */
+  --site-bg: #fdfbf6;
+  --site-fg: #2b2621;
+  --site-accent: #c08f45;
+  --site-on-accent: #fdfbf6;
+  --site-surface: #f8f2e7;
+  --site-muted: #6e6459;
+  --site-border: #e2d3bb;
+  --site-font:
+    'PingFang SC', 'HarmonyOS Sans SC', 'Microsoft YaHei', 'Noto Sans SC',
+    system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --site-radius: 1;
+  --site-space: 1;
+  --site-type: 1;
+  --site-motion: 1;
+
   /* 纸张与墨色 */
-  --color-cream-50: #fdfbf6;
-  --color-cream-100: #f8f2e7;
+  --color-cream-50: var(--site-bg);
+  --color-cream-100: var(--site-surface);
   --color-cream-200: #f0e6d5;
-  --color-sand-300: #e2d3bb;
-  --color-ink-900: #2b2621;
+  --color-sand-300: var(--site-border);
+  --color-ink-900: var(--site-fg);
   --color-ink-700: #4b4339;
-  --color-ink-500: #6e6459;
+  --color-ink-500: var(--site-muted);
   --color-ink-400: #8c8277;
 
   /* 微光金 */
   --color-gold-200: #f4e2bd;
   --color-gold-300: #e9c98c;
   --color-gold-400: #d9ae6d;
-  --color-gold-500: #c08f45;
+  --color-gold-500: var(--site-accent);
   --color-gold-600: #9b6f2e;
 
   /* 城市里的绿 */
@@ -32,13 +51,47 @@
   --font-display:
     'Songti SC', 'STSong', 'Noto Serif SC', 'Source Han Serif SC', 'SimSun',
     serif;
-  --font-body:
-    'PingFang SC', 'HarmonyOS Sans SC', 'Microsoft YaHei', 'Noto Sans SC',
-    system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-body: var(--site-font);
+
+  /* 间距与圆角：随工作台参数整体缩放，默认 1 保持原尺寸 */
+  --spacing: calc(0.25rem * var(--site-space, 1));
+  --radius-2xl: calc(1rem * var(--site-radius, 1));
+
+  /* 字号：随工作台参数缩放，默认 1 保持原尺寸 */
+  --text-lg: calc(1.125rem * var(--site-type, 1));
+  --text-3xl: calc(1.875rem * var(--site-type, 1));
+  --text-7xl: calc(4.5rem * var(--site-type, 1));
+  --text-hero: calc(64px * var(--site-type, 1));
 
   /* 动效 */
-  --animate-soft-pulse: soft-pulse 5.5s ease-in-out infinite;
-  --animate-rise-in: rise-in 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+  --default-transition-duration: calc(200ms * var(--site-motion, 1));
+  --animate-soft-pulse: soft-pulse calc(5.5s * var(--site-motion, 1))
+    ease-in-out infinite;
+  --animate-rise-in: rise-in calc(0.9s * var(--site-motion, 1))
+    cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-blink: blink 7s ease-in-out infinite;
+
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-7px);
+    }
+  }
+
+  @keyframes blink {
+    0%,
+    92%,
+    100% {
+      transform: scaleY(1);
+    }
+    95% {
+      transform: scaleY(0.1);
+    }
+  }
 
   @keyframes soft-pulse {
     0%,

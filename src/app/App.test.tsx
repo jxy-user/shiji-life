@@ -1,7 +1,9 @@
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
-import { describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it } from 'vitest'
 
+import { createInitialSave } from '@/game/saveSchema'
+import { useGameStore } from '@/stores/useGameStore'
 import App from './App'
 
 function renderAt(path: string) {
@@ -12,6 +14,11 @@ function renderAt(path: string) {
   )
 }
 
+beforeEach(() => {
+  window.localStorage.clear()
+  useGameStore.setState({ save: null, hasSave: false })
+})
+
 describe('路由', () => {
   it('根路径展示开始页', () => {
     renderAt('/')
@@ -19,7 +26,13 @@ describe('路由', () => {
     expect(screen.getByRole('heading', { name: '拾己' })).toBeInTheDocument()
   })
 
-  it('占位页可访问并保留返回入口', () => {
+  it('没有存档时访问城市会回到开始页', () => {
+    renderAt('/city')
+
+    expect(screen.getByRole('heading', { name: '拾己' })).toBeInTheDocument()
+  })
+
+  it('未实现的页面保留占位与返回入口', () => {
     renderAt('/archive')
 
     expect(screen.getByRole('heading', { name: '人生档案' })).toBeInTheDocument()
@@ -33,5 +46,23 @@ describe('路由', () => {
     renderAt('/not-exist')
 
     expect(screen.getByRole('heading', { name: '拾己' })).toBeInTheDocument()
+  })
+
+  it('有存档时可以直接进入城市', () => {
+    useGameStore.setState({
+      save: createInitialSave({
+        nickname: '小满',
+        avatarId: 'sun',
+        lifeStage: null,
+        explorationTopic: null,
+      }),
+      hasSave: true,
+    })
+
+    renderAt('/city')
+
+    expect(
+      screen.getByRole('heading', { name: /小满，想去哪里走走/ }),
+    ).toBeInTheDocument()
   })
 })

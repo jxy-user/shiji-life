@@ -37,7 +37,7 @@ export default function StartPage() {
         </p>
 
         <h1
-          className="mt-6 animate-rise-in font-display text-[64px] leading-none tracking-[0.14em] text-ink-900 [text-indent:0.14em] sm:text-7xl"
+          className="mt-6 animate-rise-in font-display text-hero leading-none tracking-[0.14em] text-ink-900 [text-indent:0.14em] sm:text-7xl"
           style={{ animationDelay: '80ms' }}
         >
           拾己
