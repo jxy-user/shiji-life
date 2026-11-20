@@ -16,21 +16,22 @@ export default function CityPage() {
   const setFlag = useGameStore((state) => state.setFlag)
 
   const [dialogue, setDialogue] = useState<'first' | 'smalltalk' | null>(null)
-  const [chapterCardDismissed, setChapterCardDismissed] = useState(false)
 
   const exploredBeyondPlaza =
     save?.visitedScenes.some((scene) => scene !== 'plaza') ?? false
+  // 关闭状态写进存档，刷新后不再重复弹出
+  const chapterCardDismissed = Boolean(save?.flags.chapterCardDismissed)
   const chapterCardRef = useRef<HTMLElement>(null)
 
   // 第一次完成探索时，把通关卡片带到视野里，避免玩家以为没有反馈
   useEffect(() => {
-    if (!exploredBeyondPlaza) return
+    if (!exploredBeyondPlaza || chapterCardDismissed) return
     const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
     chapterCardRef.current?.scrollIntoView({
       behavior: reduceMotion ? 'auto' : 'smooth',
       block: 'center',
     })
-  }, [exploredBeyondPlaza])
+  }, [exploredBeyondPlaza, chapterCardDismissed])
 
   if (!save) return <Navigate to="/" replace />
 
@@ -112,7 +113,7 @@ export default function CityPage() {
               </Link>
               <button
                 type="button"
-                onClick={() => setChapterCardDismissed(true)}
+                onClick={() => setFlag('chapterCardDismissed')}
                 className="rounded-full border border-sand-300 px-5 py-2 text-[13px] text-ink-700 transition-colors hover:border-gold-400"
               >
                 继续在城里走走

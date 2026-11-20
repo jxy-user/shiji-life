@@ -120,7 +120,7 @@ export const LUMI_FIRST_MEETING: Record<string, DialogueNode> = {
     id: 'pass',
     lines: [
       { speaker: 'lumi', text: '路过也好。' },
-      { speaker: 'lumi', text: '路过的人常常看见更多东西，因为他们不急着到达。' },
+      { speaker: 'lumi', text: '我常常待在路边，看人和车经过。' },
     ],
     next: 'city',
   },

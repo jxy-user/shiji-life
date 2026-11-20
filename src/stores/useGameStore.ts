@@ -12,14 +12,15 @@ import { clearSave } from '@/services/storage'
 
 const TIME_ORDER: TimeSlot[] = ['morning', 'noon', 'afternoon', 'evening']
 
-/** 休息与新一天恢复的精力值，属于游戏规则，不放在 UI 里 */
-const REST_ENERGY = 25
+/** 新一天恢复的精力值，属于游戏规则，不放在 UI 里 */
 const NEW_DAY_ENERGY = 60
 
 type GameState = {
   /** 当前存档；null 表示还没有开始游戏 */
   save: SaveData | null
   hasSave: boolean
+  /** 最近一次写盘是否失败（隐私模式、存储配额等），失败时页面要提示玩家 */
+  persistenceError: boolean
 
   /** 从本地存储重新读取（进入开始页时调用） */
   loadFromStorage: () => void
@@ -45,14 +46,14 @@ type GameState = {
  * AI 只能读取用于回顾的经历，永远不能调用这里的写操作。
  */
 export const useGameStore = create<GameState>()((set, get) => {
-  /** 统一提交：写盘成功后同步内存，失败则保持原状态 */
-  function commit(next: SaveData) {
-    if (!persistSave(next)) {
-      // 存储不可用时仍允许继续游玩，只是无法恢复
-      set({ save: next, hasSave: false })
-      return
-    }
-    set({ save: next, hasSave: true })
+  /**
+   * 统一提交：内存状态始终更新（玩家可以继续玩），
+   * 写盘结果单独返回并记录到 persistenceError，由界面提示。
+   */
+  function commit(next: SaveData): boolean {
+    const persisted = persistSave(next)
+    set({ save: next, hasSave: persisted, persistenceError: !persisted })
+    return persisted
   }
 
   function mutate(updater: (save: SaveData) => SaveData) {
@@ -64,9 +65,12 @@ export const useGameStore = create<GameState>()((set, get) => {
   return {
     save: loadSave(),
     hasSave: loadSave() !== null,
+    persistenceError: false,
 
     loadFromStorage: () => {
       const save = loadSave()
+      // 不清除 persistenceError：它记录的是「最近一次写盘失败」，
+      // 只有真正写成功（commit）才能恢复，否则读一次页面就把警告抹掉了
       set({ save, hasSave: save !== null })
     },
 
@@ -81,8 +85,8 @@ export const useGameStore = create<GameState>()((set, get) => {
     updateProfile: (patch) => {
       const current = get().save
       if (!current) return false
-      commit({ ...current, profile: { ...current.profile, ...patch } })
-      return true
+      // 返回值反映真实写盘结果，而不是「内存里更新过了」
+      return commit({ ...current, profile: { ...current.profile, ...patch } })
     },
 
     goToScene: (scene) => {
@@ -124,9 +128,7 @@ export const useGameStore = create<GameState>()((set, get) => {
 
     resetProgress: () => {
       clearSave()
-      set({ save: null, hasSave: false })
+      set({ save: null, hasSave: false, persistenceError: false })
     },
   }
 })
-
-export { REST_ENERGY }

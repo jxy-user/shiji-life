@@ -1,5 +1,6 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 
+import { PersistenceNotice } from '@/components/layout/PersistenceNotice'
 import CityPage from '@/pages/CityPage'
 import CreatePage from '@/pages/CreatePage'
 import PlaceholderPage from '@/pages/PlaceholderPage'
@@ -16,56 +17,61 @@ import StartPage from '@/pages/StartPage'
  */
 export default function App() {
   return (
-    <Routes>
-      <Route path="/" element={<StartPage />} />
+    <>
+      <Routes>
+        <Route path="/" element={<StartPage />} />
 
-      <Route path="/prologue" element={<ProloguePage />} />
-      <Route path="/create" element={<CreatePage />} />
-      <Route path="/city" element={<CityPage />} />
-      <Route path="/scene/:sceneId" element={<ScenePage />} />
+        <Route path="/prologue" element={<ProloguePage />} />
+        <Route path="/create" element={<CreatePage />} />
+        <Route path="/city" element={<CityPage />} />
+        <Route path="/scene/:sceneId" element={<ScenePage />} />
 
-      <Route
-        path="/archive"
-        element={
-          <PlaceholderPage
-            kicker="档案"
-            title="人生档案"
-            description="你经历的事，以及你亲口确认的、关于自己的认识。未确认的猜测不会出现在这里。"
-          />
-        }
-      />
-      <Route
-        path="/journal"
-        element={
-          <PlaceholderPage
-            kicker="日记"
-            title="只写给自己看"
-            description="默认不进入任何分析。你写下的内容属于你，随时可以修改或删除。"
-          />
-        }
-      />
-      <Route
-        path="/actions"
-        element={
-          <PlaceholderPage
-            kicker="行动"
-            title="带回到现实"
-            description="从一条确认过的认知出发，做一件小事。没完成也没关系，可以暂停，也可以放弃。"
-          />
-        }
-      />
-      <Route
-        path="/settings"
-        element={
-          <PlaceholderPage
-            kicker="设置"
-            title="由你决定"
-            description="AI 分析授权、邀请频率、数据删除与导出。所有开关的最终解释权在你。"
-          />
-        }
-      />
+        <Route
+          path="/archive"
+          element={
+            <PlaceholderPage
+              kicker="档案"
+              title="人生档案"
+              description="你经历的事，以及你亲口确认的、关于自己的认识。未确认的猜测不会出现在这里。"
+            />
+          }
+        />
+        <Route
+          path="/journal"
+          element={
+            <PlaceholderPage
+              kicker="日记"
+              title="只写给自己看"
+              description="默认不进入任何分析。你写下的内容属于你，随时可以修改或删除。"
+            />
+          }
+        />
+        <Route
+          path="/actions"
+          element={
+            <PlaceholderPage
+              kicker="行动"
+              title="带回到现实"
+              description="从一条确认过的认知出发，做一件小事。没完成也没关系，可以暂停，也可以放弃。"
+            />
+          }
+        />
+        <Route
+          path="/settings"
+          element={
+            <PlaceholderPage
+              kicker="设置"
+              title="由你决定"
+              description="AI 分析授权、邀请频率、数据删除与导出。所有开关的最终解释权在你。"
+            />
+          }
+        />
 
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+
+      {/* 写盘失败时在所有页面统一提示，避免玩家在不知情的情况下丢进度 */}
+      <PersistenceNotice />
+    </>
   )
 }

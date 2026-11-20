@@ -16,7 +16,7 @@ function renderAt(path: string) {
 
 beforeEach(() => {
   window.localStorage.clear()
-  useGameStore.setState({ save: null, hasSave: false })
+  useGameStore.setState({ save: null, hasSave: false, persistenceError: false })
 })
 
 describe('路由', () => {
@@ -46,6 +46,14 @@ describe('路由', () => {
     renderAt('/not-exist')
 
     expect(screen.getByRole('heading', { name: '拾己' })).toBeInTheDocument()
+  })
+
+  it('写盘失败时在页面上提示玩家', () => {
+    useGameStore.setState({ persistenceError: true })
+
+    renderAt('/')
+
+    expect(screen.getByRole('status')).toHaveTextContent('刷新后会丢失')
   })
 
   it('有存档时可以直接进入城市', () => {

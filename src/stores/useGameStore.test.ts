@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { loadSave } from '@/services/saveService'
 import { useGameStore } from './useGameStore'
@@ -60,6 +60,31 @@ describe('游戏状态', () => {
     window.localStorage.setItem('shiji-life:save:v1', '{broken json')
 
     expect(loadSave()).toBeNull()
+  })
+
+  it('写盘失败时如实返回 false，并标记持久化错误', () => {
+    useGameStore.getState().beginJourney(profile)
+
+    const spy = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+      throw new Error('quota exceeded')
+    })
+
+    const ok = useGameStore.getState().updateProfile({ nickname: '改名' })
+    const state = useGameStore.getState()
+
+    expect(ok).toBe(false)
+    expect(state.persistenceError).toBe(true)
+    // 内存里仍然生效，玩家可以继续玩
+    expect(state.save?.profile.nickname).toBe('改名')
+
+    spy.mockRestore()
+  })
+
+  it('剧情标记会写入存档，刷新后仍然保留', () => {
+    useGameStore.getState().beginJourney(profile)
+    useGameStore.getState().setFlag('chapterCardDismissed')
+
+    expect(loadSave()?.flags.chapterCardDismissed).toBe(true)
   })
 
   it('删除进度会清空本地存档', () => {
