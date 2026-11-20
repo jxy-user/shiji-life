@@ -8,13 +8,34 @@ import { readRawSave, writeRawSave } from '@/services/storage'
  * 本地存储的细节仍然只在 storage.ts 里出现，页面不直接访问。
  */
 
+function readVersion(input: unknown): number | null {
+  if (typeof input !== 'object' || input === null) return null
+  const version = (input as { version?: unknown }).version
+  return typeof version === 'number' ? version : null
+}
+
+/**
+ * 存档迁移入口。
+ *
+ * 当前只有 v1，直接放行。未来升级版本时在这里按 version 逐级转换，
+ * 例如：v1 → v2 补齐新字段的默认值。
+ * 原则：迁移失败宁可当作无存档，也不返回残缺数据；禁止静默丢弃玩家进度。
+ */
+export function migrateSave(input: unknown): unknown {
+  return input
+}
+
 /** 读取并校验存档；任何异常都返回 null，绝不覆盖原始数据 */
 export function loadSave(): SaveData | null {
   const raw = readRawSave()
   if (!raw) return null
 
   try {
-    const parsed = saveSchema.safeParse(JSON.parse(raw))
+    const stored: unknown = JSON.parse(raw)
+    if (readVersion(stored) === null) return null
+
+    const migrated = migrateSave(stored)
+    const parsed = saveSchema.safeParse(migrated)
     if (!parsed.success) return null
     return parsed.data
   } catch {

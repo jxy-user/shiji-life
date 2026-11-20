@@ -22,7 +22,7 @@ export default function PlaceholderPage({
       <div className="relative z-10 mx-auto flex w-full max-w-lg flex-1 flex-col justify-center px-6 py-16">
         <Link
           to="/"
-          className="mb-10 w-fit text-[12px] tracking-[0.2em] text-ink-400 transition-colors hover:text-ink-900"
+          className="mb-10 w-fit text-[12px] tracking-[0.2em] text-ink-500 transition-colors hover:text-ink-900"
         >
           ← 回到开始页
         </Link>
@@ -34,7 +34,7 @@ export default function PlaceholderPage({
         <p className="mt-4 text-[14px] leading-7 text-ink-500">{description}</p>
 
         <div className="mt-12 rounded-2xl border border-dashed border-sand-300 bg-cream-100/60 px-5 py-6">
-          <p className="text-[12px] leading-6 text-ink-400">
+          <p className="text-[12px] leading-6 text-ink-500">
             这一页正在建造中。
             <br />
             当前版本只包含项目骨架与视觉基线。

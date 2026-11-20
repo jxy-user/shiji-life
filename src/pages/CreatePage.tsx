@@ -125,7 +125,7 @@ export default function CreatePage() {
 
           <fieldset>
             <legend className="text-[12px] tracking-[0.1em] text-ink-500">
-              人生状态<span className="ml-2 text-ink-400">可跳过</span>
+              人生状态<span className="ml-2 text-ink-500">可跳过</span>
             </legend>
             <div className="mt-3 flex flex-wrap gap-2">
               {LIFE_STAGES.map((stage) => (
@@ -149,7 +149,7 @@ export default function CreatePage() {
 
           <fieldset>
             <legend className="text-[12px] tracking-[0.1em] text-ink-500">
-              此刻想探索的问题<span className="ml-2 text-ink-400">可跳过</span>
+              此刻想探索的问题<span className="ml-2 text-ink-500">可跳过</span>
             </legend>
             <div className="mt-3 flex flex-wrap gap-2">
               {EXPLORATION_TOPICS.map((item) => (
@@ -176,7 +176,7 @@ export default function CreatePage() {
           <Button size="lg" onClick={submit} disabled={!cleanName} className="w-full">
             推门，进入城市
           </Button>
-          <p className="text-center text-[11px] text-ink-400">
+          <p className="text-center text-[11px] text-ink-500">
             之后都可以在设置里修改
           </p>
         </div>

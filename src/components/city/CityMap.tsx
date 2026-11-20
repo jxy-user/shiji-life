@@ -154,12 +154,12 @@ export function CityMap({ onEnter, lumiSlot }: CityMapProps) {
             'group absolute -translate-x-1/2 -translate-y-1/2 whitespace-nowrap rounded-full px-3 py-1.5',
             'text-[11px] tracking-[0.12em] shadow-sm backdrop-blur-sm transition-all duration-200 sm:px-3.5 sm:text-[12px]',
             spot.locked
-              ? 'cursor-not-allowed border border-dashed border-sand-300 bg-cream-50/60 text-ink-400'
+              ? 'cursor-not-allowed border border-dashed border-sand-300 bg-cream-50/60 text-ink-500'
               : 'border border-sand-300 bg-cream-50/90 text-ink-700 hover:-translate-y-[calc(50%+2px)] hover:border-gold-400 hover:text-ink-900 hover:shadow-md',
           ].join(' ')}
         >
           {spot.label}
-          <span className="mt-0.5 block text-[9px] tracking-[0.06em] text-ink-400 group-hover:text-ink-500">
+          <span className="mt-0.5 block text-[9px] tracking-[0.06em] text-ink-500 group-hover:text-ink-500">
             {spot.hint}
           </span>
         </button>

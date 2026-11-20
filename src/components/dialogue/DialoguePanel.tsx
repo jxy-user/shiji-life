@@ -22,9 +22,11 @@ export function DialoguePanel({ script, startId, onFinish }: DialoguePanelProps)
 
   const node = script[nodeId]
 
+  // 首次打开、以及每次切换节点后都把焦点交还面板：
+  // 选项按钮被移除时焦点会掉到 body，键盘用户会迷失位置
   useEffect(() => {
     panelRef.current?.focus()
-  }, [])
+  }, [nodeId])
 
   if (!node) return null
 
@@ -117,7 +119,7 @@ export function DialoguePanel({ script, startId, onFinish }: DialoguePanelProps)
             <button
               type="button"
               onClick={advance}
-              className="rounded-full px-3 py-2 text-[12px] text-ink-400 transition-colors hover:text-ink-700"
+              className="rounded-full px-3 py-2 text-[12px] text-ink-500 transition-colors hover:text-ink-700"
             >
               继续 →
             </button>

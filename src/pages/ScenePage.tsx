@@ -74,11 +74,11 @@ export default function ScenePage() {
               >
                 <span>
                   <span className="block text-[14px] text-ink-900">{action.label}</span>
-                  <span className="mt-0.5 block text-[11px] text-ink-400">
+                  <span className="mt-0.5 block text-[11px] text-ink-500">
                     {action.hint}
                   </span>
                 </span>
-                <span className="shrink-0 text-[11px] tabular-nums text-ink-400">
+                <span className="shrink-0 text-[11px] tabular-nums text-ink-500">
                   {action.energy === 0
                     ? '精力不变'
                     : action.energy > 0
@@ -89,14 +89,17 @@ export default function ScenePage() {
             ))}
           </div>
 
-          {result ? (
-            <div
-              aria-live="polite"
-              className="mt-5 animate-rise-in rounded-2xl border border-sand-300/70 bg-cream-100/70 px-4 py-3"
-            >
-              <p className="font-display text-[14px] leading-7 text-ink-700">{result}</p>
-            </div>
-          ) : null}
+          {/*
+            aria-live 容器必须常驻：先有区域、后有内容，读屏才会播报。
+            若容器随结果一起挂载，多数读屏软件不会朗读。
+          */}
+          <div aria-live="polite" aria-atomic="true">
+            {result ? (
+              <div className="mt-5 animate-rise-in rounded-2xl border border-sand-300/70 bg-cream-100/70 px-4 py-3">
+                <p className="font-display text-[14px] leading-7 text-ink-700">{result}</p>
+              </div>
+            ) : null}
+          </div>
 
           <button
             type="button"
