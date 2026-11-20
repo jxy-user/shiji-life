@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 
 import { Button } from '@/components/ui/Button'
 import { buttonStyles } from '@/components/ui/buttonStyles'
@@ -9,6 +9,12 @@ export default function StartPage() {
   // 直接读存储层，不引入游戏 store：完整校验（zod）留在后续页面的代码块里，
   // 首屏只需要知道「有没有可继续的存档」——损坏的存档不能给出继续入口
   const [hasSave] = useState(() => hasPlayableSave())
+  const location = useLocation()
+  const saveBroken = Boolean(
+    (location.state as { saveBroken?: boolean } | null)?.saveBroken,
+  )
+  // 存档已知读不出来时不再给继续入口，避免「点了又弹回」的死循环
+  const canContinue = hasSave && !saveBroken
 
   return (
     <main className="relative isolate flex min-h-dvh flex-col overflow-hidden bg-cream-50">
@@ -74,7 +80,7 @@ export default function StartPage() {
             开始新的旅程
           </Link>
 
-          {hasSave ? (
+          {canContinue ? (
             <Link to="/city" className={`${buttonStyles('secondary', 'lg')} w-full`}>
               继续旅程
             </Link>
@@ -84,9 +90,18 @@ export default function StartPage() {
             </Button>
           )}
 
-          {!hasSave && (
+          {!hasSave && !saveBroken && (
             <p className="text-center text-[11px] text-ink-500">还没有存档</p>
           )}
+
+          {saveBroken ? (
+            <p
+              role="status"
+              className="mx-auto max-w-[300px] text-center text-[11px] leading-5 text-ink-700"
+            >
+              上一份存档读不出来，可能需要重新开始。
+            </p>
+          ) : null}
         </div>
       </div>
 

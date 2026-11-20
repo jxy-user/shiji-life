@@ -1,33 +1,84 @@
+import { SCENE_IDS, TIME_SLOTS } from '@/game/saveEnums'
 import { SAVE_VERSION } from '@/game/saveVersion'
 import { readRawSave } from '@/services/storage'
 
 /**
  * 首屏用的轻量存档判断
  *
- * 只做「能不能点继续」这一件事：JSON 可解析、版本号合法、有昵称。
- * 不做完整校验——那需要 zod，会把校验库带进首包；真正的读取仍走 loadSave。
- * 这里宁可严格：拿不准就当作没有存档，让玩家走新游戏，而不是点进坏档又被弹回首页。
+ * 只决定「继续旅程」能不能点。检查到字段类型与取值为止：
+ * JSON 可解析、版本号合法、角色/章节/场景/时间/精力/经历/设置等必需字段齐全。
+ *
+ * 不做完整 schema 校验——那需要 zod，会把校验库带进首包。
+ * 剩余边界：字段齐全但内部结构损坏（例如某条经历缺字段）仍可能通过这里，
+ * 那种情况由 loadSave 拒绝，并由城市页给出「存档读不出来」的提示。
  */
+
+const SCENE_SET = new Set<string>(SCENE_IDS)
+const TIME_SLOT_SET = new Set<string>(TIME_SLOTS)
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null
+}
+
 export function hasPlayableSave(): boolean {
   const raw = readRawSave()
   if (!raw) return false
 
   try {
     const data: unknown = JSON.parse(raw)
-    if (typeof data !== 'object' || data === null) return false
+    if (!isRecord(data)) return false
 
-    const record = data as { version?: unknown; profile?: unknown }
+    const version = data.version
     if (
-      typeof record.version !== 'number' ||
-      !Number.isInteger(record.version) ||
-      record.version < 1 ||
-      record.version > SAVE_VERSION
+      typeof version !== 'number' ||
+      !Number.isInteger(version) ||
+      version < 1 ||
+      version > SAVE_VERSION
     ) {
       return false
     }
 
-    const profile = record.profile as { nickname?: unknown } | undefined
-    return typeof profile?.nickname === 'string' && profile.nickname.trim().length > 0
+    const profile = data.profile
+    if (
+      !isRecord(profile) ||
+      typeof profile.nickname !== 'string' ||
+      profile.nickname.trim().length === 0
+    ) {
+      return false
+    }
+
+    if (data.chapter !== 'chapter_01') return false
+    if (typeof data.currentScene !== 'string' || !SCENE_SET.has(data.currentScene)) {
+      return false
+    }
+    if (
+      typeof data.gameDay !== 'number' ||
+      !Number.isInteger(data.gameDay) ||
+      data.gameDay < 1
+    ) {
+      return false
+    }
+    if (typeof data.timeSlot !== 'string' || !TIME_SLOT_SET.has(data.timeSlot)) {
+      return false
+    }
+    if (
+      typeof data.energy !== 'number' ||
+      !Number.isFinite(data.energy) ||
+      data.energy < 0 ||
+      data.energy > 100
+    ) {
+      return false
+    }
+    if (!Array.isArray(data.experiences) || !Array.isArray(data.seenEventIds)) {
+      return false
+    }
+
+    const settings = data.settings
+    if (!isRecord(settings) || typeof settings.analysisConsentDefault !== 'boolean') {
+      return false
+    }
+
+    return true
   } catch {
     return false
   }

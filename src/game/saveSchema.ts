@@ -1,5 +1,6 @@
 import { z } from 'zod'
 
+import { SCENE_IDS, TIME_SLOTS, type SceneId, type TimeSlot } from '@/game/saveEnums'
 import { SAVE_VERSION } from '@/game/saveVersion'
 import { EXPERIENCE_TYPES } from '@/types/game'
 
@@ -13,9 +14,8 @@ import { EXPERIENCE_TYPES } from '@/types/game'
  */
 
 export { SAVE_VERSION }
-
-export const SCENE_IDS = ['plaza', 'home', 'campus', 'park'] as const
-export type SceneId = (typeof SCENE_IDS)[number]
+export { SCENE_IDS, TIME_SLOTS }
+export type { SceneId, TimeSlot }
 
 export const AVATAR_IDS = ['sun', 'ink', 'sage', 'clay'] as const
 export type AvatarId = (typeof AVATAR_IDS)[number]
@@ -31,9 +31,6 @@ export const EXPLORATION_TOPICS = [
   'unknown',
 ] as const
 export type ExplorationTopic = (typeof EXPLORATION_TOPICS)[number]
-
-export const TIME_SLOTS = ['morning', 'noon', 'afternoon', 'evening'] as const
-export type TimeSlot = (typeof TIME_SLOTS)[number]
 
 export const TIME_SLOT_LABELS: Record<TimeSlot, string> = {
   morning: '早晨',
@@ -56,7 +53,7 @@ export type PlayerProfile = z.infer<typeof playerProfileSchema>
  * 一条人生经历
  *
  * 只记录游戏内客观发生的事情（选了什么、结果是什么）与玩家的授权状态。
- * 玩家的理由与感受是可选表达，M2 暂不收集。
+ * 玩家的理由与感受是可选的主动表达：只有玩家填写才保存，空白一律为 null。
  * 删除采用软删除：保留记录以维持一致性，但不再进入任何分析。
  */
 export const lifeExperienceSchema = z.object({

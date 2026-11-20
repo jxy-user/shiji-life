@@ -3,6 +3,7 @@ import { MemoryRouter } from 'react-router-dom'
 import { beforeEach, describe, expect, it } from 'vitest'
 
 import { createInitialSave } from '@/game/saveSchema'
+import { SAVE_KEY } from '@/services/storage'
 import { useGameStore } from '@/stores/useGameStore'
 import { useUiStore } from '@/stores/useUiStore'
 import App from './App'
@@ -62,6 +63,25 @@ describe('路由', () => {
     renderAt('/')
 
     expect(screen.getByRole('status')).toHaveTextContent('刷新后会丢失')
+  })
+
+  it('存档结构损坏时给出明确提示，而不是静默跳转', async () => {
+    const broken = createInitialSave({
+      nickname: '小满',
+      avatarId: 'sun',
+      lifeStage: null,
+      explorationTopic: null,
+    })
+    window.localStorage.setItem(
+      SAVE_KEY,
+      JSON.stringify({ ...broken, experiences: [{ id: 'bad' }] }),
+    )
+
+    renderAt('/city')
+
+    expect(await screen.findByText(/上一份存档读不出来/)).toBeInTheDocument()
+    // 已知读不出来的存档不再提供继续入口，避免反复弹回
+    expect(screen.getByRole('button', { name: '继续旅程' })).toBeDisabled()
   })
 
   it('有存档时可以直接进入城市', async () => {

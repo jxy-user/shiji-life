@@ -7,6 +7,7 @@ import { StatusBar } from '@/components/layout/StatusBar'
 import { LumiSprite } from '@/components/lumi/LumiSprite'
 import { LUMI_FIRST_MEETING, LUMI_SMALL_TALK } from '@/data/story'
 import type { SceneId } from '@/game/saveSchema'
+import { hasPlayableSave } from '@/services/savePeek'
 import { useGameStore } from '@/stores/useGameStore'
 
 export default function CityPage() {
@@ -33,7 +34,17 @@ export default function CityPage() {
     })
   }, [exploredBeyondPlaza, chapterCardDismissed])
 
-  if (!save) return <Navigate to="/" replace />
+  if (!save) {
+    // 首屏判断通过、完整校验失败：明确告诉玩家存档读不出来，
+    // 而不是静默弹回首页让人以为点错了
+    return (
+      <Navigate
+        to="/"
+        replace
+        state={hasPlayableSave() ? { saveBroken: true } : undefined}
+      />
+    )
+  }
 
   const lumiMet = Boolean(save.flags.lumiMet)
 
