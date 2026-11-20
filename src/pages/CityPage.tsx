@@ -6,6 +6,7 @@ import { DialoguePanel } from '@/components/dialogue/DialoguePanel'
 import { StatusBar } from '@/components/layout/StatusBar'
 import { LumiSprite } from '@/components/lumi/LumiSprite'
 import { LUMI_FIRST_MEETING, LUMI_SMALL_TALK } from '@/data/story'
+import { evaluateReflection } from '@/game/reflection'
 import type { SceneId } from '@/game/saveSchema'
 import { hasPlayableSave } from '@/services/savePeek'
 import { useGameStore } from '@/stores/useGameStore'
@@ -15,6 +16,8 @@ export default function CityPage() {
   const save = useGameStore((state) => state.save)
   const goToScene = useGameStore((state) => state.goToScene)
   const setFlag = useGameStore((state) => state.setFlag)
+  const createReflectionInvite = useGameStore((state) => state.createReflectionInvite)
+  const respondReflection = useGameStore((state) => state.respondReflection)
 
   const [dialogue, setDialogue] = useState<'first' | 'smalltalk' | null>(null)
 
@@ -47,6 +50,19 @@ export default function CityPage() {
   }
 
   const lumiMet = Boolean(save.flags.lumiMet)
+  const readiness = evaluateReflection(save)
+
+  function handleReflection(response: 'accept' | 'postpone' | 'decline') {
+    const reflectionId = createReflectionInvite()
+    if (!reflectionId) return
+
+    if (response === 'accept') {
+      respondReflection(reflectionId, 'accept')
+      navigate('/reflection')
+      return
+    }
+    respondReflection(reflectionId, response)
+  }
 
   function enterScene(scene: SceneId) {
     goToScene(scene)
@@ -102,6 +118,47 @@ export default function CityPage() {
             设置
           </Link>
         </nav>
+
+        {readiness.shouldInvite ? (
+          <section className="mx-auto mt-8 animate-rise-in rounded-3xl border border-gold-300/70 bg-gradient-to-b from-cream-100 to-cream-50 p-5 sm:p-6">
+            <div className="flex items-start gap-4">
+              <LumiSprite size={52} talking />
+              <div className="min-w-0 flex-1">
+                <p className="text-[11px] tracking-[0.35em] text-gold-600">微光</p>
+                <p className="mt-2 font-display text-[15px] leading-7 text-ink-900">
+                  最近我们一起经历了不少事。我有一些小发现，但不确定是不是我理解的那样。你愿意聊聊吗？
+                </p>
+                <p className="mt-1.5 text-[11px] leading-5 text-ink-500">
+                  你可以接受、稍后，或者这次不聊——都不会有惩罚，也不会影响城市里的任何事。
+                </p>
+
+                <div className="mt-4 flex flex-wrap gap-2.5">
+                  <button
+                    type="button"
+                    onClick={() => handleReflection('accept')}
+                    className="rounded-full bg-ink-900 px-5 py-2 text-[13px] text-cream-50 transition-colors hover:bg-ink-700"
+                  >
+                    现在聊聊
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleReflection('postpone')}
+                    className="rounded-full border border-sand-300 px-5 py-2 text-[13px] text-ink-700 transition-colors hover:border-gold-400"
+                  >
+                    稍后
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleReflection('decline')}
+                    className="rounded-full px-4 py-2 text-[13px] text-ink-500 transition-colors hover:text-ink-900"
+                  >
+                    这次不聊
+                  </button>
+                </div>
+              </div>
+            </div>
+          </section>
+        ) : null}
 
         {exploredBeyondPlaza && !chapterCardDismissed ? (
           <section

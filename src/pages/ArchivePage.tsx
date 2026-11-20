@@ -5,7 +5,11 @@ import { StatusBar } from '@/components/layout/StatusBar'
 import { SCENES } from '@/data/scenes'
 import { TIME_SLOT_LABELS } from '@/game/saveSchema'
 import { getVisibleExperiences } from '@/services/experienceService'
-import { EXPERIENCE_TYPE_LABELS } from '@/types/game'
+import {
+  EXPERIENCE_TYPE_LABELS,
+  INSIGHT_CATEGORIES,
+  INSIGHT_CATEGORY_LABELS,
+} from '@/types/game'
 import { useGameStore } from '@/stores/useGameStore'
 
 function formatTime(iso: string): string {
@@ -25,9 +29,11 @@ export default function ArchivePage() {
   const save = useGameStore((state) => state.save)
   const setExperienceConsent = useGameStore((state) => state.setExperienceConsent)
   const deleteExperience = useGameStore((state) => state.deleteExperience)
+  const deleteInsight = useGameStore((state) => state.deleteInsight)
 
   /** 二次确认：第一次点「删除」只进入待确认状态 */
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null)
+  const [pendingInsightDeleteId, setPendingInsightDeleteId] = useState<string | null>(null)
 
   if (!save) return <Navigate to="/" replace />
 
@@ -158,16 +164,78 @@ export default function ArchivePage() {
         <section className="mt-12">
           <div className="flex items-baseline justify-between">
             <h2 className="font-display text-lg text-ink-900">关于自己的认识</h2>
-            <span className="text-[12px] text-ink-500">共 0 条</span>
+            <span className="text-[12px] text-ink-500">共 {save.insights.length} 条</span>
           </div>
 
-          <div className="mt-4 rounded-2xl border border-dashed border-sand-300 bg-cream-100/50 px-5 py-8 text-center">
-            <p className="text-[13px] leading-6 text-ink-500">
-              还没有确认过的认知。
-              <br />
-              等你和微光一起回顾之后，这里才会出现内容——而且只出现你亲自确认过的那些。
-            </p>
-          </div>
+          {save.insights.length === 0 ? (
+            <div className="mt-4 rounded-2xl border border-dashed border-sand-300 bg-cream-100/50 px-5 py-8 text-center">
+              <p className="text-[13px] leading-6 text-ink-500">
+                还没有确认过的认知。
+                <br />
+                等你和微光一起回顾之后，这里才会出现内容——而且只出现你亲自确认过的那些。
+              </p>
+            </div>
+          ) : (
+            <div className="mt-4 space-y-6">
+              {INSIGHT_CATEGORIES.map((category) => {
+                const items = save.insights.filter(
+                  (insight) => insight.category === category,
+                )
+                if (items.length === 0) return null
+
+                return (
+                  <div key={category}>
+                    <h3 className="text-[11px] tracking-[0.25em] text-gold-600">
+                      {INSIGHT_CATEGORY_LABELS[category]}
+                    </h3>
+                    <ul className="mt-2 space-y-2.5">
+                      {items.map((insight) => (
+                        <li
+                          key={insight.id}
+                          className="rounded-2xl border border-sand-300 bg-cream-50 p-4"
+                        >
+                          <div className="flex items-start justify-between gap-3">
+                            <p className="font-display text-[15px] text-ink-900">
+                              {insight.title}
+                            </p>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                if (pendingInsightDeleteId === insight.id) {
+                                  deleteInsight(insight.id)
+                                  setPendingInsightDeleteId(null)
+                                } else {
+                                  setPendingInsightDeleteId(insight.id)
+                                }
+                              }}
+                              onBlur={() => setPendingInsightDeleteId(null)}
+                              className={[
+                                'shrink-0 rounded-full px-3 py-1 text-[11px] transition-colors',
+                                pendingInsightDeleteId === insight.id
+                                  ? 'bg-ink-900 text-cream-50'
+                                  : 'text-ink-500 hover:text-ink-900',
+                              ].join(' ')}
+                            >
+                              {pendingInsightDeleteId === insight.id
+                                ? '再次点击确认删除'
+                                : '删除'}
+                            </button>
+                          </div>
+                          <p className="mt-2 whitespace-pre-line text-[13px] leading-6 text-ink-700">
+                            {insight.content}
+                          </p>
+                          <p className="mt-2 text-[11px] text-ink-500">
+                            依据 {insight.evidenceIds.length} 条经历 · 你确认于{' '}
+                            {formatTime(insight.createdAt)}
+                          </p>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )
+              })}
+            </div>
+          )}
         </section>
       </div>
     </main>

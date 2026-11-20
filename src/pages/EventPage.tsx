@@ -53,6 +53,7 @@ export default function EventPage() {
       experienceType: event.experienceType,
       choiceId: choice.id,
       choiceText: choice.text,
+      choiceTags: choice.tags,
       outcome: choice.result,
       effects: choice.effects,
       markExplored: event.sceneId !== 'plaza',

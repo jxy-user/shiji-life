@@ -25,6 +25,11 @@ export const choiceEffectsSchema = z.object({
 export const eventChoiceSchema = z.object({
   id: z.string().min(1).max(40),
   text: z.string().min(1).max(40),
+  /**
+   * 做法的中性标签（如 approach / avoid / wait / observe），
+   * 只用于生成「你两次都选了…」这类事实性候选观察，不映射人格。
+   */
+  tags: z.array(z.string().min(1).max(16)).max(3).optional(),
   /** 选择之后发生的事情：只描述事实，不评价玩家 */
   result: z.array(z.string().min(1).max(120)).min(1).max(4),
   effects: choiceEffectsSchema.optional(),

@@ -14,6 +14,7 @@ export default function SettingsPage() {
   const navigate = useNavigate()
   const save = useGameStore((state) => state.save)
   const setAnalysisConsentDefault = useGameStore((state) => state.setAnalysisConsentDefault)
+  const setInvitationsEnabled = useGameStore((state) => state.setInvitationsEnabled)
   const resetProgress = useGameStore((state) => state.resetProgress)
 
   const [confirmingDelete, setConfirmingDelete] = useState(false)
@@ -79,9 +80,39 @@ export default function SettingsPage() {
             </button>
           </div>
 
+          <div className="mt-3 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-sand-300 bg-cream-50 p-4">
+            <div className="max-w-sm">
+              <p className="text-[14px] text-ink-900">允许微光主动邀请回顾</p>
+              <p className="mt-1 text-[12px] leading-5 text-ink-500">
+                关闭后只记录经历，不会主动打扰。你仍然可以自己打开回顾。
+              </p>
+            </div>
+            <button
+              type="button"
+              role="switch"
+              aria-checked={save.settings.invitationsEnabled}
+              aria-label="允许微光主动邀请回顾"
+              onClick={() => setInvitationsEnabled(!save.settings.invitationsEnabled)}
+              className={[
+                'relative h-7 w-12 shrink-0 rounded-full border transition-colors',
+                save.settings.invitationsEnabled
+                  ? 'border-sage-500/60 bg-sage-500/70'
+                  : 'border-sand-300 bg-cream-200',
+              ].join(' ')}
+            >
+              <span
+                className={[
+                  'absolute top-[3px] h-[22px] w-[22px] rounded-full bg-cream-50 shadow-sm transition-transform',
+                  save.settings.invitationsEnabled ? 'translate-x-6' : 'translate-x-0.5',
+                ].join(' ')}
+              />
+            </button>
+          </div>
+
           <p className="mt-3 text-[11px] leading-5 text-ink-500">
             无论是否授权，游戏都不会在你做出普通选择后立刻分析你；
-            回顾只会在经历积累到一定程度后由微光邀请。
+            回顾只会在经历积累到一定程度后由微光邀请。当前阈值：{save.settings.reflectionThreshold} 条经历、
+            {save.settings.minExperienceTypes} 类经历（可配置的演示值，不是心理学标准）。
           </p>
         </section>
 

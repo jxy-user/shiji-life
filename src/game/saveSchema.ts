@@ -2,7 +2,7 @@ import { z } from 'zod'
 
 import { SCENE_IDS, TIME_SLOTS, type SceneId, type TimeSlot } from '@/game/saveEnums'
 import { SAVE_VERSION } from '@/game/saveVersion'
-import { EXPERIENCE_TYPES } from '@/types/game'
+import { EXPERIENCE_TYPES, INSIGHT_CATEGORIES } from '@/types/game'
 
 /**
  * 存档模型（v2）
@@ -10,7 +10,8 @@ import { EXPERIENCE_TYPES } from '@/types/game'
  * 存档是玩家数据的唯一真相，任何字段变化都必须升级 version 并提供迁移，
  * 不允许直接丢弃旧存档。读取时一律走 schema 校验，失败视为无存档。
  *
- * v1 → v2：新增经历记录 experiences 与已读事件 seenEventIds，迁移见 saveService。
+ * v1 → v2：新增经历记录 experiences 与已读事件 seenEventIds。
+ * v2 → v3：新增选择标签、回顾会话、候选观察、认知卡片与回顾设置。迁移见 saveService。
  */
 
 export { SAVE_VERSION }
@@ -71,6 +72,8 @@ export const lifeExperienceSchema = z.object({
   /** 玩家主动填写的理由与感受；未填写一律为 null，绝不代写 */
   playerReason: z.string().max(200).nullable(),
   playerFeeling: z.string().max(200).nullable(),
+  /** 选择标签快照（做法倾向），只用于生成中性的候选观察，不代表人格 */
+  choiceTags: z.array(z.string().min(1).max(16)).max(4),
   /** 经历发生时的游戏内时间，便于回顾时按时间排列 */
   gameDay: z.number().int().min(1),
   timeSlot: z.enum(TIME_SLOTS),
@@ -79,6 +82,63 @@ export const lifeExperienceSchema = z.object({
 })
 
 export type LifeExperience = z.infer<typeof lifeExperienceSchema>
+
+/** 回顾会话：一次邀请及其处理结果 */
+export const REFLECTION_STATUSES = [
+  'invited',
+  'accepted',
+  'postponed',
+  'declined',
+  'completed',
+] as const
+
+export const reflectionSchema = z.object({
+  id: z.string().min(1),
+  status: z.enum(REFLECTION_STATUSES),
+  trigger: z.literal('threshold'),
+  /** 本次回顾被邀请参与的经历 id 快照 */
+  experienceIds: z.array(z.string()).max(50),
+  createdAt: z.string(),
+  respondedAt: z.string().nullable(),
+  completedAt: z.string().nullable(),
+  /** 冷却到第几个游戏日；null 表示无冷却 */
+  cooldownUntilGameDay: z.number().int().min(1).nullable(),
+})
+
+export type Reflection = z.infer<typeof reflectionSchema>
+
+/** 候选观察：微光基于授权经历提出的线索，必须带证据，玩家确认前不进入档案 */
+export const CANDIDATE_STATUSES = ['pending', 'confirmed', 'rejected'] as const
+
+export const candidateInsightSchema = z.object({
+  id: z.string().min(1),
+  reflectionId: z.string().min(1),
+  category: z.enum(INSIGHT_CATEGORIES),
+  title: z.string().min(1).max(24),
+  description: z.string().min(1).max(200),
+  hypothesis: z.string().max(200).nullable(),
+  uncertainty: z.string().min(1).max(120),
+  questionForPlayer: z.string().min(1).max(120),
+  evidenceIds: z.array(z.string()).min(1).max(5),
+  status: z.enum(CANDIDATE_STATUSES),
+  createdAt: z.string(),
+})
+
+export type CandidateInsight = z.infer<typeof candidateInsightSchema>
+
+/** 玩家确认后的认知卡片 */
+export const selfInsightSchema = z.object({
+  id: z.string().min(1),
+  candidateId: z.string().nullable(),
+  category: z.enum(INSIGHT_CATEGORIES),
+  title: z.string().min(1).max(40),
+  content: z.string().min(1).max(300),
+  evidenceIds: z.array(z.string()).max(6),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+})
+
+export type SelfInsight = z.infer<typeof selfInsightSchema>
 
 export const saveSchema = z.object({
   version: z.literal(SAVE_VERSION),
@@ -95,9 +155,21 @@ export const saveSchema = z.object({
   experiences: z.array(lifeExperienceSchema).max(500),
   /** 已经历过的事件 id，保证一次性事件不重复触发 */
   seenEventIds: z.array(z.string()).max(500),
+  /** 回顾会话记录 */
+  reflections: z.array(reflectionSchema).max(200),
+  /** 候选观察（含已被拒绝的），仅用于流程与审计 */
+  candidateInsights: z.array(candidateInsightSchema).max(200),
+  /** 玩家确认过的认知卡片 */
+  insights: z.array(selfInsightSchema).max(200),
   settings: z.object({
     /** 新经历是否默认允许用于回顾；默认关闭，只影响之后创建的经历 */
     analysisConsentDefault: z.boolean(),
+    /** 触发回顾所需的有效经历条数（产品参数，不是心理学标准） */
+    reflectionThreshold: z.number().int().min(1).max(10),
+    /** 触发回顾需要覆盖的经历类型数 */
+    minExperienceTypes: z.number().int().min(1).max(4),
+    /** 是否接受主动邀请；关闭后只记录经历，不打扰玩家 */
+    invitationsEnabled: z.boolean(),
   }),
   prologueDone: z.boolean(),
   createdAt: z.string(),
@@ -120,7 +192,15 @@ export function createInitialSave(profile: PlayerProfile): SaveData {
     visitedScenes: ['plaza'],
     experiences: [],
     seenEventIds: [],
-    settings: { analysisConsentDefault: false },
+    reflections: [],
+    candidateInsights: [],
+    insights: [],
+    settings: {
+      analysisConsentDefault: false,
+      reflectionThreshold: 3,
+      minExperienceTypes: 2,
+      invitationsEnabled: true,
+    },
     prologueDone: true,
     createdAt: now,
     updatedAt: now,

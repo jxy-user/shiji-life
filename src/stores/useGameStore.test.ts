@@ -189,7 +189,7 @@ describe('游戏状态', () => {
     expect(save?.energy).toBe(95)
   })
 
-  it('v1 存档迁移到 v2 时保留原有进度', () => {
+  it('v1 存档连续迁移到 v3 时保留原有进度', () => {
     window.localStorage.setItem(
       SAVE_KEY,
       JSON.stringify({
@@ -210,15 +210,68 @@ describe('游戏状态', () => {
 
     const save = loadSave()
 
-    expect(save?.version).toBe(2)
+    expect(save?.version).toBe(3)
     expect(save?.experiences).toEqual([])
     expect(save?.seenEventIds).toEqual([])
+    expect(save?.reflections).toEqual([])
+    expect(save?.insights).toEqual([])
+    expect(save?.settings.reflectionThreshold).toBe(3)
+    expect(save?.settings.analysisConsentDefault).toBe(false)
     expect(save?.gameDay).toBe(3)
     expect(save?.energy).toBe(45)
     expect(save?.flags.lumiMet).toBe(true)
   })
 
-  it.each([0, -1, 1.5, 3])('版本号 %s 不被迁移，也不被当作有效存档', (version) => {
+  it('v2 存档升级到 v3 时给旧经历补上选择标签', () => {
+    window.localStorage.setItem(
+      SAVE_KEY,
+      JSON.stringify({
+        version: 2,
+        profile: { nickname: '旧玩家', avatarId: 'ink', lifeStage: null, explorationTopic: null },
+        chapter: 'chapter_01',
+        currentScene: 'campus',
+        gameDay: 2,
+        timeSlot: 'morning',
+        energy: 80,
+        flags: {},
+        visitedScenes: ['plaza', 'campus'],
+        experiences: [
+          {
+            id: 'old-experience',
+            eventId: 'campus_001',
+            eventTitle: '那个没有发出的消息',
+            sceneId: 'campus',
+            experienceType: 'social',
+            choiceId: 'ask',
+            choiceText: '主动问问具体安排',
+            outcome: ['你发了消息。'],
+            analysisConsent: true,
+            playerReason: null,
+            playerFeeling: null,
+            gameDay: 1,
+            timeSlot: 'morning',
+            createdAt: '2026-11-01T10:00:00.000Z',
+            deletedAt: null,
+          },
+        ],
+        seenEventIds: ['campus_001'],
+        settings: { analysisConsentDefault: true },
+        prologueDone: true,
+        createdAt: '2026-11-01T10:00:00.000Z',
+        updatedAt: '2026-11-01T10:00:00.000Z',
+      }),
+    )
+
+    const save = loadSave()
+
+    expect(save?.version).toBe(3)
+    expect(save?.experiences[0].choiceTags).toEqual([])
+    expect(save?.experiences[0].analysisConsent).toBe(true)
+    expect(save?.settings.analysisConsentDefault).toBe(true)
+    expect(save?.settings.invitationsEnabled).toBe(true)
+  })
+
+  it.each([0, -1, 1.5, 4])('版本号 %s 不被迁移，也不被当作有效存档', (version) => {
     window.localStorage.setItem(
       SAVE_KEY,
       JSON.stringify({

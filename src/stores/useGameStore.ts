@@ -2,12 +2,17 @@ import { create } from 'zustand'
 
 import {
   createInitialSave,
+  type CandidateInsight,
   type LifeExperience,
   type PlayerProfile,
+  type Reflection,
   type SaveData,
   type SceneId,
+  type SelfInsight,
   type TimeSlot,
 } from '@/game/saveSchema'
+import { buildCandidateInsights } from '@/game/insightRules'
+import { getEligibleExperiences } from '@/services/experienceService'
 import { loadSave, persistSave } from '@/services/saveService'
 import { clearSave } from '@/services/storage'
 import { useUiStore } from '@/stores/useUiStore'
@@ -31,6 +36,7 @@ export type NewExperienceInput = Pick<
 > & {
   playerReason?: string | null
   playerFeeling?: string | null
+  choiceTags?: string[]
 }
 
 /**
@@ -46,6 +52,7 @@ export type CompleteEventInput = {
   experienceType: LifeExperience['experienceType']
   choiceId: string
   choiceText: string
+  choiceTags?: string[]
   outcome: string[]
   effects?: {
     energy?: number
@@ -103,6 +110,8 @@ type GameState = {
   setExperienceReason: (experienceId: string, reason: string) => void
   /** 修改「新经历默认授权」，只影响之后创建的经历 */
   setAnalysisConsentDefault: (value: boolean) => void
+  /** 是否允许微光主动邀请回顾 */
+  setInvitationsEnabled: (value: boolean) => void
   /** 软删除：保留记录但不再展示、不再进入任何分析 */
   deleteExperience: (experienceId: string) => void
   changeEnergy: (delta: number) => void
@@ -110,6 +119,25 @@ type GameState = {
   advanceTime: () => void
   /** 彻底清除存档（设置页的「删除数据」使用）；返回是否真的清除成功 */
   resetProgress: () => boolean
+
+  // —— M3 阶段回顾 ——
+  /** 创建一次回顾邀请；已有进行中的会话时返回它 */
+  createReflectionInvite: () => string | null
+  /** 接受、稍后或拒绝；稍后与拒绝会进入冷却 */
+  respondReflection: (
+    reflectionId: string,
+    response: 'accept' | 'postpone' | 'decline',
+  ) => void
+  /** 基于当前已授权经历生成候选观察，返回生成条数 */
+  generateCandidates: (reflectionId: string) => number
+  /** 玩家确认一条候选观察；可带玩家改写后的标题与内容 */
+  confirmCandidate: (
+    candidateId: string,
+    edited?: { title?: string; content?: string },
+  ) => string | null
+  rejectCandidate: (candidateId: string) => void
+  completeReflection: (reflectionId: string) => void
+  deleteInsight: (insightId: string) => void
 }
 
 /**
@@ -162,6 +190,7 @@ export const useGameStore = create<GameState>()((set, get) => {
   ): LifeExperience {
     return {
       ...input,
+      choiceTags: input.choiceTags ?? [],
       playerReason: normalizeOptionalText(input.playerReason),
       playerFeeling: normalizeOptionalText(input.playerFeeling),
       gameDay: current.gameDay,
@@ -267,6 +296,7 @@ export const useGameStore = create<GameState>()((set, get) => {
         experienceType: input.experienceType,
         choiceId: input.choiceId,
         choiceText: input.choiceText,
+        choiceTags: input.choiceTags,
         outcome: input.outcome,
         // 默认授权来自设置，且默认为关闭：不替玩家同意
         analysisConsent: current.settings.analysisConsentDefault,
@@ -308,6 +338,13 @@ export const useGameStore = create<GameState>()((set, get) => {
       }))
     },
 
+    setInvitationsEnabled: (value) => {
+      mutate((save) => ({
+        ...save,
+        settings: { ...save.settings, invitationsEnabled: value },
+      }))
+    },
+
     deleteExperience: (experienceId) => {
       const now = new Date().toISOString()
       mutate((save) => ({
@@ -334,6 +371,156 @@ export const useGameStore = create<GameState>()((set, get) => {
       set({ save: null, hasSave: false })
       useUiStore.getState().setPersistenceError(false)
       return true
+    },
+
+    createReflectionInvite: () => {
+      const current = get().save
+      if (!current) return null
+
+      const existing = current.reflections.find(
+        (reflection) =>
+          reflection.status === 'invited' || reflection.status === 'accepted',
+      )
+      if (existing) return existing.id
+
+      const reflection: Reflection = {
+        id: createId(),
+        status: 'invited',
+        trigger: 'threshold',
+        experienceIds: getEligibleExperiences(current).map(
+          (experience) => experience.id,
+        ),
+        createdAt: new Date().toISOString(),
+        respondedAt: null,
+        completedAt: null,
+        cooldownUntilGameDay: null,
+      }
+
+      commit({ ...current, reflections: [...current.reflections, reflection] })
+      return reflection.id
+    },
+
+    respondReflection: (reflectionId, response) => {
+      mutate((save) => {
+        const now = new Date().toISOString()
+        return {
+          ...save,
+          reflections: save.reflections.map((reflection) => {
+            if (reflection.id !== reflectionId) return reflection
+            if (response === 'accept') {
+              return { ...reflection, status: 'accepted', respondedAt: now }
+            }
+            return {
+              ...reflection,
+              status: response === 'postpone' ? 'postponed' : 'declined',
+              respondedAt: now,
+              // 至少隔一个游戏日再打扰
+              cooldownUntilGameDay: save.gameDay + 1,
+            }
+          }),
+        }
+      })
+    },
+
+    generateCandidates: (reflectionId) => {
+      const current = get().save
+      if (!current) return 0
+
+      const eligible = getEligibleExperiences(current)
+      const candidates = buildCandidateInsights(eligible, reflectionId)
+
+      commit({
+        ...current,
+        reflections: current.reflections.map((reflection) =>
+          reflection.id === reflectionId
+            ? {
+                ...reflection,
+                experienceIds: eligible.map((experience) => experience.id),
+              }
+            : reflection,
+        ),
+        // 重新生成时替换本会话里还没处理的候选，已确认/已否认的保留
+        candidateInsights: [
+          ...current.candidateInsights.filter(
+            (candidate) =>
+              !(candidate.reflectionId === reflectionId && candidate.status === 'pending'),
+          ),
+          ...candidates,
+        ],
+      })
+
+      return candidates.length
+    },
+
+    confirmCandidate: (candidateId, edited) => {
+      const current = get().save
+      if (!current) return null
+
+      const candidate = current.candidateInsights.find(
+        (item) => item.id === candidateId && item.status === 'pending',
+      )
+      if (!candidate) return null
+
+      const now = new Date().toISOString()
+      const insight: SelfInsight = {
+        id: createId(),
+        candidateId: candidate.id,
+        category: candidate.category,
+        title: (edited?.title ?? candidate.title).slice(0, 40),
+        content: (
+          edited?.content ??
+          [candidate.description, candidate.hypothesis].filter(Boolean).join('\n\n')
+        ).slice(0, 300),
+        evidenceIds: candidate.evidenceIds,
+        createdAt: now,
+        updatedAt: now,
+      }
+
+      commit({
+        ...current,
+        candidateInsights: current.candidateInsights.map((item) =>
+          item.id === candidateId
+            ? ({ ...item, status: 'confirmed' } as CandidateInsight)
+            : item,
+        ),
+        insights: [...current.insights, insight],
+      })
+
+      return insight.id
+    },
+
+    rejectCandidate: (candidateId) => {
+      mutate((save) => ({
+        ...save,
+        candidateInsights: save.candidateInsights.map((candidate) =>
+          candidate.id === candidateId && candidate.status === 'pending'
+            ? { ...candidate, status: 'rejected' }
+            : candidate,
+        ),
+      }))
+    },
+
+    completeReflection: (reflectionId) => {
+      mutate((save) => ({
+        ...save,
+        reflections: save.reflections.map((reflection) =>
+          reflection.id === reflectionId
+            ? {
+                ...reflection,
+                status: 'completed',
+                completedAt: new Date().toISOString(),
+                cooldownUntilGameDay: save.gameDay + 1,
+              }
+            : reflection,
+        ),
+      }))
+    },
+
+    deleteInsight: (insightId) => {
+      mutate((save) => ({
+        ...save,
+        insights: save.insights.filter((insight) => insight.id !== insightId),
+      }))
     },
   }
 })

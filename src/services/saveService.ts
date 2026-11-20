@@ -9,6 +9,10 @@ import { readRawSave, writeRawSave } from '@/services/storage'
  * 本地存储的细节仍然只在 storage.ts 里出现，页面不直接访问。
  */
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null
+}
+
 function readVersion(input: unknown): number | null {
   if (typeof input !== 'object' || input === null) return null
   const version = (input as { version?: unknown }).version
@@ -29,15 +33,41 @@ export function migrateSave(input: unknown): unknown {
   const save = { ...(input as Record<string, unknown>) }
   const version = readVersion(save)
 
-  // 只迁移明确识别到的已知版本；未知版本不猜，交给 loadSave 拒绝
-  if (version === 1) {
+  // 只迁移明确识别到的已知版本；未知版本不猜，交给 loadSave 拒绝。
+  // 逐级向上：v1 → v2 → v3，保证每一步都有确定的含义。
+  let current = version
+
+  if (current === 1) {
     if (!Array.isArray(save.experiences)) save.experiences = []
     if (!Array.isArray(save.seenEventIds)) save.seenEventIds = []
-    if (typeof save.settings !== 'object' || save.settings === null) {
+    if (!isRecord(save.settings)) {
       // 隐私优先：旧存档升级后默认不授权分析，玩家需要自己打开
       save.settings = { analysisConsentDefault: false }
     }
-    save.version = SAVE_VERSION
+    current = 2
+    save.version = 2
+  }
+
+  if (current === 2) {
+    // 旧经历没有选择标签，补空数组；不改写其余内容
+    save.experiences = Array.isArray(save.experiences)
+      ? save.experiences.map((experience) =>
+          isRecord(experience) && !Array.isArray(experience.choiceTags)
+            ? { ...experience, choiceTags: [] }
+            : experience,
+        )
+      : []
+    if (!Array.isArray(save.reflections)) save.reflections = []
+    if (!Array.isArray(save.candidateInsights)) save.candidateInsights = []
+    if (!Array.isArray(save.insights)) save.insights = []
+    save.settings = {
+      analysisConsentDefault: false,
+      ...(isRecord(save.settings) ? save.settings : {}),
+      reflectionThreshold: 3,
+      minExperienceTypes: 2,
+      invitationsEnabled: true,
+    }
+    save.version = 3
   }
 
   return save

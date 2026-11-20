@@ -17,6 +17,7 @@ const CityPage = lazy(() => import('@/pages/CityPage'))
 const ScenePage = lazy(() => import('@/pages/ScenePage'))
 const EventPage = lazy(() => import('@/pages/EventPage'))
 const ArchivePage = lazy(() => import('@/pages/ArchivePage'))
+const ReflectionPage = lazy(() => import('@/pages/ReflectionPage'))
 const SettingsPage = lazy(() => import('@/pages/SettingsPage'))
 
 function RouteFallback() {
@@ -51,6 +52,7 @@ export default function App() {
           <Route path="/scene/:sceneId" element={<ScenePage />} />
           <Route path="/event/:eventId" element={<EventPage />} />
           <Route path="/archive" element={<ArchivePage />} />
+          <Route path="/reflection" element={<ReflectionPage />} />
           <Route path="/settings" element={<SettingsPage />} />
 
           <Route
