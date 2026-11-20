@@ -35,6 +35,17 @@ describe('事件数据', () => {
     }
   })
 
+  it('拒绝同一事件内重复的选项 id', () => {
+    const original = GAME_EVENTS[0]
+    const duplicated = {
+      ...original,
+      id: 'dup_test',
+      choices: [original.choices[0], { ...original.choices[1], id: original.choices[0].id }],
+    }
+
+    expect(() => gameEventSchema.parse(duplicated)).toThrow()
+  })
+
   it('已经历过的事件不会再出现，直到该场景的事件都结束', () => {
     expect(pendingEventFor('campus', [])?.id).toBe('campus_001')
     expect(pendingEventFor('campus', ['campus_001'])?.id).toBe('campus_002')

@@ -132,6 +132,63 @@ describe('游戏状态', () => {
     expect(experience?.analysisConsent).toBe(false)
   })
 
+  it('事件完成是一次写盘：失败时不会留下半完成存档', () => {
+    useGameStore.getState().beginJourney(profile)
+    const before = window.localStorage.getItem(SAVE_KEY)
+
+    const spy = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+      throw new Error('quota exceeded')
+    })
+
+    const result = useGameStore.getState().completeEvent({
+      eventId: 'campus_001',
+      eventTitle: '那个没有发出的消息',
+      sceneId: 'campus',
+      experienceType: 'social',
+      choiceId: 'ask',
+      choiceText: '主动问问具体安排',
+      outcome: ['你发了消息。'],
+      effects: { energy: -5, advanceTime: true },
+      markExplored: true,
+    })
+
+    spy.mockRestore()
+
+    expect(result.ok).toBe(false)
+    expect(result.experienceId).toBeTruthy()
+
+    // 磁盘上仍是完成前的状态：没有已读标记、没有经历、精力未变
+    expect(window.localStorage.getItem(SAVE_KEY)).toBe(before)
+    const persisted = JSON.parse(before ?? '{}')
+    expect(persisted.seenEventIds).toEqual([])
+    expect(persisted.experiences).toEqual([])
+    expect(persisted.energy).toBe(100)
+  })
+
+  it('重复完成同一事件不会重复扣精力或重复写经历', () => {
+    useGameStore.getState().beginJourney(profile)
+
+    const input = {
+      eventId: 'campus_001',
+      eventTitle: '那个没有发出的消息',
+      sceneId: 'campus' as const,
+      experienceType: 'social' as const,
+      choiceId: 'ask',
+      choiceText: '主动问问具体安排',
+      outcome: ['你发了消息。'],
+      effects: { energy: -5 },
+    }
+
+    const first = useGameStore.getState().completeEvent(input)
+    const second = useGameStore.getState().completeEvent(input)
+
+    const save = useGameStore.getState().save
+    expect(first.experienceId).toBeTruthy()
+    expect(second.experienceId).toBeNull()
+    expect(save?.experiences).toHaveLength(1)
+    expect(save?.energy).toBe(95)
+  })
+
   it('v1 存档迁移到 v2 时保留原有进度', () => {
     window.localStorage.setItem(
       SAVE_KEY,
@@ -159,6 +216,28 @@ describe('游戏状态', () => {
     expect(save?.gameDay).toBe(3)
     expect(save?.energy).toBe(45)
     expect(save?.flags.lumiMet).toBe(true)
+  })
+
+  it.each([0, -1, 1.5, 3])('版本号 %s 不被迁移，也不被当作有效存档', (version) => {
+    window.localStorage.setItem(
+      SAVE_KEY,
+      JSON.stringify({
+        version,
+        profile: { nickname: '旧玩家', avatarId: 'ink', lifeStage: null, explorationTopic: null },
+        chapter: 'chapter_01',
+        currentScene: 'park',
+        gameDay: 3,
+        timeSlot: 'noon',
+        energy: 45,
+        flags: {},
+        visitedScenes: ['plaza'],
+        prologueDone: true,
+        createdAt: '2026-11-01T10:00:00.000Z',
+        updatedAt: '2026-11-01T10:00:00.000Z',
+      }),
+    )
+
+    expect(loadSave()).toBeNull()
   })
 
   it('删除进度会清空本地存档', () => {

@@ -1,4 +1,5 @@
 import { saveSchema, type SaveData } from '@/game/saveSchema'
+import { SAVE_VERSION } from '@/game/saveVersion'
 import { readRawSave, writeRawSave } from '@/services/storage'
 
 /**
@@ -11,7 +12,9 @@ import { readRawSave, writeRawSave } from '@/services/storage'
 function readVersion(input: unknown): number | null {
   if (typeof input !== 'object' || input === null) return null
   const version = (input as { version?: unknown }).version
-  return typeof version === 'number' ? version : null
+  // 只接受正整数版本号：0、负数、小数一律视为无效存档
+  if (typeof version !== 'number' || !Number.isInteger(version) || version < 1) return null
+  return version
 }
 
 /**
@@ -24,17 +27,17 @@ export function migrateSave(input: unknown): unknown {
   if (typeof input !== 'object' || input === null) return input
 
   const save = { ...(input as Record<string, unknown>) }
-  const version = readVersion(save) ?? 0
+  const version = readVersion(save)
 
-  // v1 → v2：新增经历记录、已读事件与授权设置，旧存档补默认值即可继续玩
-  if (version < 2) {
+  // 只迁移明确识别到的已知版本；未知版本不猜，交给 loadSave 拒绝
+  if (version === 1) {
     if (!Array.isArray(save.experiences)) save.experiences = []
     if (!Array.isArray(save.seenEventIds)) save.seenEventIds = []
     if (typeof save.settings !== 'object' || save.settings === null) {
       // 隐私优先：旧存档升级后默认不授权分析，玩家需要自己打开
       save.settings = { analysisConsentDefault: false }
     }
-    save.version = 2
+    save.version = SAVE_VERSION
   }
 
   return save
@@ -47,7 +50,9 @@ export function loadSave(): SaveData | null {
 
   try {
     const stored: unknown = JSON.parse(raw)
-    if (readVersion(stored) === null) return null
+    const version = readVersion(stored)
+    // 高于当前版本、或版本号非法时一律拒绝，不猜测、不覆盖
+    if (version === null || version > SAVE_VERSION) return null
 
     const migrated = migrateSave(stored)
     const parsed = saveSchema.safeParse(migrated)

@@ -3,12 +3,12 @@ import { Link } from 'react-router-dom'
 
 import { Button } from '@/components/ui/Button'
 import { buttonStyles } from '@/components/ui/buttonStyles'
-import { hasSave as hasLocalSave } from '@/services/storage'
+import { hasPlayableSave } from '@/services/savePeek'
 
 export default function StartPage() {
-  // 直接读存储层，不引入游戏 store：存档校验库留在后续页面的代码块里，
-  // 首屏只需要知道「有没有存档」这一个布尔值
-  const [hasSave] = useState(() => hasLocalSave())
+  // 直接读存储层，不引入游戏 store：完整校验（zod）留在后续页面的代码块里，
+  // 首屏只需要知道「有没有可继续的存档」——损坏的存档不能给出继续入口
+  const [hasSave] = useState(() => hasPlayableSave())
 
   return (
     <main className="relative isolate flex min-h-dvh flex-col overflow-hidden bg-cream-50">

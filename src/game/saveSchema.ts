@@ -1,5 +1,6 @@
 import { z } from 'zod'
 
+import { SAVE_VERSION } from '@/game/saveVersion'
 import { EXPERIENCE_TYPES } from '@/types/game'
 
 /**
@@ -11,7 +12,7 @@ import { EXPERIENCE_TYPES } from '@/types/game'
  * v1 → v2：新增经历记录 experiences 与已读事件 seenEventIds，迁移见 saveService。
  */
 
-export const SAVE_VERSION = 2
+export { SAVE_VERSION }
 
 export const SCENE_IDS = ['plaza', 'home', 'campus', 'park'] as const
 export type SceneId = (typeof SCENE_IDS)[number]

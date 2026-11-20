@@ -32,6 +32,23 @@ describe('StartPage', () => {
     expect(screen.getByText('还没有存档')).toBeInTheDocument()
   })
 
+  it('存档损坏时不提供继续入口', () => {
+    window.localStorage.setItem(SAVE_KEY, '{ broken json')
+
+    renderStart()
+
+    expect(screen.getByRole('button', { name: '继续旅程' })).toBeDisabled()
+    expect(screen.getByText('还没有存档')).toBeInTheDocument()
+  })
+
+  it('结构不完整的存档也不提供继续入口', () => {
+    window.localStorage.setItem(SAVE_KEY, JSON.stringify({ version: 2, profile: {} }))
+
+    renderStart()
+
+    expect(screen.getByRole('button', { name: '继续旅程' })).toBeDisabled()
+  })
+
   it('存在存档时提供继续入口', () => {
     window.localStorage.setItem(
       SAVE_KEY,

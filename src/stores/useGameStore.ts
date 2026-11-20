@@ -33,6 +33,29 @@ export type NewExperienceInput = Pick<
   playerFeeling?: string | null
 }
 
+/**
+ * 一次事件完成所需的全部输入。
+ *
+ * 引擎必须把这组变更作为一次提交写盘：如果分步写，
+ * 中途失败会留下「事件已读但没有经历」的半完成存档，刷新后无法重试。
+ */
+export type CompleteEventInput = {
+  eventId: string
+  eventTitle: string
+  sceneId: SceneId
+  experienceType: LifeExperience['experienceType']
+  choiceId: string
+  choiceText: string
+  outcome: string[]
+  effects?: {
+    energy?: number
+    advanceTime?: boolean
+    flags?: Record<string, boolean>
+  }
+  /** 非广场事件完成时，标记「已经探索过城市」 */
+  markExplored?: boolean
+}
+
 /** 玩家主动填写的内容才保存；空白一律存 null，绝不代写 */
 function normalizeOptionalText(value: string | null | undefined): string | null {
   const trimmed = value?.trim()
@@ -66,6 +89,14 @@ type GameState = {
   markEventSeen: (eventId: string) => void
   /** 记录一条经历；返回新经历的 id，没有存档时返回 null */
   recordExperience: (input: NewExperienceInput) => string | null
+  /**
+   * 原子完成一个事件：效果、已读标记与经历记录合并为一次写盘。
+   * 事件已完成后再次调用不会产生任何变化（幂等）。
+   */
+  completeEvent: (input: CompleteEventInput) => {
+    ok: boolean
+    experienceId: string | null
+  }
   /** 修改单条经历的回顾授权 */
   setExperienceConsent: (experienceId: string, consent: boolean) => void
   /** 保存玩家补充的理由；传空字符串等于清空 */
@@ -104,6 +135,41 @@ export const useGameStore = create<GameState>()((set, get) => {
     const current = get().save
     if (!current) return
     commit(updater(current))
+  }
+
+  /** 时段推进规则，纯函数，供 advanceTime 与 completeEvent 共用 */
+  function advanceSaveTime(save: SaveData): SaveData {
+    const index = TIME_ORDER.indexOf(save.timeSlot)
+    const isNight = index === TIME_ORDER.length - 1
+    if (!isNight) {
+      return { ...save, timeSlot: TIME_ORDER[index + 1] }
+    }
+    return {
+      ...save,
+      gameDay: save.gameDay + 1,
+      timeSlot: 'morning',
+      energy: Math.min(100, save.energy + NEW_DAY_ENERGY),
+    }
+  }
+
+  function clampEnergy(value: number): number {
+    return Math.max(0, Math.min(100, value))
+  }
+
+  function buildExperience(
+    current: SaveData,
+    input: NewExperienceInput,
+  ): LifeExperience {
+    return {
+      ...input,
+      playerReason: normalizeOptionalText(input.playerReason),
+      playerFeeling: normalizeOptionalText(input.playerFeeling),
+      gameDay: current.gameDay,
+      timeSlot: current.timeSlot,
+      id: createId(),
+      createdAt: new Date().toISOString(),
+      deletedAt: null,
+    }
   }
 
   return {
@@ -158,22 +224,59 @@ export const useGameStore = create<GameState>()((set, get) => {
       const current = get().save
       if (!current) return null
 
-      const experience: LifeExperience = {
-        ...input,
-        playerReason: normalizeOptionalText(input.playerReason),
-        playerFeeling: normalizeOptionalText(input.playerFeeling),
-        gameDay: current.gameDay,
-        timeSlot: current.timeSlot,
-        id: createId(),
-        createdAt: new Date().toISOString(),
-        deletedAt: null,
-      }
-
+      const experience = buildExperience(current, input)
       commit({
         ...current,
         experiences: [...current.experiences, experience],
       })
       return experience.id
+    },
+
+    completeEvent: (input) => {
+      const current = get().save
+      if (!current) return { ok: false, experienceId: null }
+
+      // 幂等：已经完成过的事件不再重复应用效果或生成经历
+      if (current.seenEventIds.includes(input.eventId)) {
+        return { ok: true, experienceId: null }
+      }
+
+      let next: SaveData = {
+        ...current,
+        seenEventIds: [...current.seenEventIds, input.eventId],
+        flags: { ...current.flags },
+      }
+
+      if (input.effects?.energy) {
+        next.energy = clampEnergy(next.energy + input.effects.energy)
+      }
+      if (input.effects?.advanceTime) {
+        next = advanceSaveTime(next)
+      }
+      if (input.effects?.flags) {
+        next.flags = { ...next.flags, ...input.effects.flags }
+      }
+      if (input.markExplored) {
+        next.flags = { ...next.flags, exploredBeyondPlaza: true }
+      }
+
+      const experience = buildExperience(next, {
+        eventId: input.eventId,
+        eventTitle: input.eventTitle,
+        sceneId: input.sceneId,
+        experienceType: input.experienceType,
+        choiceId: input.choiceId,
+        choiceText: input.choiceText,
+        outcome: input.outcome,
+        // 默认授权来自设置，且默认为关闭：不替玩家同意
+        analysisConsent: current.settings.analysisConsentDefault,
+      })
+
+      next = { ...next, experiences: [...next.experiences, experience] }
+
+      // 唯一一次写盘：要么全部生效，要么完全不变
+      const ok = commit(next)
+      return { ok, experienceId: experience.id }
     },
 
     setExperienceConsent: (experienceId, consent) => {
@@ -218,26 +321,11 @@ export const useGameStore = create<GameState>()((set, get) => {
     },
 
     changeEnergy: (delta) => {
-      mutate((save) => ({
-        ...save,
-        energy: Math.max(0, Math.min(100, save.energy + delta)),
-      }))
+      mutate((save) => ({ ...save, energy: clampEnergy(save.energy + delta) }))
     },
 
     advanceTime: () => {
-      mutate((save) => {
-        const index = TIME_ORDER.indexOf(save.timeSlot)
-        const isNight = index === TIME_ORDER.length - 1
-        if (!isNight) {
-          return { ...save, timeSlot: TIME_ORDER[index + 1] }
-        }
-        return {
-          ...save,
-          gameDay: save.gameDay + 1,
-          timeSlot: 'morning',
-          energy: Math.min(100, save.energy + NEW_DAY_ENERGY),
-        }
-      })
+      mutate(advanceSaveTime)
     },
 
     resetProgress: () => {

@@ -8,8 +8,8 @@ import { gameEventSchema, type GameEvent } from '@/game/eventSchema'
  * - 结果只写发生的事，不推断性格、不给评价。
  * - 分支有限，结束后都汇合到同一个「回到城市」。
  *
- * 授权默认值：true。玩家在结果页与档案页都能一键撤回；
- * 若默认为 false，阶段回顾将永远没有材料可用，产品闭环不成立。
+ * 授权默认值：false（来自设置 settings.analysisConsentDefault）。
+ * 玩家在结果页与档案页都能逐条打开或撤回；M3 的回顾邀请需要先征得同意。
  */
 const RAW_EVENTS: GameEvent[] = [
   {

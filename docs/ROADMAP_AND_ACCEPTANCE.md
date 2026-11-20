@@ -61,6 +61,11 @@
 - 经历查询集中在 `src/services/experienceService.ts`：`getVisibleExperiences` 与 `getEligibleExperiences`，M3 只允许用后者。
 - 存档升到 v2：新增 `experiences`、`seenEventIds`、`settings`；`migrateSave` 实现 v1 → v2 补默认值，旧档进度不丢（有测试覆盖）。
 - 修复 M1 遗留缺陷：`localStorage.getItem`/`removeItem` 抛 `SecurityError` 时不再白屏，读取返回 `null`、清除返回 `false`，页面显示写盘提示（有测试覆盖）。
+- 事件完成改为**原子提交**：`completeEvent` 一次构造并写盘（精力、时段、标记、已读、经历），写盘失败不会留下「已读但无经历」的半完成存档；重复调用幂等。
+- 首屏「继续旅程」改用轻量有效存档判断（`savePeek`）：损坏或结构不完整的存档不再提供继续入口，同时不把校验库带入首包。
+- 结果直播区（`aria-live`）在事件页常驻，选择后才填充内容，保证首次结果被读屏播报。
+- 存档版本判断收紧：只迁移明确的 v1；0、负数、小数与高于当前的版本一律拒绝，且不覆盖原始数据。
+- 事件 schema 增加选项 id 唯一性校验。
 - 体积：路由级代码分割 + 依赖分包，首屏从 127 KB gzip 降到约 96 KB，校验库随进入游戏时加载。
 - 已验证：`typecheck`、`lint`、41 项测试、`build` 通过；无头 Chrome 实测「事件 → 选择 → 理由 → 授权 → 档案 → 设置 → 390px」。
 - 未包含：真实 AI 分析、阶段回顾与认知确认（M3）；多节点剧情图（当前一个选择即为一处汇合点）。

@@ -44,6 +44,19 @@ export const gameEventSchema = z.object({
     /** 事件完成后是否提供「可跳过」的理由填写入口 */
     askReason: z.boolean(),
   }),
+}).superRefine((event, ctx) => {
+  // 同一事件内的选项 id 必须唯一，否则经历记录无法区分玩家到底选了哪一个
+  const seen = new Set<string>()
+  event.choices.forEach((choice, index) => {
+    if (seen.has(choice.id)) {
+      ctx.addIssue({
+        code: 'custom',
+        message: `事件 ${event.id} 的选项 id 重复：${choice.id}`,
+        path: ['choices', index, 'id'],
+      })
+    }
+    seen.add(choice.id)
+  })
 })
 
 export type GameEvent = z.infer<typeof gameEventSchema>
