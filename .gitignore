@@ -1,0 +1,19 @@
+# 原始文档归档（非项目源码）
+shiji_life_qoder_docs(1)/
+
+# 依赖与构建产物
+node_modules/
+dist/
+build/
+*.log
+
+# 环境变量（密钥不得入库）
+.env
+.env.*
+!.env.example
+
+# 编辑器与系统文件
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
