@@ -9,7 +9,7 @@ import { useGameStore } from '@/stores/useGameStore'
 
 beforeEach(() => {
   window.localStorage.clear()
-  useGameStore.setState({ save: null, hasSave: false, persistenceError: false })
+  useGameStore.setState({ save: null, hasSave: false })
 })
 
 function renderApp() {
@@ -28,7 +28,7 @@ describe('首章流程', () => {
     await user.click(screen.getByRole('link', { name: '开始新的旅程' }))
 
     // 五幕：雨 → 房间 → 信（有一次选择）→ 地图 → 门
-    await user.click(screen.getByRole('button', { name: '继续' }))
+    await user.click(await screen.findByRole('button', { name: '继续' }))
     await user.click(screen.getByRole('button', { name: '继续' }))
     await user.click(screen.getByRole('button', { name: '把信读完' }))
     await user.click(screen.getByRole('button', { name: '继续' }))
@@ -36,13 +36,13 @@ describe('首章流程', () => {
     await user.click(screen.getByRole('button', { name: '推开门' }))
 
     expect(
-      screen.getByRole('heading', { name: '你想怎样被称呼' }),
+      await screen.findByRole('heading', { name: '你想怎样被称呼' }),
     ).toBeInTheDocument()
 
     await user.click(screen.getByRole('button', { name: '推门，进入城市' }))
 
     expect(
-      screen.getByRole('heading', { name: /想去哪里走走/ }),
+      await screen.findByRole('heading', { name: /想去哪里走走/ }),
     ).toBeInTheDocument()
 
     const save = loadSave()
@@ -55,10 +55,10 @@ describe('首章流程', () => {
     renderApp()
 
     await user.click(screen.getByRole('link', { name: '开始新的旅程' }))
-    await user.click(screen.getByRole('button', { name: '跳过开场' }))
+    await user.click(await screen.findByRole('button', { name: '跳过开场' }))
 
     expect(
-      screen.getByRole('heading', { name: '你想怎样被称呼' }),
+      await screen.findByRole('heading', { name: '你想怎样被称呼' }),
     ).toBeInTheDocument()
   })
 })

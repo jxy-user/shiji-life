@@ -15,14 +15,29 @@ function readVersion(input: unknown): number | null {
 }
 
 /**
- * 存档迁移入口。
+ * 存档迁移入口：按 version 逐级向上升。
  *
- * 当前只有 v1，直接放行。未来升级版本时在这里按 version 逐级转换，
- * 例如：v1 → v2 补齐新字段的默认值。
- * 原则：迁移失败宁可当作无存档，也不返回残缺数据；禁止静默丢弃玩家进度。
+ * 原则：迁移只做「补齐新字段」这类可逆操作，不改写已有内容；
+ * 迁移失败宁可当作无存档，也不返回残缺数据；禁止静默丢弃玩家进度。
  */
 export function migrateSave(input: unknown): unknown {
-  return input
+  if (typeof input !== 'object' || input === null) return input
+
+  const save = { ...(input as Record<string, unknown>) }
+  const version = readVersion(save) ?? 0
+
+  // v1 → v2：新增经历记录、已读事件与授权设置，旧存档补默认值即可继续玩
+  if (version < 2) {
+    if (!Array.isArray(save.experiences)) save.experiences = []
+    if (!Array.isArray(save.seenEventIds)) save.seenEventIds = []
+    if (typeof save.settings !== 'object' || save.settings === null) {
+      // 隐私优先：旧存档升级后默认不授权分析，玩家需要自己打开
+      save.settings = { analysisConsentDefault: false }
+    }
+    save.version = 2
+  }
+
+  return save
 }
 
 /** 读取并校验存档；任何异常都返回 null，绝不覆盖原始数据 */

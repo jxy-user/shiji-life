@@ -1,4 +1,4 @@
-import { useGameStore } from '@/stores/useGameStore'
+import { useUiStore } from '@/stores/useUiStore'
 
 /**
  * 写盘失败提示
@@ -7,7 +7,7 @@ import { useGameStore } from '@/stores/useGameStore'
  * 但必须让玩家知道「刷新后会丢」，而不是默默丢失进度。
  */
 export function PersistenceNotice() {
-  const failed = useGameStore((state) => state.persistenceError)
+  const failed = useUiStore((state) => state.persistenceError)
   if (!failed) return null
 
   return (

@@ -1,8 +1,9 @@
 import { useState } from 'react'
-import { Navigate, useNavigate, useParams } from 'react-router-dom'
+import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
 
 import { StatusBar } from '@/components/layout/StatusBar'
 import { SceneBackdrop } from '@/components/scene/SceneBackdrop'
+import { pendingEventFor } from '@/data/events'
 import { SCENES, type SceneAction } from '@/data/scenes'
 import { SCENE_IDS, type SceneId } from '@/game/saveSchema'
 import { useGameStore } from '@/stores/useGameStore'
@@ -26,6 +27,7 @@ export default function ScenePage() {
   if (!isSceneId(sceneId)) return <Navigate to="/city" replace />
 
   const scene = SCENES[sceneId]
+  const pendingEvent = pendingEventFor(sceneId, save.seenEventIds)
 
   function runAction(action: SceneAction) {
     changeEnergy(action.energy)
@@ -57,6 +59,23 @@ export default function ScenePage() {
               </p>
             ))}
           </div>
+
+          {pendingEvent ? (
+            <Link
+              to={`/event/${pendingEvent.id}`}
+              className="group mt-5 block rounded-2xl border border-gold-300/70 bg-gold-200/20 px-4 py-4 transition-colors hover:border-gold-400 hover:bg-gold-200/35"
+            >
+              <p className="text-[11px] tracking-[0.3em] text-gold-600">
+                这里发生了一件事
+              </p>
+              <p className="mt-1.5 font-display text-[16px] text-ink-900">
+                {pendingEvent.title}
+              </p>
+              <p className="mt-1 text-[11px] text-ink-500 transition-colors group-hover:text-ink-700">
+                走过去看看 →
+              </p>
+            </Link>
+          ) : null}
 
           <div className="mt-6 space-y-2.5">
             {scene.actions.map((action) => (

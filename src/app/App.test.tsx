@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it } from 'vitest'
 
 import { createInitialSave } from '@/game/saveSchema'
 import { useGameStore } from '@/stores/useGameStore'
+import { useUiStore } from '@/stores/useUiStore'
 import App from './App'
 
 function renderAt(path: string) {
@@ -16,7 +17,8 @@ function renderAt(path: string) {
 
 beforeEach(() => {
   window.localStorage.clear()
-  useGameStore.setState({ save: null, hasSave: false, persistenceError: false })
+  useGameStore.setState({ save: null, hasSave: false })
+  useUiStore.setState({ persistenceError: false })
 })
 
 describe('路由', () => {
@@ -26,20 +28,26 @@ describe('路由', () => {
     expect(screen.getByRole('heading', { name: '拾己' })).toBeInTheDocument()
   })
 
-  it('没有存档时访问城市会回到开始页', () => {
+  it('没有存档时访问城市会回到开始页', async () => {
     renderAt('/city')
 
-    expect(screen.getByRole('heading', { name: '拾己' })).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: '拾己' })).toBeInTheDocument()
   })
 
   it('未实现的页面保留占位与返回入口', () => {
-    renderAt('/archive')
+    renderAt('/journal')
 
-    expect(screen.getByRole('heading', { name: '人生档案' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: '只写给自己看' })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /回到开始页/ })).toHaveAttribute(
       'href',
       '/',
     )
+  })
+
+  it('人生档案在没有存档时回到开始页', async () => {
+    renderAt('/archive')
+
+    expect(await screen.findByRole('heading', { name: '拾己' })).toBeInTheDocument()
   })
 
   it('未知路径回到开始页', () => {
@@ -49,14 +57,14 @@ describe('路由', () => {
   })
 
   it('写盘失败时在页面上提示玩家', () => {
-    useGameStore.setState({ persistenceError: true })
+    useUiStore.setState({ persistenceError: true })
 
     renderAt('/')
 
     expect(screen.getByRole('status')).toHaveTextContent('刷新后会丢失')
   })
 
-  it('有存档时可以直接进入城市', () => {
+  it('有存档时可以直接进入城市', async () => {
     useGameStore.setState({
       save: createInitialSave({
         nickname: '小满',
@@ -70,7 +78,7 @@ describe('路由', () => {
     renderAt('/city')
 
     expect(
-      screen.getByRole('heading', { name: /小满，想去哪里走走/ }),
+      await screen.findByRole('heading', { name: /小满，想去哪里走走/ }),
     ).toBeInTheDocument()
   })
 })

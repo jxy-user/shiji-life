@@ -19,7 +19,15 @@ function getStorage(): Storage | null {
 }
 
 export function readRawSave(): string | null {
-  return getStorage()?.getItem(SAVE_KEY) ?? null
+  const storage = getStorage()
+  if (!storage) return null
+  try {
+    return storage.getItem(SAVE_KEY)
+  } catch {
+    // 隐私模式或安全策略可能让 getItem 直接抛 SecurityError，
+    // 这里必须兜住，否则应用会在启动阶段白屏
+    return null
+  }
 }
 
 export function writeRawSave(value: string): boolean {
@@ -33,8 +41,16 @@ export function writeRawSave(value: string): boolean {
   }
 }
 
-export function clearSave(): void {
-  getStorage()?.removeItem(SAVE_KEY)
+/** 返回值表示是否真的清除成功，调用方不得把失败当成删除完成 */
+export function clearSave(): boolean {
+  const storage = getStorage()
+  if (!storage) return false
+  try {
+    storage.removeItem(SAVE_KEY)
+    return true
+  } catch {
+    return false
+  }
 }
 
 export function hasSave(): boolean {

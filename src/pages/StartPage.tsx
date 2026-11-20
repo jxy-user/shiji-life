@@ -1,17 +1,14 @@
-import { useEffect } from 'react'
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import { Button } from '@/components/ui/Button'
 import { buttonStyles } from '@/components/ui/buttonStyles'
-import { useGameStore } from '@/stores/useGameStore'
+import { hasSave as hasLocalSave } from '@/services/storage'
 
 export default function StartPage() {
-  const hasSave = useGameStore((state) => state.hasSave)
-  const refreshSaveState = useGameStore((state) => state.refreshSaveState)
-
-  useEffect(() => {
-    refreshSaveState()
-  }, [refreshSaveState])
+  // 直接读存储层，不引入游戏 store：存档校验库留在后续页面的代码块里，
+  // 首屏只需要知道「有没有存档」这一个布尔值
+  const [hasSave] = useState(() => hasLocalSave())
 
   return (
     <main className="relative isolate flex min-h-dvh flex-col overflow-hidden bg-cream-50">
