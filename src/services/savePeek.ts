@@ -69,13 +69,21 @@ export function hasPlayableSave(): boolean {
     ) {
       return false
     }
-    if (!Array.isArray(data.experiences) || !Array.isArray(data.seenEventIds)) {
-      return false
+    // v1 存档没有这些字段，迁移会补上；不要因为旧版本字段缺失就把玩家挡在门外
+    if (version >= 2) {
+      if (!Array.isArray(data.experiences) || !Array.isArray(data.seenEventIds)) {
+        return false
+      }
+      const settings = data.settings
+      if (!isRecord(settings) || typeof settings.analysisConsentDefault !== 'boolean') {
+        return false
+      }
     }
 
-    const settings = data.settings
-    if (!isRecord(settings) || typeof settings.analysisConsentDefault !== 'boolean') {
-      return false
+    if (version >= 3) {
+      if (!Array.isArray(data.reflections) || !Array.isArray(data.insights)) {
+        return false
+      }
     }
 
     return true

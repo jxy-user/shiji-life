@@ -28,6 +28,28 @@ describe('首屏存档判断', () => {
     expect(hasPlayableSave()).toBe(true)
   })
 
+  it('v1 存档可以继续：缺失字段由迁移补齐', () => {
+    window.localStorage.setItem(
+      SAVE_KEY,
+      JSON.stringify({
+        version: 1,
+        profile: { nickname: '旧玩家', avatarId: 'ink', lifeStage: null, explorationTopic: null },
+        chapter: 'chapter_01',
+        currentScene: 'park',
+        gameDay: 3,
+        timeSlot: 'noon',
+        energy: 45,
+        flags: {},
+        visitedScenes: ['plaza', 'park'],
+        prologueDone: true,
+        createdAt: '2026-11-01T10:00:00.000Z',
+        updatedAt: '2026-11-01T10:00:00.000Z',
+      }),
+    )
+
+    expect(hasPlayableSave()).toBe(true)
+  })
+
   it('没有存档时不可继续', () => {
     expect(hasPlayableSave()).toBe(false)
   })

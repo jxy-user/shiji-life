@@ -59,7 +59,8 @@ export default function EventPage() {
       markExplored: event.sceneId !== 'plaza',
     })
 
-    setOutcome({ choice, experienceId: result.experienceId })
+    // 双击时第二次幂等调用也能拿到同一条经历，不覆盖已渲染的结果
+    setOutcome((previous) => previous ?? { choice, experienceId: result.experienceId })
     scrollToTop()
   }
 

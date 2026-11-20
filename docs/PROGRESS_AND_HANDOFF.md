@@ -1,0 +1,104 @@
+# 进度与协作交接
+
+> 更新于 2026-11-20。**开始任何开发前先读这一页**，再读 `AGENTS.md` 与对应章节。
+> 以 `git log` 为最终事实；本文记录的是「为什么这样做」与「还差什么」。
+
+## 一分钟了解
+
+《拾己 · LIFE》是一款 2D 互动人生探索游戏：玩家在「未完成之城」自由生活、经历事件、做出选择；经历积累到阈值后，AI 引路人「微光 Lumi」邀请回顾，提出**带证据的候选观察**；只有玩家确认的内容才写入人生档案。
+
+当前 **M3 已完成**，可以完整玩到：「开场 → 建角 → 城市 → 事件 → 经历 → 阶段回顾 → 认知卡片」。
+
+- 路由使用 **HashRouter**（`/#/city`），原因：Qoder Sites 静态托管没有 SPA 回退。
+- 部署在 **Qoder Sites**（公网链接由 Qoder 生成，会随部署变化）。
+- 仓库当前为 **公开**，提交作者使用 GitHub noreply 邮箱，无密钥入库。
+
+## 进度表
+
+| 里程碑 | 状态 | 内容 | 主要位置 |
+|---|---|---|---|
+| M0 骨架 | ✅ | Vite/React/TS/Tailwind、路由、设计令牌、开始页 | `src/app`、`src/index.css` |
+| M1 首章可玩 | ✅ | 开场五幕、建角、城市地图、四个场景、微光登场、本地存档 | `src/pages/{Prologue,Create,City,Scene}Page.tsx` |
+| M2 事件与经历 | ✅ | 5 个事件、选择结果、可选理由、经历记录与授权、档案 | `src/data/events.ts`、`EventPage.tsx`、`ArchivePage.tsx` |
+| M3 阶段回顾 | ✅ | 阈值/冷却、授权优先、候选观察、确认与改写、认知卡片 | `src/game/reflection.ts`、`insightRules.ts`、`ReflectionPage.tsx` |
+| M4 真实 AI | ⬜ | 服务端适配层、prompt 版本、输出校验 | 未开始 |
+| M5 行动与日记 | ⬜ | 现实行动、日记、阶段总结 | 占位页在 `/actions`、`/journal` |
+
+## 常用命令
+
+```bash
+npm install
+npm run dev        # http://localhost:5173
+npm run typecheck
+npm run lint
+npm test
+npm run build      # 路由级代码分割，首屏约 96 KB gzip
+```
+
+交付前必须四条全过：`typecheck`、`lint`、`test`、`build`。
+
+## 目录与职责
+
+| 位置 | 职责 | 注意 |
+|---|---|---|
+| `src/game/saveSchema.ts` | 存档模型（v3）与全部 Zod 契约 | 改字段必须升版 + 迁移 |
+| `src/game/saveVersion.ts` / `saveEnums.ts` | 无依赖常量 | 首屏轻量判断用，**不要**从这里引 zod |
+| `src/services/storage.ts` | 唯一的 localStorage 访问点 | 读写异常必须兜住，禁止让页面白屏 |
+| `src/services/saveService.ts` | 读写校验、v1→v2→v3 迁移 | 迁移只补默认值，不改写已有内容 |
+| `src/services/savePeek.ts` | 首屏「有没有可继续存档」 | 轻量检查，不含 zod |
+| `src/services/experienceService.ts` | 经历查询：可见 / 可分析 | M4 只能从 `getEligibleExperiences` 取数 |
+| `src/stores/useGameStore.ts` | 全部游戏状态变更的入口 | 事件完成必须是**一次写盘**（`completeEvent`） |
+| `src/stores/useUiStore.ts` | 写盘失败提示 | 故意不含 zod，保证首屏轻量 |
+| `src/game/reflection.ts` | 回顾触发与冷却 | 阈值是可配置产品参数 |
+| `src/game/insightRules.ts` | mock 观察生成器 | 必须带证据；M4 只替换这里 |
+| `src/pages/ReflectionPage.tsx` | 回顾流程 | 确认前的内容不得出现在档案 |
+| `src/index.css` | 设计令牌 | 含 Qoder Sites 的 `--site-*` 变量，改动前先和 Qoder 协调 |
+
+## 存档模型（v3）要点
+
+- `profile`、`chapter`、`currentScene`、`gameDay`、`timeSlot`、`energy`、`flags`、`visitedScenes`
+- `experiences[]`：选择、结果、类型、`choiceTags`、`analysisConsent`（默认 **关闭**）、可选 `playerReason`
+- `seenEventIds[]`：一次性事件
+- `reflections[]`：邀请状态、冷却游戏日、完成时间
+- `candidateInsights[]`：候选观察（pending / confirmed / rejected），带 `evidenceIds`
+- `insights[]`：玩家确认的认知卡片
+- `settings`：`analysisConsentDefault`、`reflectionThreshold`（3）、`minExperienceTypes`（2）、`invitationsEnabled`
+
+迁移规则：只迁移明确识别到的版本（1 → 2 → 3）；`0`、负数、小数、高于当前的版本一律拒绝，且**不覆盖原始字符串**。
+
+## 产品红线（改代码前必读）
+
+1. 不做心理诊断、不打人格标签；观察只陈述事实与猜测，并明写「这只是猜测」。
+2. 只有玩家确认的内容进入认知档案；否认不留痕、不惩罚。
+3. AI（当前是 mock 规则）只能读取**已授权且未删除**的经历，输出必须带证据 id。
+4. AI 不得修改游戏状态；所有状态变化走 store action。
+5. 玩家可拒绝回顾、撤回授权、删除经历与认知卡片；拒绝后有冷却，不重复劝说。
+6. 不使用羞耻、恐惧、损失厌恶或社交比较驱动。
+7. 不新增社交、排行榜、付费、经济系统、多人在线。
+
+## 未决事项与已知限制
+
+- **M4 是否接入真实模型**：取决于 Qoder Sites 是否支持服务端运行时与环境变量（未验证）。若支持，只替换 `insightRules` 的生成器并保留同样的输出校验；若不支持，保持高质量 mock。
+- **事件引擎没有多节点图**：当前一个选择对应一段结果，随即汇合回场景。与「有限分支 + 汇合」在体验上等价，但若要做多段分支，需要扩展 `eventSchema`。
+- **内容量**：5 个事件，候选规则最多产出 2 条观察；演示时玩法种类有限。
+- **默认授权关闭**：因此回顾页面设计了「先授权再一起看」的流程；不要为了演示顺畅偷偷改成默认开启。
+- 章节完成卡与回顾邀请卡同页出现时，自动滚动会定位到章节卡（视觉上会把邀请卡顶上去），属于已知的小问题。
+- 首屏判断是轻量版：极少数「字段齐全但内部结构损坏」的存档会走到城市页再弹出提示，这是有意为之（不把 zod 放进首包）。
+
+## 协作约定
+
+1. **先读文档再动手**：`AGENTS.md` → 本文 → 对应 PRD 章节。
+2. **小步提交**，提交信息用 `feat(m3): …` / `fix(m2): …` 格式；不要用「改动1」这类信息。
+3. **改存档必须**：升 `SAVE_VERSION`、在 `migrateSave` 里写显式迁移、补迁移测试。
+4. **改事件完成路径必须**保持一次写盘与幂等，不允许退回分步 `commit`；幂等分支必须返回既有经历 id。
+5. **候选观察 id 必须稳定**（会话 + 规则 key），否则重新生成会造成重复候选与重复认知。
+6. **测试优先**：bug 用失败测试复现再修。
+7. **提交前**跑四条命令并贴真实输出。
+8. **交接审查**：每个里程碑完成后用 `docs/QODER_M*_REVIEW_PROMPT.md` 交给 Qoder 审查与部署，不要跳过。
+9. 不直接改 `public/` 素材与设计令牌而不通知；设计与部署由 Qoder 维护。
+
+## 下一步建议顺序
+
+1. M5 的现实行动（认知 → 小行动 → 复盘），闭环更完整，且不依赖后端。
+2. M4 真实 AI（先验证 Qoder Sites 的服务端能力）。
+3. 内容扩充：再写 5–10 个事件，让回顾的候选规则有更多变化。

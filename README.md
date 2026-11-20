@@ -93,6 +93,7 @@ npm run test:watch # 单元测试（监听）
 
 ## 文档索引
 
+0. `docs/PROGRESS_AND_HANDOFF.md`：**进度与协作交接**——多人协作前先读这一页
 1. `AGENTS.md`：项目总规则与 AI 协作方式
 2. `docs/PROJECT_CONTEXT.md`：产品背景与已确认决策
 3. `docs/PRODUCT_PRD.md`：完整产品需求

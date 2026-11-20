@@ -184,9 +184,49 @@ describe('游戏状态', () => {
 
     const save = useGameStore.getState().save
     expect(first.experienceId).toBeTruthy()
-    expect(second.experienceId).toBeNull()
+    // 幂等调用返回同一条经历，界面不会因此把结果覆盖成空
+    expect(second.experienceId).toBe(first.experienceId)
     expect(save?.experiences).toHaveLength(1)
     expect(save?.energy).toBe(95)
+  })
+
+  it('重新生成候选不会重复，也不会重复写入认知', () => {
+    useGameStore.getState().beginJourney(profile)
+
+    const makeExperience = (sceneId: 'campus' | 'home', title: string) => ({
+      eventId: `event-${title}`,
+      eventTitle: title,
+      sceneId,
+      experienceType: 'social' as const,
+      choiceId: 'leave',
+      choiceText: '找个借口走开',
+      choiceTags: ['avoid'],
+      outcome: ['你走开了。'],
+      analysisConsent: true,
+    })
+
+    useGameStore.getState().recordExperience(makeExperience('campus', 'A'))
+    useGameStore.getState().recordExperience(makeExperience('home', 'B'))
+
+    const reflectionId = useGameStore.getState().createReflectionInvite()!
+    useGameStore.getState().respondReflection(reflectionId, 'accept')
+
+    expect(useGameStore.getState().generateCandidates(reflectionId)).toBe(1)
+
+    const candidate = useGameStore
+      .getState()
+      .save!.candidateInsights.find((item) => item.reflectionId === reflectionId)!
+
+    expect(useGameStore.getState().confirmCandidate(candidate.id)).toBeTruthy()
+
+    // 回到回顾页调整授权后重新生成：同一条观察不会再出现
+    expect(useGameStore.getState().generateCandidates(reflectionId)).toBe(0)
+
+    const save = useGameStore.getState().save!
+    expect(
+      save.candidateInsights.filter((item) => item.reflectionId === reflectionId),
+    ).toHaveLength(1)
+    expect(save.insights).toHaveLength(1)
   })
 
   it('v1 存档连续迁移到 v3 时保留原有进度', () => {

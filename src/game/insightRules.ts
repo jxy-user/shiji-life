@@ -42,16 +42,20 @@ const TAG_RULES: TagRule[] = [
   },
 ]
 
-let counter = 0
-
+/**
+ * 候选 id = 会话 id + 规则 key。
+ *
+ * 稳定 id 是去重的前提：玩家回去调整授权后重新生成时，
+ * 同一条规则产出的仍是同一个候选，不会因为换了个随机 id 而重复入档。
+ */
 function createCandidate(
   reflectionId: string,
+  ruleKey: string,
   input: Omit<CandidateInsight, 'id' | 'reflectionId' | 'status' | 'createdAt'>,
 ): CandidateInsight {
-  counter += 1
   return {
     ...input,
-    id: `candidate-${Date.now().toString(36)}-${counter}`,
+    id: `${reflectionId}-${ruleKey}`,
     reflectionId,
     status: 'pending',
     createdAt: new Date().toISOString(),
@@ -86,7 +90,7 @@ export function buildCandidateInsights(
 
     const evidence = matches.slice(0, 3)
     candidates.push(
-      createCandidate(reflectionId, {
+      createCandidate(reflectionId, `tag-${rule.tag}`, {
         category: 'patterns',
         title: rule.title,
         description: `${listTitles(evidence)}里，你分别${evidence
@@ -117,7 +121,7 @@ export function buildCandidateInsights(
     if (!firstTag || !secondTag || firstTag === secondTag) continue
 
     candidates.push(
-      createCandidate(reflectionId, {
+      createCandidate(reflectionId, `scene-${first.sceneId}`, {
         category: 'thinking',
         title: '同一个地方的两种做法',
         description: `在同一个地方，你${quote(first)}，另一次${quote(second)}。`,

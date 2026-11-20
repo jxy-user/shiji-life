@@ -265,9 +265,14 @@ export const useGameStore = create<GameState>()((set, get) => {
       const current = get().save
       if (!current) return { ok: false, experienceId: null }
 
-      // 幂等：已经完成过的事件不再重复应用效果或生成经历
+      // 幂等：已经完成过的事件不再重复应用效果或生成经历。
+      // 返回已存在经历的 id，避免界面第二次调用时把结果覆盖成空。
       if (current.seenEventIds.includes(input.eventId)) {
-        return { ok: true, experienceId: null }
+        const existing = current.experiences.find(
+          (experience) =>
+            experience.eventId === input.eventId && experience.deletedAt === null,
+        )
+        return { ok: true, experienceId: existing?.id ?? null }
       }
 
       let next: SaveData = {
@@ -427,7 +432,20 @@ export const useGameStore = create<GameState>()((set, get) => {
       if (!current) return 0
 
       const eligible = getEligibleExperiences(current)
-      const candidates = buildCandidateInsights(eligible, reflectionId)
+
+      // 已经确认或否认过的候选，按稳定 id 记住，不再重新生成
+      const handledIds = new Set(
+        current.candidateInsights
+          .filter(
+            (candidate) =>
+              candidate.reflectionId === reflectionId && candidate.status !== 'pending',
+          )
+          .map((candidate) => candidate.id),
+      )
+
+      const candidates = buildCandidateInsights(eligible, reflectionId).filter(
+        (candidate) => !handledIds.has(candidate.id),
+      )
 
       commit({
         ...current,
@@ -439,7 +457,7 @@ export const useGameStore = create<GameState>()((set, get) => {
               }
             : reflection,
         ),
-        // 重新生成时替换本会话里还没处理的候选，已确认/已否认的保留
+        // 重新生成只替换未处理的候选；已确认/已否认的保留，且不会被新随机 id 绕过
         candidateInsights: [
           ...current.candidateInsights.filter(
             (candidate) =>

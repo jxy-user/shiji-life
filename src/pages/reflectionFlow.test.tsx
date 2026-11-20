@@ -78,6 +78,7 @@ describe('阶段回顾流程', () => {
     await user.click(screen.getByRole('button', { name: '开始回顾' }))
 
     expect(await screen.findByText('绕开的那几步')).toBeInTheDocument()
+    expect(screen.getByRole('status')).toHaveTextContent('微光注意到 2 条观察')
 
     // 第一条确认，第二条否认
     await user.click(screen.getAllByRole('button', { name: '是的，像我' })[0])

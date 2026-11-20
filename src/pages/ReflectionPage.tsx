@@ -173,6 +173,16 @@ export default function ReflectionPage() {
           </>
         )}
 
+        {/*
+          常驻直播区域：开始回顾后候选是动态生成的，
+          容器必须先存在，读屏软件才会播报第一次结果。
+        */}
+        <p className="sr-only" role="status" aria-live="polite">
+          {started
+            ? `微光注意到 ${candidates.length} 条观察，其中 ${pending.length} 条待处理。`
+            : ''}
+        </p>
+
         {started ? (
           <>
             <section className="mt-8">
