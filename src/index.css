@@ -1,0 +1,123 @@
+@import 'tailwindcss';
+
+/*
+ * 拾己 · LIFE 设计令牌
+ * 基调：温暖、克制、轻奇幻、生活化。避免测评仪表盘、分数与排名。
+ * 命名只描述用途，不描述情绪（情绪不是好/坏分数）。
+ */
+@theme {
+  /* 纸张与墨色 */
+  --color-cream-50: #fdfbf6;
+  --color-cream-100: #f8f2e7;
+  --color-cream-200: #f0e6d5;
+  --color-sand-300: #e2d3bb;
+  --color-ink-900: #2b2621;
+  --color-ink-700: #4b4339;
+  --color-ink-500: #6e6459;
+  --color-ink-400: #8c8277;
+
+  /* 微光金 */
+  --color-gold-200: #f4e2bd;
+  --color-gold-300: #e9c98c;
+  --color-gold-400: #d9ae6d;
+  --color-gold-500: #c08f45;
+  --color-gold-600: #9b6f2e;
+
+  /* 城市里的绿 */
+  --color-sage-300: #b8cbba;
+  --color-sage-500: #7c9882;
+  --color-sage-700: #4f6b57;
+
+  /* 字体：叙事用宋体，界面用黑体 */
+  --font-display:
+    'Songti SC', 'STSong', 'Noto Serif SC', 'Source Han Serif SC', 'SimSun',
+    serif;
+  --font-body:
+    'PingFang SC', 'HarmonyOS Sans SC', 'Microsoft YaHei', 'Noto Sans SC',
+    system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  /* 动效 */
+  --animate-soft-pulse: soft-pulse 5.5s ease-in-out infinite;
+  --animate-rise-in: rise-in 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+
+  @keyframes soft-pulse {
+    0%,
+    100% {
+      opacity: 0.55;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.9;
+      transform: scale(1.08);
+    }
+  }
+
+  @keyframes rise-in {
+    from {
+      opacity: 0;
+      transform: translateY(14px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+@layer base {
+  html,
+  body,
+  #root {
+    min-height: 100%;
+  }
+
+  body {
+    margin: 0;
+    background-color: var(--color-cream-50);
+    color: var(--color-ink-900);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background-color: var(--color-gold-300);
+    color: var(--color-ink-900);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-gold-500);
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+    }
+  }
+}
+
+@layer components {
+  /* 纸张颗粒感，叠在任意浅色背景上，不抢内容 */
+  .paper-grain {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+  }
+
+  /* 微光的柔光球：中心是暖白光，向外过渡到金色并散开 */
+  .lumi-glow {
+    background: radial-gradient(
+      circle at 50% 44%,
+      #fffdf6 0%,
+      var(--color-gold-200) 20%,
+      var(--color-gold-300) 44%,
+      color-mix(in srgb, var(--color-gold-400) 45%, transparent) 66%,
+      transparent 78%
+    );
+    filter: blur(2px);
+  }
+}

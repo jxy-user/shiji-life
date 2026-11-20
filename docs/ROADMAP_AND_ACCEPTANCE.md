@@ -12,6 +12,13 @@
 - 建立文档、代码规范和测试脚本。
 - 验收：项目可安装、启动、构建。
 
+**状态：已完成（2026-11-20）**
+
+- 技术栈：Vite 8 + React 19 + TypeScript 7 + Tailwind CSS 4 + React Router 7 + Zustand 5 + Vitest 5（oxlint 做静态检查）。
+- 已建立：设计令牌（`src/index.css`）、路由表（`src/app/App.tsx`）、开始页、七个占位页、localStorage 存档探测（`src/services/storage.ts`）、领域类型（`src/types/game.ts`）。
+- 已验证：`npm run typecheck`、`npm run lint`、`npm test`（6 项）、`npm run build` 全部通过；桌面与 390px 移动视口渲染正常。
+- 尚未建立：事件 JSON schema、游戏引擎 reducer、AI 适配层（分别属于 M2、M4）。
+
 ### M1：首章可玩
 - 开场剧情。
 - 角色创建。
