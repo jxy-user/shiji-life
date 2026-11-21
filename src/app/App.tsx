@@ -2,7 +2,6 @@ import { Suspense, lazy } from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
 
 import { PersistenceNotice } from '@/components/layout/PersistenceNotice'
-import PlaceholderPage from '@/pages/PlaceholderPage'
 import StartPage from '@/pages/StartPage'
 
 /**
@@ -19,6 +18,8 @@ const EventPage = lazy(() => import('@/pages/EventPage'))
 const ArchivePage = lazy(() => import('@/pages/ArchivePage'))
 const ReflectionPage = lazy(() => import('@/pages/ReflectionPage'))
 const SettingsPage = lazy(() => import('@/pages/SettingsPage'))
+const ActionsPage = lazy(() => import('@/pages/ActionsPage'))
+const JournalPage = lazy(() => import('@/pages/JournalPage'))
 
 function RouteFallback() {
   return (
@@ -35,8 +36,7 @@ function RouteFallback() {
 /**
  * 路由表
  *
- * 已实现：开始页、开场、角色创建、城市、区域场景、事件、人生档案、设置。
- * 仍在建造：日记、现实行动（M5）。
+ * 已实现：开始页、开场、角色创建、城市、区域场景、事件、人生档案、设置、现实行动、日记。
  * 地址形态为 #/path，原因见 main.tsx。
  */
 export default function App() {
@@ -54,27 +54,8 @@ export default function App() {
           <Route path="/archive" element={<ArchivePage />} />
           <Route path="/reflection" element={<ReflectionPage />} />
           <Route path="/settings" element={<SettingsPage />} />
-
-          <Route
-            path="/journal"
-            element={
-              <PlaceholderPage
-                kicker="日记"
-                title="只写给自己看"
-                description="默认不进入任何分析。你写下的内容属于你，随时可以修改或删除。"
-              />
-            }
-          />
-          <Route
-            path="/actions"
-            element={
-              <PlaceholderPage
-                kicker="行动"
-                title="带回到现实"
-                description="从一条确认过的认知出发，做一件小事。没完成也没关系，可以暂停，也可以放弃。"
-              />
-            }
-          />
+          <Route path="/actions" element={<ActionsPage />} />
+          <Route path="/journal" element={<JournalPage />} />
 
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

@@ -5,13 +5,14 @@ import { SAVE_VERSION } from '@/game/saveVersion'
 import { EXPERIENCE_TYPES, INSIGHT_CATEGORIES } from '@/types/game'
 
 /**
- * 存档模型（v2）
+ * 存档模型（v4）
  *
  * 存档是玩家数据的唯一真相，任何字段变化都必须升级 version 并提供迁移，
  * 不允许直接丢弃旧存档。读取时一律走 schema 校验，失败视为无存档。
  *
  * v1 → v2：新增经历记录 experiences 与已读事件 seenEventIds。
- * v2 → v3：新增选择标签、回顾会话、候选观察、认知卡片与回顾设置。迁移见 saveService。
+ * v2 → v3：新增选择标签、回顾会话、候选观察、认知卡片与回顾设置。
+ * v3 → v4：新增现实行动 actions、日记 journalEntries、阶段总结 chapterSummaries（M5）。
  */
 
 export { SAVE_VERSION }
@@ -140,6 +141,62 @@ export const selfInsightSchema = z.object({
 
 export type SelfInsight = z.infer<typeof selfInsightSchema>
 
+/** 现实行动：玩家从认知转化或手动创建的小行动 */
+export const ACTION_STATUSES = ['todo', 'in_progress', 'done', 'paused'] as const
+export const ACTION_FREQUENCIES = ['once', 'daily', 'weekly', 'custom'] as const
+
+export const actionSchema = z.object({
+  id: z.string().min(1),
+  title: z.string().min(1).max(60),
+  /** 关联的认知卡片 id；手动创建时可为 null */
+  linkedInsightId: z.string().nullable(),
+  /** 频率：一次性 / 每日 / 每周 / 自定义 */
+  frequency: z.enum(ACTION_FREQUENCIES),
+  /** 截止日期（ISO 日期字符串），一次性行动可选 */
+  dueDate: z.string().nullable(),
+  /** 提醒时间（HH:mm），可选 */
+  reminderTime: z.string().nullable(),
+  status: z.enum(ACTION_STATUSES),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+  /** 完成时间，完成时填入 */
+  completedAt: z.string().nullable(),
+})
+
+export type Action = z.infer<typeof actionSchema>
+
+/** 日记条目：自由记录、行动复盘、关联认知等 */
+export const JOURNAL_TYPES = ['action_review', 'free', 'insight_link'] as const
+
+export const journalEntrySchema = z.object({
+  id: z.string().min(1),
+  type: z.enum(JOURNAL_TYPES),
+  content: z.string().min(1).max(2000),
+  /** 关联的行动 id（行动复盘时） */
+  linkedActionId: z.string().nullable(),
+  /** 关联的认知 id（关联认知时） */
+  linkedInsightId: z.string().nullable(),
+  /** 关联的经历 ids（自由记录可关联多条经历） */
+  linkedExperienceIds: z.array(z.string()).max(10),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+})
+
+export type JournalEntry = z.infer<typeof journalEntrySchema>
+
+/** 阶段总结：章节结束或手动触发，汇总该阶段的经历、认知、行动、日记 */
+export const chapterSummarySchema = z.object({
+  id: z.string().min(1),
+  chapter: z.string().min(1),
+  content: z.string().min(1).max(5000),
+  generatedAt: z.string(),
+  /** 玩家是否编辑过 */
+  isEdited: z.boolean(),
+  editedAt: z.string().nullable(),
+})
+
+export type ChapterSummary = z.infer<typeof chapterSummarySchema>
+
 export const saveSchema = z.object({
   version: z.literal(SAVE_VERSION),
   profile: playerProfileSchema,
@@ -161,6 +218,12 @@ export const saveSchema = z.object({
   candidateInsights: z.array(candidateInsightSchema).max(200),
   /** 玩家确认过的认知卡片 */
   insights: z.array(selfInsightSchema).max(200),
+  /** 现实行动（M5） */
+  actions: z.array(actionSchema).max(200),
+  /** 日记条目（M5） */
+  journalEntries: z.array(journalEntrySchema).max(500),
+  /** 阶段总结（M5） */
+  chapterSummaries: z.array(chapterSummarySchema).max(20),
   settings: z.object({
     /** 新经历是否默认允许用于回顾；默认关闭，只影响之后创建的经历 */
     analysisConsentDefault: z.boolean(),
@@ -195,6 +258,9 @@ export function createInitialSave(profile: PlayerProfile): SaveData {
     reflections: [],
     candidateInsights: [],
     insights: [],
+    actions: [],
+    journalEntries: [],
+    chapterSummaries: [],
     settings: {
       analysisConsentDefault: false,
       reflectionThreshold: 3,

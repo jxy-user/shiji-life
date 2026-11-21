@@ -7,7 +7,7 @@
 
 《拾己 · LIFE》是一款 2D 互动人生探索游戏：玩家在「未完成之城」自由生活、经历事件、做出选择；经历积累到阈值后，AI 引路人「微光 Lumi」邀请回顾，提出**带证据的候选观察**；只有玩家确认的内容才写入人生档案。
 
-当前 **M3 已完成**，可以完整玩到：「开场 → 建角 → 城市 → 事件 → 经历 → 阶段回顾 → 认知卡片」。
+当前 **M3、M5 均已完成**，可以完整玩到：「开场 → 建角 → 城市 → 事件 → 经历 → 阶段回顾 → 认知卡片 → 现实行动 → 日记 → 阶段总结」。
 
 - 路由使用 **HashRouter**（`/#/city`），原因：Qoder Sites 静态托管没有 SPA 回退。
 - 部署在 **Qoder Sites**（公网链接由 Qoder 生成，会随部署变化）。
@@ -21,8 +21,8 @@
 | M1 首章可玩 | ✅ | 开场五幕、建角、城市地图、四个场景、微光登场、本地存档 | `src/pages/{Prologue,Create,City,Scene}Page.tsx` |
 | M2 事件与经历 | ✅ | 5 个事件、选择结果、可选理由、经历记录与授权、档案 | `src/data/events.ts`、`EventPage.tsx`、`ArchivePage.tsx` |
 | M3 阶段回顾 | ✅ | 阈值/冷却、授权优先、候选观察、确认与改写、认知卡片 | `src/game/reflection.ts`、`insightRules.ts`、`ReflectionPage.tsx` |
-| M4 真实 AI | ⬜ | 服务端适配层、prompt 版本、输出校验 | 未开始 |
-| M5 行动与日记 | ⬜ | 现实行动、日记、阶段总结 | 占位页在 `/actions`、`/journal` |
+| M4 真实 AI | ⏸️ | 服务端适配层、prompt 版本、输出校验 | 暂缓（需付费计划），架构已就绪 |
+| M5 行动与日记 | ✅ | 现实行动、日记、阶段总结、存档 v4 | `src/pages/{Actions,Journal}Page.tsx`、store actions、saveSchema v4 |
 
 ## 常用命令
 
@@ -54,17 +54,21 @@ npm run build      # 路由级代码分割，首屏约 96 KB gzip
 | `src/pages/ReflectionPage.tsx` | 回顾流程 | 确认前的内容不得出现在档案 |
 | `src/index.css` | 设计令牌 | 含 Qoder Sites 的 `--site-*` 变量，改动前先和 Qoder 协调 |
 
-## 存档模型（v3）要点
+## 存档模型（v4 当前）
 
+### v4（当前）
 - `profile`、`chapter`、`currentScene`、`gameDay`、`timeSlot`、`energy`、`flags`、`visitedScenes`
 - `experiences[]`：选择、结果、类型、`choiceTags`、`analysisConsent`（默认 **关闭**）、可选 `playerReason`
 - `seenEventIds[]`：一次性事件
 - `reflections[]`：邀请状态、冷却游戏日、完成时间
 - `candidateInsights[]`：候选观察（pending / confirmed / rejected），带 `evidenceIds`
 - `insights[]`：玩家确认的认知卡片
+- `actions[]`：`id`、`title`、`linkedInsightId?`、`frequency`（once/daily/weekly/custom）、`dueDate?`、`reminderTime?`、`status`（todo/in_progress/done/paused）、`createdAt`、`updatedAt`、`completedAt?`
+- `journalEntries[]`：`id`、`type`（action_review/free/insight_link）、`content`、`linkedActionId?`、`linkedInsightId?`、`linkedExperienceIds?`、`createdAt`、`updatedAt`
+- `chapterSummaries[]`：`id`、`chapter`、`content`、`generatedAt`、`isEdited`、`editedAt?`
 - `settings`：`analysisConsentDefault`、`reflectionThreshold`（3）、`minExperienceTypes`（2）、`invitationsEnabled`
 
-迁移规则：只迁移明确识别到的版本（1 → 2 → 3）；`0`、负数、小数、高于当前的版本一律拒绝，且**不覆盖原始字符串**。
+迁移规则：只迁移明确识别到的版本（1 → 2 → 3 → 4）；`0`、负数、小数、高于当前的版本一律拒绝，且**不覆盖原始字符串**。v3→v4 仅给三个新数组补 `[]`，不改动既有数据。
 
 ## 产品红线（改代码前必读）
 
@@ -78,7 +82,7 @@ npm run build      # 路由级代码分割，首屏约 96 KB gzip
 
 ## 未决事项与已知限制
 
-- **M4 是否接入真实模型**：取决于 Qoder Sites 是否支持服务端运行时与环境变量（未验证）。若支持，只替换 `insightRules` 的生成器并保留同样的输出校验；若不支持，保持高质量 mock。
+- **M4 真实 AI 暂缓**：Qoder Sites 当前为 Free 计划，仅支持静态站点；服务端函数、数据库、存储均需付费/高级计划。架构已就绪（`insightRules.ts` 为生成器预留接口），赛后可接入。
 - **事件引擎没有多节点图**：当前一个选择对应一段结果，随即汇合回场景。与「有限分支 + 汇合」在体验上等价，但若要做多段分支，需要扩展 `eventSchema`。
 - **内容量**：5 个事件，候选规则最多产出 2 条观察；演示时玩法种类有限。
 - **默认授权关闭**：因此回顾页面设计了「先授权再一起看」的流程；不要为了演示顺畅偷偷改成默认开启。
@@ -99,6 +103,6 @@ npm run build      # 路由级代码分割，首屏约 96 KB gzip
 
 ## 下一步建议顺序
 
-1. M5 的现实行动（认知 → 小行动 → 复盘），闭环更完整，且不依赖后端。
-2. M4 真实 AI（先验证 Qoder Sites 的服务端能力）。
+1. **M5 验收与部署**：运行 `docs/QODER_M5_REVIEW_PROMPT.md` 交给 Qoder 审查并部署。
+2. M4 真实 AI（赛后，需升级 Qoder Sites 计划）。
 3. 内容扩充：再写 5–10 个事件，让回顾的候选规则有更多变化。

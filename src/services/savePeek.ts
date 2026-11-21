@@ -11,6 +11,12 @@ import { readRawSave } from '@/services/storage'
  * 不做完整 schema 校验——那需要 zod，会把校验库带进首包。
  * 剩余边界：字段齐全但内部结构损坏（例如某条经历缺字段）仍可能通过这里，
  * 那种情况由 loadSave 拒绝，并由城市页给出「存档读不出来」的提示。
+ *
+ * 版本放宽规则：
+ * - v1：只检查基础字段（角色/章节/场景/时间/精力），迁移会补 experiences/settings
+ * - v2：额外检查 experiences/seenEventIds/settings
+ * - v3：额外检查 reflections/insights
+ * - v4：额外检查 actions/journalEntries/chapterSummaries
  */
 
 const SCENE_SET = new Set<string>(SCENE_IDS)
@@ -82,6 +88,12 @@ export function hasPlayableSave(): boolean {
 
     if (version >= 3) {
       if (!Array.isArray(data.reflections) || !Array.isArray(data.insights)) {
+        return false
+      }
+    }
+
+    if (version >= 4) {
+      if (!Array.isArray(data.actions) || !Array.isArray(data.journalEntries) || !Array.isArray(data.chapterSummaries)) {
         return false
       }
     }

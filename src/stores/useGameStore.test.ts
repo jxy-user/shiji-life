@@ -229,7 +229,7 @@ describe('游戏状态', () => {
     expect(save.insights).toHaveLength(1)
   })
 
-  it('v1 存档连续迁移到 v3 时保留原有进度', () => {
+  it('v1 存档连续迁移到 v4 时保留原有进度', () => {
     window.localStorage.setItem(
       SAVE_KEY,
       JSON.stringify({
@@ -250,11 +250,14 @@ describe('游戏状态', () => {
 
     const save = loadSave()
 
-    expect(save?.version).toBe(3)
+    expect(save?.version).toBe(4)
     expect(save?.experiences).toEqual([])
     expect(save?.seenEventIds).toEqual([])
     expect(save?.reflections).toEqual([])
     expect(save?.insights).toEqual([])
+    expect(save?.actions).toEqual([])
+    expect(save?.journalEntries).toEqual([])
+    expect(save?.chapterSummaries).toEqual([])
     expect(save?.settings.reflectionThreshold).toBe(3)
     expect(save?.settings.analysisConsentDefault).toBe(false)
     expect(save?.gameDay).toBe(3)
@@ -262,7 +265,7 @@ describe('游戏状态', () => {
     expect(save?.flags.lumiMet).toBe(true)
   })
 
-  it('v2 存档升级到 v3 时给旧经历补上选择标签', () => {
+  it('v2 存档升级到 v4 时给旧经历补上选择标签', () => {
     window.localStorage.setItem(
       SAVE_KEY,
       JSON.stringify({
@@ -304,14 +307,17 @@ describe('游戏状态', () => {
 
     const save = loadSave()
 
-    expect(save?.version).toBe(3)
+    expect(save?.version).toBe(4)
     expect(save?.experiences[0].choiceTags).toEqual([])
     expect(save?.experiences[0].analysisConsent).toBe(true)
     expect(save?.settings.analysisConsentDefault).toBe(true)
     expect(save?.settings.invitationsEnabled).toBe(true)
+    expect(save?.actions).toEqual([])
+    expect(save?.journalEntries).toEqual([])
+    expect(save?.chapterSummaries).toEqual([])
   })
 
-  it.each([0, -1, 1.5, 4])('版本号 %s 不被迁移，也不被当作有效存档', (version) => {
+  it.each([0, -1, 1.5, 5])('版本号 %s 不被迁移，也不被当作有效存档', (version) => {
     window.localStorage.setItem(
       SAVE_KEY,
       JSON.stringify({
@@ -331,6 +337,61 @@ describe('游戏状态', () => {
     )
 
     expect(loadSave()).toBeNull()
+  })
+
+  it('v3 存档升级到 v4 时补齐 M5 新数组', () => {
+    window.localStorage.setItem(
+      SAVE_KEY,
+      JSON.stringify({
+        version: 3,
+        profile: { nickname: '旧玩家', avatarId: 'ink', lifeStage: null, explorationTopic: null },
+        chapter: 'chapter_01',
+        currentScene: 'campus',
+        gameDay: 2,
+        timeSlot: 'morning',
+        energy: 80,
+        flags: {},
+        visitedScenes: ['plaza', 'campus'],
+        experiences: [
+          {
+            id: 'old-experience',
+            eventId: 'campus_001',
+            eventTitle: '那个没有发出的消息',
+            sceneId: 'campus',
+            experienceType: 'social',
+            choiceId: 'ask',
+            choiceText: '主动问问具体安排',
+            choiceTags: ['approach'],
+            outcome: ['你发了消息。'],
+            analysisConsent: true,
+            playerReason: null,
+            playerFeeling: null,
+            gameDay: 1,
+            timeSlot: 'morning',
+            createdAt: '2026-11-01T10:00:00.000Z',
+            deletedAt: null,
+          },
+        ],
+        seenEventIds: ['campus_001'],
+        reflections: [],
+        candidateInsights: [],
+        insights: [],
+        settings: { analysisConsentDefault: false, reflectionThreshold: 3, minExperienceTypes: 2, invitationsEnabled: true },
+        prologueDone: true,
+        createdAt: '2026-11-01T10:00:00.000Z',
+        updatedAt: '2026-11-01T10:00:00.000Z',
+      }),
+    )
+
+    const save = loadSave()
+
+    expect(save?.version).toBe(4)
+    expect(save?.actions).toEqual([])
+    expect(save?.journalEntries).toEqual([])
+    expect(save?.chapterSummaries).toEqual([])
+    // 既有数据保留
+    expect(save?.experiences).toHaveLength(1)
+    expect(save?.experiences[0].choiceTags).toEqual(['approach'])
   })
 
   it('删除进度会清空本地存档', () => {

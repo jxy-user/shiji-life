@@ -2,7 +2,10 @@ import { create } from 'zustand'
 
 import {
   createInitialSave,
+  type Action,
   type CandidateInsight,
+  type ChapterSummary,
+  type JournalEntry,
   type LifeExperience,
   type PlayerProfile,
   type Reflection,
@@ -67,6 +70,36 @@ export type CompleteEventInput = {
 function normalizeOptionalText(value: string | null | undefined): string | null {
   const trimmed = value?.trim()
   return trimmed ? trimmed.slice(0, 200) : null
+}
+
+/** 创建现实行动输入 */
+export type CreateActionInput = Pick<
+  Action,
+  'title' | 'linkedInsightId' | 'frequency' | 'dueDate' | 'reminderTime'
+>
+
+/** 更新行动状态输入 */
+export type UpdateActionStatusInput = {
+  actionId: string
+  status: Action['status']
+}
+
+/** 记录行动复盘输入 */
+export type RecordActionReviewInput = {
+  actionId: string
+  content: string
+}
+
+/** 添加日记条目输入 */
+export type AddJournalEntryInput = Pick<
+  JournalEntry,
+  'type' | 'content' | 'linkedActionId' | 'linkedInsightId' | 'linkedExperienceIds'
+>
+
+/** 生成阶段总结输入 */
+export type GenerateChapterSummaryInput = {
+  chapter: string
+  content: string
 }
 
 function createId(): string {
@@ -138,6 +171,26 @@ type GameState = {
   rejectCandidate: (candidateId: string) => void
   completeReflection: (reflectionId: string) => void
   deleteInsight: (insightId: string) => void
+
+  // —— M5 现实行动与日记 ——
+  /** 创建一个现实行动；返回行动 id */
+  createAction: (input: CreateActionInput) => string | null
+  /** 更新行动状态（待办/进行中/完成/暂停） */
+  updateActionStatus: (input: UpdateActionStatusInput) => void
+  /** 删除行动 */
+  deleteAction: (actionId: string) => void
+  /** 完成行动并记录复盘；复盘内容自动写入日记 */
+  completeAction: (input: RecordActionReviewInput) => void
+  /** 添加日记条目（自由记录、关联认知等） */
+  addJournalEntry: (input: AddJournalEntryInput) => string | null
+  /** 更新日记条目 */
+  updateJournalEntry: (journalId: string, content: string) => void
+  /** 删除日记条目 */
+  deleteJournalEntry: (journalId: string) => void
+  /** 生成/更新阶段总结 */
+  upsertChapterSummary: (input: GenerateChapterSummaryInput) => void
+  /** 删除阶段总结 */
+  deleteChapterSummary: (summaryId: string) => void
 }
 
 /**
@@ -538,6 +591,156 @@ export const useGameStore = create<GameState>()((set, get) => {
       mutate((save) => ({
         ...save,
         insights: save.insights.filter((insight) => insight.id !== insightId),
+      }))
+    },
+
+    // —— M5 现实行动与日记 ——
+    createAction: (input) => {
+      const current = get().save
+      if (!current) return null
+
+      const now = new Date().toISOString()
+      const action: Action = {
+        id: createId(),
+        title: input.title.slice(0, 60),
+        linkedInsightId: input.linkedInsightId ?? null,
+        frequency: input.frequency,
+        dueDate: input.dueDate ?? null,
+        reminderTime: input.reminderTime ?? null,
+        status: 'todo',
+        createdAt: now,
+        updatedAt: now,
+        completedAt: null,
+      }
+
+      commit({ ...current, actions: [...current.actions, action] })
+      return action.id
+    },
+
+    updateActionStatus: ({ actionId, status }) => {
+      mutate((save) => ({
+        ...save,
+        actions: save.actions.map((action) =>
+          action.id === actionId
+            ? { ...action, status, updatedAt: new Date().toISOString() }
+            : action,
+        ),
+      }))
+    },
+
+    deleteAction: (actionId) => {
+      mutate((save) => ({
+        ...save,
+        actions: save.actions.filter((action) => action.id !== actionId),
+      }))
+    },
+
+    completeAction: ({ actionId, content }) => {
+      const current = get().save
+      if (!current) return
+
+      const now = new Date().toISOString()
+      const action = current.actions.find((a) => a.id === actionId)
+      if (!action) return
+
+      // 更新行动状态为完成
+      const updatedActions = current.actions.map((a) =>
+        a.id === actionId
+          ? { ...a, status: 'done' as const, updatedAt: now, completedAt: now }
+          : a,
+      )
+
+      // 写入复盘日记
+      const journalEntry: JournalEntry = {
+        id: createId(),
+        type: 'action_review',
+        content: normalizeOptionalText(content) ?? '',
+        linkedActionId: actionId,
+        linkedInsightId: action.linkedInsightId,
+        linkedExperienceIds: [],
+        createdAt: now,
+        updatedAt: now,
+      }
+
+      commit({
+        ...current,
+        actions: updatedActions,
+        journalEntries: [...current.journalEntries, journalEntry],
+      })
+    },
+
+    addJournalEntry: (input) => {
+      const current = get().save
+      if (!current) return null
+
+      const now = new Date().toISOString()
+      const entry: JournalEntry = {
+        id: createId(),
+        type: input.type,
+        content: input.content.slice(0, 2000),
+        linkedActionId: input.linkedActionId ?? null,
+        linkedInsightId: input.linkedInsightId ?? null,
+        linkedExperienceIds: input.linkedExperienceIds ?? [],
+        createdAt: now,
+        updatedAt: now,
+      }
+
+      commit({ ...current, journalEntries: [...current.journalEntries, entry] })
+      return entry.id
+    },
+
+    updateJournalEntry: (journalId, content) => {
+      mutate((save) => ({
+        ...save,
+        journalEntries: save.journalEntries.map((entry) =>
+          entry.id === journalId
+            ? { ...entry, content: content.slice(0, 2000), updatedAt: new Date().toISOString() }
+            : entry,
+        ),
+      }))
+    },
+
+    deleteJournalEntry: (journalId) => {
+      mutate((save) => ({
+        ...save,
+        journalEntries: save.journalEntries.filter((entry) => entry.id !== journalId),
+      }))
+    },
+
+    upsertChapterSummary: ({ chapter, content }) => {
+      mutate((save) => {
+        const now = new Date().toISOString()
+        const existingIndex = save.chapterSummaries.findIndex(
+          (summary) => summary.chapter === chapter,
+        )
+
+        if (existingIndex >= 0) {
+          const summaries = [...save.chapterSummaries]
+          summaries[existingIndex] = {
+            ...summaries[existingIndex],
+            content: content.slice(0, 5000),
+            isEdited: true,
+            editedAt: now,
+          }
+          return { ...save, chapterSummaries: summaries }
+        }
+
+        const summary: ChapterSummary = {
+          id: createId(),
+          chapter,
+          content: content.slice(0, 5000),
+          generatedAt: now,
+          isEdited: false,
+          editedAt: null,
+        }
+        return { ...save, chapterSummaries: [...save.chapterSummaries, summary] }
+      })
+    },
+
+    deleteChapterSummary: (summaryId) => {
+      mutate((save) => ({
+        ...save,
+        chapterSummaries: save.chapterSummaries.filter((summary) => summary.id !== summaryId),
       }))
     },
   }

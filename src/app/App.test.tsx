@@ -35,13 +35,13 @@ describe('路由', () => {
     expect(await screen.findByRole('heading', { name: '拾己' })).toBeInTheDocument()
   })
 
-  it('未实现的页面保留占位与返回入口', () => {
+  it('日记页面可正常访问', async () => {
     renderAt('/journal')
 
-    expect(screen.getByRole('heading', { name: '只写给自己看' })).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: /回到开始页/ })).toHaveAttribute(
+    expect(await screen.findByRole('heading', { name: '日记' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: '城市' })).toHaveAttribute(
       'href',
-      '/',
+      '#/city',
     )
   })
 

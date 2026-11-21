@@ -34,7 +34,7 @@ export function migrateSave(input: unknown): unknown {
   const version = readVersion(save)
 
   // 只迁移明确识别到的已知版本；未知版本不猜，交给 loadSave 拒绝。
-  // 逐级向上：v1 → v2 → v3，保证每一步都有确定的含义。
+  // 逐级向上：v1 → v2 → v3 → v4，保证每一步都有确定的含义。
   let current = version
 
   if (current === 1) {
@@ -67,7 +67,16 @@ export function migrateSave(input: unknown): unknown {
       minExperienceTypes: 2,
       invitationsEnabled: true,
     }
+    current = 3
     save.version = 3
+  }
+
+  if (current === 3) {
+    // M5 新增字段：补空数组，不改动既有数据
+    if (!Array.isArray(save.actions)) save.actions = []
+    if (!Array.isArray(save.journalEntries)) save.journalEntries = []
+    if (!Array.isArray(save.chapterSummaries)) save.chapterSummaries = []
+    save.version = 4
   }
 
   return save
