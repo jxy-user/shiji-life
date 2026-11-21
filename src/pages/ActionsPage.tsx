@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { useGameStore } from '@/stores/useGameStore'
 
 function ActionCard({
@@ -151,6 +152,7 @@ function CreateActionDialog({
   onClose,
   onCreate,
   insights,
+  initialLinkedInsightId,
 }: {
   onClose: () => void
   onCreate: (input: {
@@ -161,18 +163,23 @@ function CreateActionDialog({
     reminderTime: string | null
   }) => void
   insights: Array<{ id: string; title: string; category: string }>
+  initialLinkedInsightId: string | null
 }) {
   const [title, setTitle] = useState('')
-  const [linkedInsightId, setLinkedInsightId] = useState<string | null>(null)
+  const [linkedInsightId, setLinkedInsightId] = useState<string | null>(initialLinkedInsightId)
   const [frequency, setFrequency] = useState<'once' | 'daily' | 'weekly' | 'custom'>('once')
   const [dueDate, setDueDate] = useState('')
   const [reminderTime, setReminderTime] = useState('')
+  const [submitting, setSubmitting] = useState(false)
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (!title.trim()) return
+    if (submitting) return
+    const trimmed = title.trim()
+    if (!trimmed) return
+    setSubmitting(true)
     onCreate({
-      title: title.trim(),
+      title: trimmed,
       linkedInsightId,
       frequency,
       dueDate: dueDate || null,
@@ -182,14 +189,15 @@ function CreateActionDialog({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" role="dialog" aria-modal="true" aria-labelledby="create-action-dialog-title">
       <article className="w-full max-w-md rounded-xl bg-white p-6 shadow-xl">
         <header className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-ink-900">新建行动</h2>
+          <h2 id="create-action-dialog-title" className="text-lg font-semibold text-ink-900">新建行动</h2>
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg p-1 text-ink-400 hover:bg-ink-100"
+            disabled={submitting}
+            className="rounded-lg p-1 text-ink-400 hover:bg-ink-100 disabled:opacity-50"
             aria-label="关闭"
           >
             ✕
@@ -211,6 +219,7 @@ function CreateActionDialog({
               className="mt-1 w-full rounded-lg border border-ink-200 px-3 py-2 text-sm focus:border-sun-500 focus:outline-none focus:ring-1 focus:ring-sun-500"
               required
               autoFocus
+              disabled={submitting}
             />
           </div>
 
@@ -223,6 +232,7 @@ function CreateActionDialog({
               value={linkedInsightId || ''}
               onChange={(e) => setLinkedInsightId(e.target.value || null)}
               className="mt-1 w-full rounded-lg border border-ink-200 px-3 py-2 text-sm focus:border-sun-500 focus:outline-none focus:ring-1 focus:ring-sun-500"
+              disabled={submitting}
             >
               <option value="">无（手动创建）</option>
               {insights.map((insight: typeof insights[0]) => (
@@ -242,6 +252,7 @@ function CreateActionDialog({
               value={frequency}
               onChange={(e) => setFrequency(e.target.value as 'once' | 'daily' | 'weekly' | 'custom')}
               className="mt-1 w-full rounded-lg border border-ink-200 px-3 py-2 text-sm focus:border-sun-500 focus:outline-none focus:ring-1 focus:ring-sun-500"
+              disabled={submitting}
             >
               <option value="once">一次性</option>
               <option value="daily">每日</option>
@@ -260,6 +271,7 @@ function CreateActionDialog({
               value={dueDate}
               onChange={(e) => setDueDate(e.target.value)}
               className="mt-1 w-full rounded-lg border border-ink-200 px-3 py-2 text-sm focus:border-sun-500 focus:outline-none focus:ring-1 focus:ring-sun-500"
+              disabled={submitting}
             />
           </div>
 
@@ -273,6 +285,7 @@ function CreateActionDialog({
               value={reminderTime}
               onChange={(e) => setReminderTime(e.target.value)}
               className="mt-1 w-full rounded-lg border border-ink-200 px-3 py-2 text-sm focus:border-sun-500 focus:outline-none focus:ring-1 focus:ring-sun-500"
+              disabled={submitting}
             />
           </div>
 
@@ -280,13 +293,14 @@ function CreateActionDialog({
             <button
               type="button"
               onClick={onClose}
-              className="rounded-lg px-4 py-2 text-sm font-medium text-ink-600 hover:bg-ink-50"
+              disabled={submitting}
+              className="rounded-lg px-4 py-2 text-sm font-medium text-ink-600 hover:bg-ink-50 disabled:opacity-50"
             >
               取消
             </button>
             <button
               type="submit"
-              disabled={!title.trim()}
+              disabled={submitting || !title.trim()}
               className="rounded-lg bg-sun-600 px-4 py-2 text-sm font-medium text-white hover:bg-sun-700 disabled:opacity-50"
             >
               创建
@@ -308,25 +322,28 @@ function CompleteActionDialog({
   actionTitle: string
 }) {
   const [content, setContent] = useState('')
-  const [submitted, setSubmitted] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (submitted) return
-    setSubmitted(true)
-    onComplete(content.trim())
+    if (submitting) return
+    const trimmed = content.trim()
+    if (!trimmed) return
+    setSubmitting(true)
+    onComplete(trimmed)
     onClose()
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" role="dialog" aria-modal="true" aria-labelledby="complete-dialog-title">
       <article className="w-full max-w-md rounded-xl bg-white p-6 shadow-xl">
         <header className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-ink-900">完成行动 · 复盘</h2>
+          <h2 id="complete-dialog-title" className="text-lg font-semibold text-ink-900">完成行动 · 复盘</h2>
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg p-1 text-ink-400 hover:bg-ink-100"
+            disabled={submitting}
+            className="rounded-lg p-1 text-ink-400 hover:bg-ink-100 disabled:opacity-50"
             aria-label="关闭"
           >
             ✕
@@ -344,18 +361,22 @@ function CompleteActionDialog({
             maxLength={2000}
             placeholder="随便写写，不需要文采，只给自己看……"
             className="w-full rounded-lg border border-ink-200 px-3 py-2 text-sm focus:border-sun-500 focus:outline-none focus:ring-1 focus:ring-sun-500 resize-none"
+            disabled={submitting}
+            aria-label="复盘内容"
           />
           <div className="mt-4 flex justify-end gap-2">
             <button
               type="button"
               onClick={onClose}
-              className="rounded-lg px-4 py-2 text-sm font-medium text-ink-600 hover:bg-ink-50"
+              disabled={submitting}
+              className="rounded-lg px-4 py-2 text-sm font-medium text-ink-600 hover:bg-ink-50 disabled:opacity-50"
             >
               稍后再说
             </button>
             <button
               type="submit"
-              className="rounded-lg bg-forest-600 px-4 py-2 text-sm font-medium text-white hover:bg-forest-700"
+              disabled={submitting || !content.trim()}
+              className="rounded-lg bg-forest-600 px-4 py-2 text-sm font-medium text-white hover:bg-forest-700 disabled:opacity-50"
             >
               保存复盘
             </button>
@@ -369,12 +390,28 @@ function CompleteActionDialog({
 export default function ActionsPage() {
   const save = useGameStore((state) => state.save)
   const { createAction, updateActionStatus, deleteAction, completeAction } = useGameStore()
+  const [searchParams, setSearchParams] = useSearchParams()
   const [showCreateDialog, setShowCreateDialog] = useState(false)
   const [completingAction, setCompletingAction] = useState<{ id: string; title: string } | null>(null)
 
   const actions = save?.actions ?? []
   const insights = save?.insights ?? []
   const linkedInsights = insights.map((i: typeof insights[0]) => ({ id: i.id, title: i.title, category: i.category }))
+  const [preSelectedInsightId, setPreSelectedInsightId] = useState<string | null>(null)
+
+  // 从 URL 查询参数预选关联认知
+  useEffect(() => {
+    const insightId = searchParams.get('insight')
+    if (!insightId) return
+    // 从 store 直接读取避免依赖 insights 数组引用变化
+    const currentInsights = useGameStore.getState().save?.insights ?? []
+    if (currentInsights.some((i) => i.id === insightId)) {
+      setPreSelectedInsightId(insightId)
+      setShowCreateDialog(true)
+      // 清理 URL，避免刷新后重复打开
+      setSearchParams({}, { replace: true })
+    }
+  }, [searchParams, setSearchParams, setShowCreateDialog, setPreSelectedInsightId])
 
   const handleStatusChange = (id: string, status: 'todo' | 'in_progress' | 'done' | 'paused') => {
     updateActionStatus({ actionId: id, status })
@@ -455,9 +492,13 @@ export default function ActionsPage() {
 
       {showCreateDialog && (
         <CreateActionDialog
-          onClose={() => setShowCreateDialog(false)}
+          onClose={() => {
+            setShowCreateDialog(false)
+            setPreSelectedInsightId(null)
+          }}
           onCreate={createAction}
           insights={linkedInsights}
+          initialLinkedInsightId={preSelectedInsightId}
         />
       )}
 

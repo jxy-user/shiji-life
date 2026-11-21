@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { loadSave } from '@/services/saveService'
+import { loadSave, persistSave } from '@/services/saveService'
 import { SAVE_KEY } from '@/services/storage'
 import { useUiStore } from '@/stores/useUiStore'
 import { useGameStore } from './useGameStore'
@@ -400,5 +400,380 @@ describe('游戏状态', () => {
 
     expect(useGameStore.getState().save).toBeNull()
     expect(loadSave()).toBeNull()
+  })
+})
+
+describe('M5 现实行动与日记', () => {
+  beforeEach(() => {
+    window.localStorage.clear()
+    useGameStore.setState({ save: null, hasSave: false })
+    useGameStore.getState().beginJourney(profile)
+    // 设置默认授权开启，简化测试
+    useGameStore.getState().setAnalysisConsentDefault(true)
+    // 创建 3 条经历：两条带 'approach' 标签（触发标签规则），一条不同场景不同标签（触发场景规则）
+    useGameStore.getState().recordExperience({
+      eventId: 'test_001',
+      eventTitle: '测试事件 1',
+      sceneId: 'plaza',
+      experienceType: 'action',
+      choiceId: 'choice1',
+      choiceText: '主动尝试',
+      outcome: ['测试结果'],
+      analysisConsent: true,
+      choiceTags: ['approach'],
+    })
+    useGameStore.getState().recordExperience({
+      eventId: 'test_002',
+      eventTitle: '测试事件 2',
+      sceneId: 'home',
+      experienceType: 'social',
+      choiceId: 'choice2',
+      choiceText: '主动社交',
+      outcome: ['社交结果'],
+      analysisConsent: true,
+      choiceTags: ['approach'],
+    })
+    useGameStore.getState().recordExperience({
+      eventId: 'test_003',
+      eventTitle: '测试事件 3',
+      sceneId: 'park',
+      experienceType: 'inner',
+      choiceId: 'choice3',
+      choiceText: '观察一下',
+      outcome: ['情感结果'],
+      analysisConsent: true,
+      choiceTags: ['observe'],
+    })
+    const reflectionId = useGameStore.getState().createReflectionInvite()!
+    useGameStore.getState().respondReflection(reflectionId, 'accept')
+    useGameStore.getState().generateCandidates(reflectionId)
+    const candidate = useGameStore.getState().save!.candidateInsights[0]
+    useGameStore.getState().confirmCandidate(candidate.id)
+  })
+
+  it('创建行动：可关联认知、设置频率与截止', () => {
+    const actionId = useGameStore.getState().createAction({
+      title: '每天冥想 5 分钟',
+      linkedInsightId: useGameStore.getState().save!.insights[0].id,
+      frequency: 'daily',
+      dueDate: '2026-12-31',
+      reminderTime: '20:00',
+    })
+    expect(actionId).toBeTruthy()
+
+    const action = useGameStore.getState().save!.actions[0]
+    expect(action.title).toBe('每天冥想 5 分钟')
+    expect(action.linkedInsightId).toBe(useGameStore.getState().save!.insights[0].id)
+    expect(action.frequency).toBe('daily')
+    expect(action.dueDate).toBe('2026-12-31')
+    expect(action.reminderTime).toBe('20:00')
+    expect(action.status).toBe('todo')
+  })
+
+  it('创建行动：手动创建无关联认知', () => {
+    const actionId = useGameStore.getState().createAction({
+      title: '散步 20 分钟',
+      linkedInsightId: null,
+      frequency: 'once',
+      dueDate: null,
+      reminderTime: null,
+    })
+    expect(actionId).toBeTruthy()
+    const action = useGameStore.getState().save!.actions[0]
+    expect(action.linkedInsightId).toBeNull()
+  })
+
+  it('拒绝空标题的行动', () => {
+    const actionId = useGameStore.getState().createAction({
+      title: '   ',
+      linkedInsightId: null,
+      frequency: 'once',
+      dueDate: null,
+      reminderTime: null,
+    })
+    expect(actionId).toBeNull()
+    expect(useGameStore.getState().save!.actions).toHaveLength(0)
+  })
+
+  it('更新行动状态：待办 → 进行中 → 完成', () => {
+    const actionId = useGameStore.getState().createAction({
+      title: '测试行动',
+      linkedInsightId: null,
+      frequency: 'once',
+      dueDate: null,
+      reminderTime: null,
+    })!
+    useGameStore.getState().updateActionStatus({ actionId, status: 'in_progress' })
+    expect(useGameStore.getState().save!.actions[0].status).toBe('in_progress')
+
+    useGameStore.getState().updateActionStatus({ actionId, status: 'done' })
+    expect(useGameStore.getState().save!.actions[0].status).toBe('done')
+    expect(useGameStore.getState().save!.actions[0].completedAt).not.toBeNull()
+  })
+
+  it('删除行动', () => {
+    const actionId = useGameStore.getState().createAction({
+      title: '待删除',
+      linkedInsightId: null,
+      frequency: 'once',
+      dueDate: null,
+      reminderTime: null,
+    })!
+    useGameStore.getState().deleteAction(actionId)
+    expect(useGameStore.getState().save!.actions).toHaveLength(0)
+  })
+
+  it('完成行动并复盘：自动写入 action_review 日记', () => {
+    const actionId = useGameStore.getState().createAction({
+      title: '完成并复盘',
+      linkedInsightId: useGameStore.getState().save!.insights[0].id,
+      frequency: 'once',
+      dueDate: null,
+      reminderTime: null,
+    })!
+
+    useGameStore.getState().completeAction({ actionId, content: '今天冥想了 5 分钟，感觉平静多了。' })
+
+    const action = useGameStore.getState().save!.actions[0]
+    expect(action.status).toBe('done')
+    expect(action.completedAt).not.toBeNull()
+
+    const journal = useGameStore.getState().save!.journalEntries[0]
+    expect(journal.type).toBe('action_review')
+    expect(journal.content).toBe('今天冥想了 5 分钟，感觉平静多了。')
+    expect(journal.linkedActionId).toBe(actionId)
+    expect(journal.linkedInsightId).toBe(action.linkedInsightId)
+  })
+
+  it('完成行动幂等：已完成的行动不再重复写入复盘', () => {
+    const actionId = useGameStore.getState().createAction({
+      title: '幂等测试',
+      linkedInsightId: null,
+      frequency: 'once',
+      dueDate: null,
+      reminderTime: null,
+    })!
+
+    useGameStore.getState().completeAction({ actionId, content: '第一次复盘' })
+    useGameStore.getState().completeAction({ actionId, content: '第二次复盘' })
+
+    expect(useGameStore.getState().save!.journalEntries).toHaveLength(1)
+    expect(useGameStore.getState().save!.journalEntries[0].content).toBe('第一次复盘')
+  })
+
+  it('拒绝空白复盘内容', () => {
+    const actionId = useGameStore.getState().createAction({
+      title: '空白复盘',
+      linkedInsightId: null,
+      frequency: 'once',
+      dueDate: null,
+      reminderTime: null,
+    })!
+
+    useGameStore.getState().completeAction({ actionId, content: '   ' })
+    expect(useGameStore.getState().save!.journalEntries).toHaveLength(0)
+    expect(useGameStore.getState().save!.actions[0].status).toBe('todo')
+  })
+
+  it('复盘内容最多 2000 字，超长截断', () => {
+    const actionId = useGameStore.getState().createAction({
+      title: '长复盘',
+      linkedInsightId: null,
+      frequency: 'once',
+      dueDate: null,
+      reminderTime: null,
+    })!
+    const longContent = 'a'.repeat(3000)
+    useGameStore.getState().completeAction({ actionId, content: longContent })
+    expect(useGameStore.getState().save!.journalEntries[0].content).toHaveLength(2000)
+  })
+
+  it('添加日记：三种类型、关联字段', () => {
+    const actionId = useGameStore.getState().createAction({
+      title: '关联行动',
+      linkedInsightId: null,
+      frequency: 'once',
+      dueDate: null,
+      reminderTime: null,
+    })!
+    const insightId = useGameStore.getState().save!.insights[0].id
+    const expId = useGameStore.getState().save!.experiences[0].id
+
+    const freeId = useGameStore.getState().addJournalEntry({
+      type: 'free',
+      content: '自由记录',
+      linkedActionId: null,
+      linkedInsightId: null,
+      linkedExperienceIds: [expId],
+    })
+    const reviewId = useGameStore.getState().addJournalEntry({
+      type: 'action_review',
+      content: '手动复盘',
+      linkedActionId: actionId,
+      linkedInsightId: insightId,
+      linkedExperienceIds: [],
+    })
+    const linkId = useGameStore.getState().addJournalEntry({
+      type: 'insight_link',
+      content: '关联认知展开',
+      linkedActionId: null,
+      linkedInsightId: insightId,
+      linkedExperienceIds: [],
+    })
+
+    expect(freeId).toBeTruthy()
+    expect(reviewId).toBeTruthy()
+    expect(linkId).toBeTruthy()
+    expect(useGameStore.getState().save!.journalEntries).toHaveLength(3)
+  })
+
+  it('拒绝空白日记内容', () => {
+    const id = useGameStore.getState().addJournalEntry({
+      type: 'free',
+      content: '   ',
+      linkedActionId: null,
+      linkedInsightId: null,
+      linkedExperienceIds: [],
+    })
+    expect(id).toBeNull()
+    expect(useGameStore.getState().save!.journalEntries).toHaveLength(0)
+  })
+
+  it('更新日记内容', () => {
+    const id = useGameStore.getState().addJournalEntry({
+      type: 'free',
+      content: '原内容',
+      linkedActionId: null,
+      linkedInsightId: null,
+      linkedExperienceIds: [],
+    })!
+    const originalUpdatedAt = useGameStore.getState().save!.journalEntries[0].updatedAt
+    useGameStore.getState().updateJournalEntry(id, '新内容')
+    expect(useGameStore.getState().save!.journalEntries[0].content).toBe('新内容')
+    expect(useGameStore.getState().save!.journalEntries[0].updatedAt).not.toBe(originalUpdatedAt)
+  })
+
+  it('拒绝空白更新日记', () => {
+    const id = useGameStore.getState().addJournalEntry({
+      type: 'free',
+      content: '原内容',
+      linkedActionId: null,
+      linkedInsightId: null,
+      linkedExperienceIds: [],
+    })!
+    useGameStore.getState().updateJournalEntry(id, '   ')
+    expect(useGameStore.getState().save!.journalEntries[0].content).toBe('原内容')
+  })
+
+  it('删除日记', () => {
+    const id = useGameStore.getState().addJournalEntry({
+      type: 'free',
+      content: '待删除',
+      linkedActionId: null,
+      linkedInsightId: null,
+      linkedExperienceIds: [],
+    })!
+    useGameStore.getState().deleteJournalEntry(id)
+    expect(useGameStore.getState().save!.journalEntries).toHaveLength(0)
+  })
+
+  it('生成阶段总结：按 chapter 去重、标记编辑', () => {
+    useGameStore.getState().upsertChapterSummary({
+      chapter: 'chapter_01',
+      content: '初版总结',
+    })
+    expect(useGameStore.getState().save!.chapterSummaries).toHaveLength(1)
+    expect(useGameStore.getState().save!.chapterSummaries[0].isEdited).toBe(false)
+
+    useGameStore.getState().upsertChapterSummary({
+      chapter: 'chapter_01',
+      content: '修订版总结',
+    })
+    expect(useGameStore.getState().save!.chapterSummaries).toHaveLength(1)
+    expect(useGameStore.getState().save!.chapterSummaries[0].content).toBe('修订版总结')
+    expect(useGameStore.getState().save!.chapterSummaries[0].isEdited).toBe(true)
+    expect(useGameStore.getState().save!.chapterSummaries[0].editedAt).not.toBeNull()
+  })
+
+  it('拒绝空白阶段总结', () => {
+    useGameStore.getState().upsertChapterSummary({
+      chapter: 'chapter_01',
+      content: '   ',
+    })
+    expect(useGameStore.getState().save!.chapterSummaries).toHaveLength(0)
+  })
+
+  it('删除阶段总结', () => {
+    useGameStore.getState().upsertChapterSummary({
+      chapter: 'chapter_01',
+      content: '待删除',
+    })
+    const id = useGameStore.getState().save!.chapterSummaries[0].id
+    useGameStore.getState().deleteChapterSummary(id)
+    expect(useGameStore.getState().save!.chapterSummaries).toHaveLength(0)
+  })
+
+  it('v3 存档迁移到 v4：新数组补空值、既有数据保留', () => {
+    window.localStorage.setItem(
+      'shiji-life:save:v1',
+      JSON.stringify({
+        version: 3,
+        profile: { nickname: '旧玩家', avatarId: 'ink', lifeStage: null, explorationTopic: null },
+        chapter: 'chapter_01',
+        currentScene: 'campus',
+        gameDay: 2,
+        timeSlot: 'morning',
+        energy: 80,
+        flags: {},
+        visitedScenes: ['plaza', 'campus'],
+        experiences: [
+          {
+            id: 'old-exp',
+            eventId: 'campus_001',
+            eventTitle: '测试',
+            sceneId: 'campus',
+            experienceType: 'social',
+            choiceId: 'ask',
+            choiceText: '提问',
+            choiceTags: ['approach'],
+            outcome: ['结果'],
+            analysisConsent: true,
+            playerReason: null,
+            playerFeeling: null,
+            gameDay: 1,
+            timeSlot: 'morning',
+            createdAt: '2026-11-01T10:00:00.000Z',
+            deletedAt: null,
+          },
+        ],
+        seenEventIds: ['campus_001'],
+        reflections: [],
+        candidateInsights: [],
+        insights: [],
+        settings: { analysisConsentDefault: false, reflectionThreshold: 3, minExperienceTypes: 2, invitationsEnabled: true },
+        prologueDone: true,
+        createdAt: '2026-11-01T10:00:00.000Z',
+        updatedAt: '2026-11-01T10:00:00.000Z',
+      }),
+    )
+
+    const save = loadSave()
+    expect(save?.version).toBe(4)
+    expect(save?.actions).toEqual([])
+    expect(save?.journalEntries).toEqual([])
+    expect(save?.chapterSummaries).toEqual([])
+    expect(save?.experiences).toHaveLength(1)
+  })
+
+  it('写盘前 schema 校验：非法数据拒绝写入', () => {
+    useGameStore.getState().beginJourney(profile)
+    // 直接构造非法存档（缺少必填字段）
+    const badSave = { ...useGameStore.getState().save! }
+    delete (badSave as Record<string, unknown>).profile
+    // @ts-expectError 故意传非法数据测试
+    const ok = persistSave(badSave as never)
+    expect(ok).toBe(false)
+    // 原存档不应被覆盖
+    expect(loadSave()?.profile.nickname).toBe('小满')
   })
 })

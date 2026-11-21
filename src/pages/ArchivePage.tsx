@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react'
-import { Link, Navigate } from 'react-router-dom'
+import { Link, Navigate, useNavigate } from 'react-router-dom'
 
 import { StatusBar } from '@/components/layout/StatusBar'
 import { SCENES } from '@/data/scenes'
@@ -33,6 +33,7 @@ export default function ArchivePage() {
   const deleteInsight = useGameStore((state) => state.deleteInsight)
   const upsertChapterSummary = useGameStore((state) => state.upsertChapterSummary)
   const deleteChapterSummary = useGameStore((state) => state.deleteChapterSummary)
+  const navigate = useNavigate()
 
   /** 二次确认：第一次点「删除」只进入待确认状态 */
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null)
@@ -224,28 +225,39 @@ export default function ArchivePage() {
                             <p className="font-display text-[15px] text-ink-900">
                               {insight.title}
                             </p>
-                            <button
-                              type="button"
-                              onClick={() => {
-                                if (pendingInsightDeleteId === insight.id) {
-                                  deleteInsight(insight.id)
-                                  setPendingInsightDeleteId(null)
-                                } else {
-                                  setPendingInsightDeleteId(insight.id)
-                                }
-                              }}
-                              onBlur={() => setPendingInsightDeleteId(null)}
-                              className={[
-                                'shrink-0 rounded-full px-3 py-1 text-[11px] transition-colors',
-                                pendingInsightDeleteId === insight.id
-                                  ? 'bg-ink-900 text-cream-50'
-                                  : 'text-ink-500 hover:text-ink-900',
-                              ].join(' ')}
-                            >
-                              {pendingInsightDeleteId === insight.id
-                                ? '再次点击确认删除'
-                                : '删除'}
-                            </button>
+                            <div className="flex items-center gap-2 shrink-0">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  navigate(`/actions?insight=${insight.id}`)
+                                }}
+                                className="rounded-full bg-sun-100 px-3 py-1 text-[11px] font-medium text-sun-700 hover:bg-sun-200 transition-colors"
+                              >
+                                转化为行动
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  if (pendingInsightDeleteId === insight.id) {
+                                    deleteInsight(insight.id)
+                                    setPendingInsightDeleteId(null)
+                                  } else {
+                                    setPendingInsightDeleteId(insight.id)
+                                  }
+                                }}
+                                onBlur={() => setPendingInsightDeleteId(null)}
+                                className={[
+                                  'shrink-0 rounded-full px-3 py-1 text-[11px] transition-colors',
+                                  pendingInsightDeleteId === insight.id
+                                    ? 'bg-ink-900 text-cream-50'
+                                    : 'text-ink-500 hover:text-ink-900',
+                                ].join(' ')}
+                              >
+                                {pendingInsightDeleteId === insight.id
+                                  ? '再次点击确认删除'
+                                  : '删除'}
+                              </button>
+                            </div>
                           </div>
                           <p className="mt-2 whitespace-pre-line text-[13px] leading-6 text-ink-700">
                             {insight.content}
@@ -436,11 +448,13 @@ function ChapterSummaryCard({
     setEditingSummaryId(null)
   }
 
+  const chapterLabel = summary.chapter === 'chapter_01' ? '第 1 章' : summary.chapter
+
   return (
     <article className="rounded-2xl border border-sand-300 bg-cream-50 p-4 sm:p-5">
       <header className="flex items-start justify-between gap-3">
         <div>
-          <h3 className="font-display text-[15px] text-ink-900">{summary.chapter}</h3>
+          <h3 className="font-display text-[15px] text-ink-900">{chapterLabel}</h3>
           <p className="mt-0.5 text-[11px] text-ink-500">
             {summary.isEdited ? '已编辑 · ' : '微光生成 · '}
             {new Date(summary.generatedAt).toLocaleString('zh-CN')}
@@ -527,16 +541,27 @@ function GenerateSummaryDialog({
   initialContent: string
 }) {
   const [content, setContent] = useState(initialContent)
+  const [submitting, setSubmitting] = useState(false)
+
+  const handleSave = () => {
+    if (submitting) return
+    const trimmed = content.trim()
+    if (!trimmed) return
+    setSubmitting(true)
+    onSave(trimmed)
+    onClose()
+  }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" role="dialog" aria-modal="true" aria-labelledby="generate-summary-dialog-title">
       <article className="w-full max-w-2xl rounded-xl bg-white p-6 shadow-xl max-h-[90vh] overflow-y-auto">
         <header className="flex items-center justify-between sticky top-0 bg-white pb-4 border-b border-ink-100">
-          <h2 className="text-lg font-semibold text-ink-900">生成阶段总结</h2>
+          <h2 id="generate-summary-dialog-title" className="text-lg font-semibold text-ink-900">生成阶段总结</h2>
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg p-1 text-ink-400 hover:bg-ink-100"
+            disabled={submitting}
+            className="rounded-lg p-1 text-ink-400 hover:bg-ink-100 disabled:opacity-50"
             aria-label="关闭"
           >
             ✕
@@ -554,6 +579,7 @@ function GenerateSummaryDialog({
             maxLength={5000}
             className="mt-3 w-full rounded-lg border border-ink-200 px-3 py-2 text-sm focus:border-sun-500 focus:outline-none focus:ring-1 focus:ring-sun-500 resize-none"
             aria-label="阶段总结内容"
+            disabled={submitting}
           />
           <p className="mt-2 text-xs text-ink-500">你可以随意修改、补充或删减。只有点击「保存为正式总结」后，内容才会进入档案。</p>
         </div>
@@ -562,16 +588,15 @@ function GenerateSummaryDialog({
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg px-4 py-2 text-sm font-medium text-ink-600 hover:bg-ink-50"
+            disabled={submitting}
+            className="rounded-lg px-4 py-2 text-sm font-medium text-ink-600 hover:bg-ink-50 disabled:opacity-50"
           >
             放弃
           </button>
           <button
             type="button"
-            onClick={() => {
-              onSave(content.trim())
-            }}
-            disabled={!content.trim()}
+            onClick={handleSave}
+            disabled={submitting || !content.trim()}
             className="rounded-lg bg-sun-600 px-4 py-2 text-sm font-medium text-white hover:bg-sun-700 disabled:opacity-50"
           >
             保存为正式总结

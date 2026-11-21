@@ -47,6 +47,28 @@
   --color-sage-500: #7c9882;
   --color-sage-700: #4f6b57;
 
+  /* 阳光暖色（行动相关） */
+  --color-sun-50: #fefce8;
+  --color-sun-100: #fef9c3;
+  --color-sun-200: #fef08a;
+  --color-sun-300: #fde047;
+  --color-sun-400: #facc15;
+  --color-sun-500: #eab308;
+  --color-sun-600: #ca8a04;
+  --color-sun-700: #a16207;
+  --color-sun-800: #854d0e;
+
+  /* 森林绿（完成状态） */
+  --color-forest-50: #f0fdf4;
+  --color-forest-100: #dcfce7;
+  --color-forest-200: #bbf7d0;
+  --color-forest-300: #86efac;
+  --color-forest-400: #4ade80;
+  --color-forest-500: #22c55e;
+  --color-forest-600: #16a34a;
+  --color-forest-700: #15803d;
+  --color-forest-800: #166534;
+
   /* 字体：叙事用宋体，界面用黑体 */
   --font-display:
     'Songti SC', 'STSong', 'Noto Serif SC', 'Source Han Serif SC', 'SimSun',

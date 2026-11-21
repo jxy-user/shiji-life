@@ -168,13 +168,17 @@ function CreateJournalDialog({
   const [linkedActionId, setLinkedActionId] = useState<string | null>(null)
   const [linkedInsightId, setLinkedInsightId] = useState<string | null>(null)
   const [linkedExperienceIds, setLinkedExperienceIds] = useState<string[]>([])
+  const [submitting, setSubmitting] = useState(false)
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (!content.trim()) return
+    if (submitting) return
+    const trimmed = content.trim()
+    if (!trimmed) return
+    setSubmitting(true)
     onCreate({
       type,
-      content: content.trim(),
+      content: trimmed,
       linkedActionId,
       linkedInsightId,
       linkedExperienceIds,
@@ -183,14 +187,15 @@ function CreateJournalDialog({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" role="dialog" aria-modal="true" aria-labelledby="create-journal-dialog-title">
       <article className="w-full max-w-md rounded-xl bg-white p-6 shadow-xl max-h-[90vh] overflow-y-auto">
         <header className="flex items-center justify-between sticky top-0 bg-white pb-4 border-b border-ink-100">
-          <h2 className="text-lg font-semibold text-ink-900">新建日记</h2>
+          <h2 id="create-journal-dialog-title" className="text-lg font-semibold text-ink-900">新建日记</h2>
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg p-1 text-ink-400 hover:bg-ink-100"
+            disabled={submitting}
+            className="rounded-lg p-1 text-ink-400 hover:bg-ink-100 disabled:opacity-50"
             aria-label="关闭"
           >
             ✕
@@ -206,10 +211,11 @@ function CreateJournalDialog({
                   key={t}
                   type="button"
                   onClick={() => setType(t)}
+                  disabled={submitting}
                   className={`rounded-lg border-2 px-3 py-2 text-sm font-medium text-center transition-all ${
                     type === t
                       ? 'border-sun-500 bg-sun-50 text-sun-700'
-                      : 'border-ink-200 text-ink-600 hover:border-ink-300'
+                      : 'border-ink-200 text-ink-600 hover:border-ink-300 disabled:opacity-50'
                   }`}
                 >
                   {TYPE_LABELS[t]}
@@ -228,6 +234,7 @@ function CreateJournalDialog({
                 value={linkedActionId || ''}
                 onChange={(e) => setLinkedActionId(e.target.value || null)}
                 className="mt-1 w-full rounded-lg border border-ink-200 px-3 py-2 text-sm focus:border-sun-500 focus:outline-none focus:ring-1 focus:ring-sun-500"
+                disabled={submitting}
               >
                 <option value="">选择一个行动</option>
                 {actions.map((a) => (
@@ -249,6 +256,7 @@ function CreateJournalDialog({
                 value={linkedInsightId || ''}
                 onChange={(e) => setLinkedInsightId(e.target.value || null)}
                 className="mt-1 w-full rounded-lg border border-ink-200 px-3 py-2 text-sm focus:border-sun-500 focus:outline-none focus:ring-1 focus:ring-sun-500"
+                disabled={submitting}
               >
                 <option value="">选择一个认知</option>
                 {insights.map((i) => (
@@ -277,6 +285,7 @@ function CreateJournalDialog({
                         )
                       }
                       className="rounded border-ink-300 text-sun-600 focus:ring-sun-500"
+                      disabled={submitting}
                     />
                     <span className="text-sm text-ink-700">
                       {exp.eventTitle}（{exp.sceneId}，第 {exp.gameDay} 天 {TIME_SLOT_LABELS[exp.timeSlot as keyof typeof TIME_SLOT_LABELS]}）
@@ -301,6 +310,7 @@ function CreateJournalDialog({
               className="mt-1 w-full rounded-lg border border-ink-200 px-3 py-2 text-sm focus:border-sun-500 focus:outline-none focus:ring-1 focus:ring-sun-500 resize-none"
               required
               autoFocus
+              disabled={submitting}
             />
           </div>
 
@@ -308,13 +318,14 @@ function CreateJournalDialog({
             <button
               type="button"
               onClick={onClose}
-              className="rounded-lg px-4 py-2 text-sm font-medium text-ink-600 hover:bg-ink-50"
+              disabled={submitting}
+              className="rounded-lg px-4 py-2 text-sm font-medium text-ink-600 hover:bg-ink-50 disabled:opacity-50"
             >
               取消
             </button>
             <button
               type="submit"
-              disabled={!content.trim()}
+              disabled={submitting || !content.trim()}
               className="rounded-lg bg-sun-600 px-4 py-2 text-sm font-medium text-white hover:bg-sun-700 disabled:opacity-50"
             >
               保存

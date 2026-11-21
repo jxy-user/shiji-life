@@ -102,14 +102,15 @@ export function loadSave(): SaveData | null {
   }
 }
 
-/** 写入存档，自动刷新 updatedAt；写入失败时返回 false，由调用方提示玩家 */
+/** 写入存档，自动刷新 updatedAt；写入前做 schema 校验，失败返回 false */
 export function persistSave(save: SaveData): boolean {
-  return writeRawSave(
-    JSON.stringify({
-      ...save,
-      updatedAt: new Date().toISOString(),
-    }),
-  )
+  const toPersist = {
+    ...save,
+    updatedAt: new Date().toISOString(),
+  }
+  const parsed = saveSchema.safeParse(toPersist)
+  if (!parsed.success) return false
+  return writeRawSave(JSON.stringify(parsed.data))
 }
 
 export function hasValidSave(): boolean {

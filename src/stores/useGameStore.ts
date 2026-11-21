@@ -72,6 +72,12 @@ function normalizeOptionalText(value: string | null | undefined): string | null 
   return trimmed ? trimmed.slice(0, 200) : null
 }
 
+/** 校验必填内容：去除首尾空白后必须非空，并按上限截断 */
+function validateRequiredText(value: string, maxLen: number): string | null {
+  const trimmed = value?.trim()
+  return trimmed ? trimmed.slice(0, maxLen) : null
+}
+
 /** 创建现实行动输入 */
 export type CreateActionInput = Pick<
   Action,
@@ -599,10 +605,13 @@ export const useGameStore = create<GameState>()((set, get) => {
       const current = get().save
       if (!current) return null
 
+      const trimmed = input.title.trim()
+      if (!trimmed) return null
+
       const now = new Date().toISOString()
       const action: Action = {
         id: createId(),
-        title: input.title.slice(0, 60),
+        title: trimmed.slice(0, 60),
         linkedInsightId: input.linkedInsightId ?? null,
         frequency: input.frequency,
         dueDate: input.dueDate ?? null,
@@ -618,11 +627,17 @@ export const useGameStore = create<GameState>()((set, get) => {
     },
 
     updateActionStatus: ({ actionId, status }) => {
+      const now = new Date().toISOString()
       mutate((save) => ({
         ...save,
         actions: save.actions.map((action) =>
           action.id === actionId
-            ? { ...action, status, updatedAt: new Date().toISOString() }
+            ? {
+                ...action,
+                status,
+                updatedAt: now,
+                completedAt: status === 'done' ? now : action.completedAt,
+              }
             : action,
         ),
       }))
@@ -643,6 +658,12 @@ export const useGameStore = create<GameState>()((set, get) => {
       const action = current.actions.find((a) => a.id === actionId)
       if (!action) return
 
+      // 幂等：已经完成的行动不再重复写入复盘
+      if (action.status === 'done') return
+
+      const validatedContent = validateRequiredText(content, 2000)
+      if (!validatedContent) return
+
       // 更新行动状态为完成
       const updatedActions = current.actions.map((a) =>
         a.id === actionId
@@ -654,7 +675,7 @@ export const useGameStore = create<GameState>()((set, get) => {
       const journalEntry: JournalEntry = {
         id: createId(),
         type: 'action_review',
-        content: normalizeOptionalText(content) ?? '',
+        content: validatedContent,
         linkedActionId: actionId,
         linkedInsightId: action.linkedInsightId,
         linkedExperienceIds: [],
@@ -673,11 +694,14 @@ export const useGameStore = create<GameState>()((set, get) => {
       const current = get().save
       if (!current) return null
 
+      const validatedContent = validateRequiredText(input.content, 2000)
+      if (!validatedContent) return null
+
       const now = new Date().toISOString()
       const entry: JournalEntry = {
         id: createId(),
         type: input.type,
-        content: input.content.slice(0, 2000),
+        content: validatedContent,
         linkedActionId: input.linkedActionId ?? null,
         linkedInsightId: input.linkedInsightId ?? null,
         linkedExperienceIds: input.linkedExperienceIds ?? [],
@@ -690,11 +714,14 @@ export const useGameStore = create<GameState>()((set, get) => {
     },
 
     updateJournalEntry: (journalId, content) => {
+      const validatedContent = validateRequiredText(content, 2000)
+      if (!validatedContent) return
+
       mutate((save) => ({
         ...save,
         journalEntries: save.journalEntries.map((entry) =>
           entry.id === journalId
-            ? { ...entry, content: content.slice(0, 2000), updatedAt: new Date().toISOString() }
+            ? { ...entry, content: validatedContent, updatedAt: new Date().toISOString() }
             : entry,
         ),
       }))
@@ -708,6 +735,9 @@ export const useGameStore = create<GameState>()((set, get) => {
     },
 
     upsertChapterSummary: ({ chapter, content }) => {
+      const validatedContent = validateRequiredText(content, 5000)
+      if (!validatedContent) return
+
       mutate((save) => {
         const now = new Date().toISOString()
         const existingIndex = save.chapterSummaries.findIndex(
@@ -718,7 +748,7 @@ export const useGameStore = create<GameState>()((set, get) => {
           const summaries = [...save.chapterSummaries]
           summaries[existingIndex] = {
             ...summaries[existingIndex],
-            content: content.slice(0, 5000),
+            content: validatedContent,
             isEdited: true,
             editedAt: now,
           }
@@ -728,7 +758,7 @@ export const useGameStore = create<GameState>()((set, get) => {
         const summary: ChapterSummary = {
           id: createId(),
           chapter,
-          content: content.slice(0, 5000),
+          content: validatedContent,
           generatedAt: now,
           isEdited: false,
           editedAt: null,
