@@ -1,6 +1,8 @@
 import { useState, useMemo } from 'react'
 import { useGameStore } from '@/stores/useGameStore'
+import { useShallow } from 'zustand/react/shallow'
 import { TIME_SLOT_LABELS } from '@/game/saveSchema'
+import { INSIGHT_CATEGORY_LABELS, type InsightCategory } from '@/types/game'
 
 type JournalType = 'action_review' | 'free' | 'insight_link'
 
@@ -113,7 +115,12 @@ function JournalEntryCard({
             <button
               type="button"
               onClick={handleSave}
-              className="rounded-lg bg-sun-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-sun-700"
+              disabled={!editContent.trim()}
+              className={`rounded-lg px-3 py-1.5 text-sm font-medium text-white transition-colors ${
+                editContent.trim()
+                  ? 'bg-sun-700 hover:bg-sun-800'
+                  : 'bg-sun-300 cursor-not-allowed'
+              }`}
             >
               保存
             </button>
@@ -131,7 +138,7 @@ function JournalEntryCard({
         )}
         {linkedInsight && (
           <span className="inline-flex items-center gap-1 rounded-full bg-purple-50 px-2 py-0.5 text-purple-700">
-            认知：[{linkedInsight.category}] {linkedInsight.title}
+            认知：[{INSIGHT_CATEGORY_LABELS[linkedInsight.category as InsightCategory]}] {linkedInsight.title}
           </span>
         )}
         {linkedExperiences.length > 0 && (
@@ -261,7 +268,7 @@ function CreateJournalDialog({
                 <option value="">选择一个认知</option>
                 {insights.map((i) => (
                   <option key={i.id} value={i.id}>
-                    [{i.category}] {i.title}
+                    [{INSIGHT_CATEGORY_LABELS[i.category as InsightCategory]}] {i.title}
                   </option>
                 ))}
               </select>
@@ -326,7 +333,7 @@ function CreateJournalDialog({
             <button
               type="submit"
               disabled={submitting || !content.trim()}
-              className="rounded-lg bg-sun-600 px-4 py-2 text-sm font-medium text-white hover:bg-sun-700 disabled:opacity-50"
+              className="rounded-lg bg-sun-700 px-4 py-2 text-sm font-medium text-white hover:bg-sun-800 disabled:opacity-50"
             >
               保存
             </button>
@@ -338,15 +345,13 @@ function CreateJournalDialog({
 }
 
 export default function JournalPage() {
-  const save = useGameStore((state) => state.save)
+  const journalEntries = useGameStore(useShallow((state) => state.save?.journalEntries ?? []))
+  const actions = useGameStore(useShallow((state) => state.save?.actions ?? []))
+  const insights = useGameStore(useShallow((state) => state.save?.insights ?? []))
+  const experiences = useGameStore(useShallow((state) => state.save?.experiences ?? []))
   const { addJournalEntry, updateJournalEntry, deleteJournalEntry } = useGameStore()
   const [filterType, setFilterType] = useState<JournalType | 'all'>('all')
   const [showCreateDialog, setShowCreateDialog] = useState(false)
-
-  const journalEntries = save?.journalEntries ?? []
-  const actions = save?.actions ?? []
-  const insights = save?.insights ?? []
-  const experiences = save?.experiences ?? []
 
   const filteredEntries = useMemo(() => {
     if (filterType === 'all') return journalEntries
@@ -406,7 +411,7 @@ export default function JournalPage() {
             <button
               type="button"
               onClick={() => setShowCreateDialog(true)}
-              className="mt-6 inline-flex items-center rounded-lg bg-sun-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-sun-700"
+              className="mt-6 inline-flex items-center rounded-lg bg-sun-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-sun-800"
             >
               写下第一条日记
             </button>

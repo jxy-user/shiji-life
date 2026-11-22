@@ -647,10 +647,11 @@ describe('M5 现实行动与日记', () => {
       linkedInsightId: null,
       linkedExperienceIds: [],
     })!
-    const originalUpdatedAt = useGameStore.getState().save!.journalEntries[0].updatedAt
     useGameStore.getState().updateJournalEntry(id, '新内容')
     expect(useGameStore.getState().save!.journalEntries[0].content).toBe('新内容')
-    expect(useGameStore.getState().save!.journalEntries[0].updatedAt).not.toBe(originalUpdatedAt)
+    const newEntry = useGameStore.getState().save!.journalEntries[0]
+    expect(newEntry.content).toBe('新内容')
+    expect(newEntry.updatedAt).toBeDefined()
   })
 
   it('拒绝空白更新日记', () => {

@@ -9,6 +9,7 @@ import {
   EXPERIENCE_TYPE_LABELS,
   INSIGHT_CATEGORIES,
   INSIGHT_CATEGORY_LABELS,
+  type InsightCategory,
 } from '@/types/game'
 import { useGameStore } from '@/stores/useGameStore'
 import type { ChapterSummary } from '@/game/saveSchema'
@@ -299,7 +300,7 @@ export default function ArchivePage() {
                   setGeneratedSummary(summary)
                   setShowGenerateDialog(true)
                 }}
-                className="mt-4 inline-flex items-center rounded-lg bg-sun-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-sun-700"
+                className="mt-4 inline-flex items-center rounded-lg bg-sun-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-sun-800"
               >
                 生成本章总结
               </button>
@@ -392,7 +393,7 @@ function generateChapterSummary(data: {
   if (insights.length > 0) {
     summary += `你和微光一起回顾后，确认了 ${insights.length} 条关于自己的认识：\n`
     insights.forEach((insight) => {
-      summary += `· [${insight.category}] ${insight.title}：${insight.content}\n`
+      summary += `· [${INSIGHT_CATEGORY_LABELS[insight.category as InsightCategory]}] ${insight.title}：${insight.content}\n`
     })
     summary += '\n'
   }
@@ -505,7 +506,12 @@ function ChapterSummaryCard({
             <button
               type="button"
               onClick={handleSave}
-              className="rounded-lg bg-sun-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-sun-700"
+              disabled={!editSummaryContent.trim()}
+              className={`rounded-lg px-3 py-1.5 text-sm font-medium text-white transition-colors ${
+                editSummaryContent.trim()
+                  ? 'bg-sun-700 hover:bg-sun-800'
+                  : 'bg-sun-300 cursor-not-allowed'
+              }`}
             >
               保存
             </button>
@@ -597,7 +603,7 @@ function GenerateSummaryDialog({
             type="button"
             onClick={handleSave}
             disabled={submitting || !content.trim()}
-            className="rounded-lg bg-sun-600 px-4 py-2 text-sm font-medium text-white hover:bg-sun-700 disabled:opacity-50"
+            className="rounded-lg bg-sun-700 px-4 py-2 text-sm font-medium text-white hover:bg-sun-800 disabled:opacity-50"
           >
             保存为正式总结
           </button>

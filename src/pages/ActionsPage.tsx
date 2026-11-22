@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useGameStore } from '@/stores/useGameStore'
+import { INSIGHT_CATEGORY_LABELS, type InsightCategory } from '@/types/game'
 
 function ActionCard({
   action,
@@ -96,7 +97,7 @@ function ActionCard({
               onClick={() => onStatusChange(action.id, 'in_progress')}
               className={`inline-flex items-center rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
                 action.status === 'in_progress'
-                  ? 'bg-sun-600 text-white'
+                  ? 'bg-sun-700 text-white'
                   : 'bg-sun-50 text-sun-700 hover:bg-sun-100'
               }`}
             >
@@ -119,7 +120,7 @@ function ActionCard({
           <button
             type="button"
             onClick={() => onComplete(action.id)}
-            className="inline-flex items-center rounded-lg bg-forest-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-forest-700"
+            className="inline-flex items-center rounded-lg bg-forest-700 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-forest-800"
           >
             完成并复盘
           </button>
@@ -237,7 +238,7 @@ function CreateActionDialog({
               <option value="">无（手动创建）</option>
               {insights.map((insight: typeof insights[0]) => (
                 <option key={insight.id} value={insight.id}>
-                  [{insight.category}] {insight.title}
+                  [{INSIGHT_CATEGORY_LABELS[insight.category as InsightCategory]}] {insight.title}
                 </option>
               ))}
             </select>
@@ -301,7 +302,7 @@ function CreateActionDialog({
             <button
               type="submit"
               disabled={submitting || !title.trim()}
-              className="rounded-lg bg-sun-600 px-4 py-2 text-sm font-medium text-white hover:bg-sun-700 disabled:opacity-50"
+              className="rounded-lg bg-sun-700 px-4 py-2 text-sm font-medium text-white hover:bg-sun-800 disabled:opacity-50"
             >
               创建
             </button>
@@ -376,7 +377,7 @@ function CompleteActionDialog({
             <button
               type="submit"
               disabled={submitting || !content.trim()}
-              className="rounded-lg bg-forest-600 px-4 py-2 text-sm font-medium text-white hover:bg-forest-700 disabled:opacity-50"
+              className="rounded-lg bg-forest-700 px-4 py-2 text-sm font-medium text-white hover:bg-forest-800 disabled:opacity-50"
             >
               保存复盘
             </button>
@@ -400,6 +401,7 @@ export default function ActionsPage() {
   const [preSelectedInsightId, setPreSelectedInsightId] = useState<string | null>(null)
 
   // 从 URL 查询参数预选关联认知
+  // eslint-disable-next-line react/set-state-in-effect — 同步外部 URL 状态，属于预期的副作用
   useEffect(() => {
     const insightId = searchParams.get('insight')
     if (!insightId) return
@@ -455,7 +457,7 @@ export default function ActionsPage() {
             <button
               type="button"
               onClick={() => setShowCreateDialog(true)}
-              className="mt-6 inline-flex items-center rounded-lg bg-sun-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-sun-700"
+              className="mt-6 inline-flex items-center rounded-lg bg-sun-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-sun-800"
             >
               新建第一个行动
             </button>
