@@ -11,6 +11,7 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate',
+      injectRegister: false, // 完全由 hook 手动控制注册（仅生产环境）
       includeAssets: ['favicon.svg', 'icons/*.png', 'icons/*.svg'],
       manifest: {
         name: '拾己 · LIFE',
@@ -43,8 +44,11 @@ export default defineConfig({
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB
         runtimeCaching: [
           {
-            // 同源请求，排除 API 路径
-            urlPattern: /^https?:\/\/[^/]+\/(?!api\/|functions\/)/,
+            // 仅同源请求，排除认证、API、Functions 路径
+            urlPattern: ({ url, sameOrigin }) => sameOrigin &&
+              !url.pathname.startsWith('/__qoder_auth') &&
+              !url.pathname.startsWith('/api/') &&
+              !url.pathname.startsWith('/functions/'),
             handler: 'StaleWhileRevalidate',
             options: {
               cacheName: 'shiji-dynamic',

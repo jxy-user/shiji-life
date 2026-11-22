@@ -401,7 +401,7 @@ export default function ActionsPage() {
   const [preSelectedInsightId, setPreSelectedInsightId] = useState<string | null>(null)
 
   // 从 URL 查询参数预选关联认知
-  // eslint-disable-next-line react/set-state-in-effect — 同步外部 URL 状态，属于预期的副作用
+  // oxlint-disable-next-line react/set-state-in-effect — 同步外部 URL 状态，属于预期的副作用
   useEffect(() => {
     const insightId = searchParams.get('insight')
     if (!insightId) return

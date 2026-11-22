@@ -1,6 +1,9 @@
 import { useEffect, useState, useCallback } from 'react';
 import { Workbox } from 'workbox-window';
 
+/** 是否为生产环境 */
+const IS_PROD = import.meta.env.PROD;
+
 /** PWA 状态 */
 export interface PWAState {
   /** 是否可安装 */
@@ -38,6 +41,7 @@ export function usePWA() {
   });
 
   // 检测是否已安装（standalone 模式）
+  // oxlint-disable-next-line react/set-state-in-effect — 同步外部状态（matchMedia）到 React state
   useEffect(() => {
     const isInstalled = window.matchMedia('(display-mode: standalone)').matches ||
       (window.navigator as any).standalone === true;
@@ -66,9 +70,9 @@ export function usePWA() {
     };
   }, []);
 
-  // workbox-window 管理 SW 注册与更新
+  // workbox-window 管理 SW 注册与更新（仅生产环境）
   useEffect(() => {
-    if (!('serviceWorker' in navigator)) return;
+    if (!('serviceWorker' in navigator) || !IS_PROD) return;
 
     const wb = new Workbox('/sw.js');
 
@@ -94,7 +98,7 @@ export function usePWA() {
       setState(prev => ({ ...prev, updateReady: false }));
     });
 
-    // 注册 SW（仅生产环境）
+    // 注册 SW
     wb.register().catch(err => console.warn('[SW] 注册失败:', err));
 
     return () => {
@@ -149,11 +153,13 @@ export function usePWANotifications() {
 
   useEffect(() => {
     if (updateReady) setShowUpdateToast(true);
+    // oxlint-disable-next-line react/set-state-in-effect — 同步外部状态到 React state
   }, [updateReady]);
 
   useEffect(() => {
     if (!online) setShowOfflineToast(true);
     else setShowOfflineToast(false);
+    // oxlint-disable-next-line react/set-state-in-effect — 同步外部状态到 React state
   }, [online]);
 
   // 安装引导：监听 installable 变化，延迟显示避免首屏干扰
