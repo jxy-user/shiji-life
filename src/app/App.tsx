@@ -2,6 +2,7 @@ import { Suspense, lazy } from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
 
 import { PersistenceNotice } from '@/components/layout/PersistenceNotice'
+import { PWANotifications } from '@/components/pwa/PWANotifications'
 import StartPage from '@/pages/StartPage'
 
 /**
@@ -63,6 +64,9 @@ export default function App() {
 
       {/* 写盘失败时在所有页面统一提示，避免玩家在不知情的情况下丢进度 */}
       <PersistenceNotice />
+
+      {/* PWA 通知：更新就绪、离线、安装引导 */}
+      <PWANotifications />
     </>
   )
 }
