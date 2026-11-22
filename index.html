@@ -19,31 +19,5 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
-    <script>
-      // Service Worker 注册
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js', { scope: '/' })
-            .then(reg => {
-              console.log('[SW] 注册成功:', reg.scope);
-              // 检查更新
-              reg.addEventListener('updatefound', () => {
-                const newWorker = reg.installing;
-                if (newWorker) {
-                  newWorker.addEventListener('statechange', () => {
-                    if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                      // 有新版本可用，通知用户
-                      console.log('[SW] 新版本就绪，请刷新');
-                      const event = new CustomEvent('sw-update-ready');
-                      window.dispatchEvent(event);
-                    }
-                  });
-                }
-              });
-            })
-            .catch(err => console.warn('[SW] 注册失败:', err));
-        });
-      }
-    </script>
   </body>
 </html>

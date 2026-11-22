@@ -1,18 +1,20 @@
 /**
  * Service Worker for 拾己 · LIFE
  * 策略：
- * - 静态资源：Cache First（构建时预缓存）
+ * - 预缓存：构建时由 vite-plugin-pwa 自动注入 self.__WB_MANIFEST
+ * - 静态资源：Cache First
  * - HTML/导航：Network First（保证最新）
  * - 其他：Stale While Revalidate
- * - 存档数据：IndexedDB 同步（由主线程管理，SW 不直接操作）
+ * - 排除：非 GET、API 路径、开发工具
+ * - 存档数据：IndexedDB 由主线程管理，SW 不直接操作
  */
 
 const CACHE_NAME = 'shiji-life-v1';
 const STATIC_CACHE = 'shiji-static-v1';
 const DYNAMIC_CACHE = 'shiji-dynamic-v1';
 
-// 预缓存清单（构建时由 vite-plugin-pwa 自动注入，这里留作兜底）
-const PRECACHE_MANIFEST = [
+// 预缓存清单（构建时由 vite-plugin-pwa 自动注入为 self.__WB_MANIFEST）
+const PRECACHE_MANIFEST = self.__WB_MANIFEST || [
   '/',
   '/index.html',
   '/manifest.json',
@@ -28,6 +30,7 @@ const STATIC_PATTERNS = [
 // 不缓存的路径
 const EXCLUDE_PATTERNS = [
   /^\/api\//,
+  /^\/functions\//,
   /\/dev\//,
   /chrome-extension:\/\//,
 ];
@@ -46,6 +49,13 @@ function isNavigationRequest(request) {
 /** 判断是否应排除 */
 function shouldExclude(url) {
   return EXCLUDE_PATTERNS.some(pattern => pattern.test(url.pathname + url.search));
+}
+
+/** 判断是否可缓存（仅 GET 且同源且不在排除列表） */
+function isCacheable(request) {
+  return request.method === 'GET' &&
+    new URL(request.url).origin === location.origin &&
+    !shouldExclude(new URL(request.url));
 }
 
 /** 从缓存获取 */
@@ -116,11 +126,8 @@ self.addEventListener('fetch', event => {
   const { request } = event;
   const url = new URL(request.url);
 
-  // 只处理同源请求
-  if (url.origin !== location.origin) return;
-
-  // 排除模式
-  if (shouldExclude(url)) return;
+  // 只处理同源、可缓存的请求
+  if (!isCacheable(request)) return;
 
   // 导航请求：Network First（保证 HTML 最新）
   if (isNavigationRequest(request)) {

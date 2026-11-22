@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
+import { Workbox } from 'workbox-window';
 
 /** PWA 状态 */
 export interface PWAState {
@@ -16,9 +17,6 @@ export interface PWAState {
 
 /** 扩展 Window 类型 */
 declare global {
-  interface WindowEventMap {
-    'sw-update-ready': CustomEvent<never>;
-  }
   interface BeforeInstallPromptEvent extends Event {
     prompt(): Promise<void>;
     userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
@@ -28,6 +26,7 @@ declare global {
 /**
  * PWA 核心 Hook
  * 提供：安装状态、更新检测、在线/离线、手动安装触发
+ * 使用 workbox-window 管理 SW 生命周期
  */
 export function usePWA() {
   const [state, setState] = useState<PWAState>({
@@ -67,11 +66,40 @@ export function usePWA() {
     };
   }, []);
 
-  // 监听 SW 更新就绪
+  // workbox-window 管理 SW 注册与更新
   useEffect(() => {
-    const handler = () => setState(prev => ({ ...prev, updateReady: true }));
-    window.addEventListener('sw-update-ready', handler);
-    return () => window.removeEventListener('sw-update-ready', handler);
+    if (!('serviceWorker' in navigator)) return;
+
+    const wb = new Workbox('/sw.js');
+
+    // SW 已安装并激活（有新版本就绪）
+    wb.addEventListener('installed', (event) => {
+      if (!event.isUpdate) {
+        console.log('[SW] 首次安装完成，可离线使用');
+      } else {
+        console.log('[SW] 新版本就绪，请刷新');
+        setState(prev => ({ ...prev, updateReady: true }));
+      }
+    });
+
+    // SW 等待激活（页面有旧版本在运行）
+    wb.addEventListener('waiting', () => {
+      console.log('[SW] 新版本等待激活');
+      setState(prev => ({ ...prev, updateReady: true }));
+    });
+
+    // SW 控制器变更（已刷新）
+    wb.addEventListener('controlling', () => {
+      console.log('[SW] 控制器已更新');
+      setState(prev => ({ ...prev, updateReady: false }));
+    });
+
+    // 注册 SW（仅生产环境）
+    wb.register().catch(err => console.warn('[SW] 注册失败:', err));
+
+    return () => {
+      // workbox-window 不需要显式卸载，但可移除监听器
+    };
   }, []);
 
   // 手动触发安装
@@ -117,6 +145,7 @@ export function usePWANotifications() {
   const { updateReady, online, refresh, showInstallPrompt, install, installable, installed } = usePWA();
   const [showUpdateToast, setShowUpdateToast] = useState(false);
   const [showOfflineToast, setShowOfflineToast] = useState(false);
+  const [showInstallBanner, setShowInstallBanner] = useState(false);
 
   useEffect(() => {
     if (updateReady) setShowUpdateToast(true);
@@ -127,12 +156,22 @@ export function usePWANotifications() {
     else setShowOfflineToast(false);
   }, [online]);
 
+  // 安装引导：监听 installable 变化，延迟显示避免首屏干扰
+  useEffect(() => {
+    if (showInstallPrompt && !installed && !localStorage.getItem('pwa-install-dismissed')) {
+      const timer = setTimeout(() => setShowInstallBanner(true), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showInstallPrompt, installed]);
+
   return {
     showUpdateToast,
     dismissUpdateToast: () => setShowUpdateToast(false),
     applyUpdate: refresh,
     showOfflineToast,
     showInstallPrompt,
+    showInstallBanner,
+    setShowInstallBanner,
     install,
     installable,
     installed,

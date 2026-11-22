@@ -1,5 +1,4 @@
 import { usePWANotifications } from '@/hooks/usePWA';
-import { useState } from 'react';
 
 /** PWA 状态通知组件（更新就绪、离线、安装引导） */
 export function PWANotifications() {
@@ -8,18 +7,10 @@ export function PWANotifications() {
     dismissUpdateToast,
     applyUpdate,
     showOfflineToast,
-    showInstallPrompt,
+    showInstallBanner,
+    setShowInstallBanner,
     install,
   } = usePWANotifications();
-
-  // 安装引导只显示一次（用 localStorage 记录）
-  const [showInstallBanner, setShowInstallBanner] = useState(false);
-
-  useState(() => {
-    if (showInstallPrompt && !localStorage.getItem('pwa-install-dismissed')) {
-      setShowInstallBanner(true);
-    }
-  });
 
   if (!showUpdateToast && !showOfflineToast && !showInstallBanner) return null;
 
@@ -62,7 +53,7 @@ export function PWANotifications() {
               <div className="flex-shrink-0 text-rose-600">📡</div>
               <div className="flex-1">
                 <p className="text-sm font-medium text-rose-900">您当前处于离线状态</p>
-                <p className="mt-1 text-xs text-rose-700">游戏可继续游玩，数据将在本地保存，联网后自动同步。</p>
+                <p className="mt-1 text-xs text-rose-700">游戏可继续游玩，数据仅保存在本设备，联网后自动保持可用。</p>
               </div>
             </div>
           </div>
