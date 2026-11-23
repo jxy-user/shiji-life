@@ -402,13 +402,13 @@ export default function ActionsPage() {
   const [preSelectedInsightId, setPreSelectedInsightId] = useState<string | null>(null)
 
   // 从 URL 查询参数预选关联认知
-  // oxlint-disable-next-line: react/set-state-in-effect — 同步外部 URL 状态，属于预期的副作用
   useEffect(() => {
     const insightId = searchParams.get('insight')
     if (!insightId) return
     // 从 store 直接读取避免依赖 insights 数组引用变化
     const currentInsights = useGameStore.getState().save?.insights ?? []
     if (currentInsights.some((i) => i.id === insightId)) {
+      // oxlint-disable-next-line react/set-state-in-effect — 同步外部 URL 状态，属于预期的副作用
       setPreSelectedInsightId(insightId)
       setShowCreateDialog(true)
       // 清理 URL，避免刷新后重复打开

@@ -1,4 +1,5 @@
 import { usePWANotifications } from '@/hooks/usePWA';
+import { PWA_INSTALL_DISMISSED_KEY, writePreference } from '@/services/preferences';
 
 /** PWA 状态通知组件（更新就绪、离线、安装引导） */
 export function PWANotifications() {
@@ -15,8 +16,12 @@ export function PWANotifications() {
   if (!showUpdateToast && !showOfflineToast && !showInstallBanner) return null;
 
   return (
-    <div className="fixed inset-x-0 bottom-0 z-50 px-4 pb-4 sm:px-6 sm:pb-6 pointer-events-none"
-         role="status" aria-live="polite" aria-atomic="true">
+    <div
+      className="pointer-events-none fixed inset-x-0 bottom-0 z-50 px-4 pb-4 sm:px-6 sm:pb-6 lg:inset-x-auto lg:right-6 lg:bottom-6 lg:w-[380px] lg:px-0 lg:pb-0"
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+    >
       <div className="flex flex-col gap-3 pointer-events-auto">
 
         {/* 更新就绪 */}
@@ -72,7 +77,7 @@ export function PWANotifications() {
                 <button
                   onClick={async () => {
                     await install();
-                    localStorage.setItem('pwa-install-dismissed', 'true');
+                    writePreference(PWA_INSTALL_DISMISSED_KEY, 'true');
                     setShowInstallBanner(false);
                   }}
                   className="whitespace-nowrap rounded-lg bg-forest-700 px-3 py-1.5 text-xs font-medium text-white hover:bg-forest-800 transition-colors"
@@ -81,7 +86,7 @@ export function PWANotifications() {
                 </button>
                 <button
                   onClick={() => {
-                    localStorage.setItem('pwa-install-dismissed', 'true');
+                    writePreference(PWA_INSTALL_DISMISSED_KEY, 'true');
                     setShowInstallBanner(false);
                   }}
                   className="whitespace-nowrap rounded-lg bg-ink-50 px-3 py-1.5 text-xs font-medium text-ink-600 hover:bg-ink-100 transition-colors"

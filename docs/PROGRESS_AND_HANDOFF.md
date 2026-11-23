@@ -23,7 +23,7 @@
 | M3 阶段回顾 | ✅ | 阈值/冷却、授权优先、候选观察、确认与改写、认知卡片 | `src/game/reflection.ts`、`insightRules.ts`、`ReflectionPage.tsx` |
 | M4 真实 AI | ⏸️ | 服务端适配层、prompt 版本、输出校验 | 暂缓（需付费计划），架构已就绪 |
 | M5 行动与日记 | ✅ | 现实行动、日记、阶段总结、存档 v4 | `src/pages/{Actions,Journal}Page.tsx`、store actions、saveSchema v4 |
-| PWA 移动端 | ✅ | 可安装、离线缓存、更新提示；manifest 单一来源，SW 仅生产注册 | `vite.config.ts`、`src/hooks/usePWA.ts`、`PWANotifications.tsx` |
+| PWA 移动端 | ✅ | 可安装、离线缓存、更新提示；manifest 单一来源、SW 仅生产注册、存储禁用安全降级、安装卡桌面置右下 | `vite.config.ts`、`src/hooks/usePWA.ts`、`src/services/preferences.ts`、`PWANotifications.tsx` |
 | PC 端适配 | ✅ | 桌面浏览器大屏布局：开始页双栏、档案双栏、行动两列、各页容器加宽；移动端不变 | `src/pages/*`、`src/components/layout/StatusBar.tsx`、`src/components/city/CityMap.tsx` |
 
 ## 常用命令
