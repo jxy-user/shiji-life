@@ -41,8 +41,8 @@ export function usePWA() {
   });
 
   // 检测是否已安装（standalone 模式）
-  // oxlint-disable-next-line react/set-state-in-effect — 同步外部状态（matchMedia）到 React state
-  useEffect(() => {
+  // eslint-disable-next-line react/set-state-in-effect — 同步外部状态（matchMedia）到 React state
+  useEffect(() => { // oxlint-disable-line react/set-state-in-effect
     const isInstalled = window.matchMedia('(display-mode: standalone)').matches ||
       (window.navigator as any).standalone === true;
     setState(prev => ({ ...prev, installed: isInstalled }));
@@ -153,13 +153,13 @@ export function usePWANotifications() {
 
   useEffect(() => {
     if (updateReady) setShowUpdateToast(true);
-    // oxlint-disable-next-line react/set-state-in-effect — 同步外部状态到 React state
+    // oxlint-disable-next-line: react/set-state-in-effect — 同步外部状态到 React state
   }, [updateReady]);
 
   useEffect(() => {
     if (!online) setShowOfflineToast(true);
     else setShowOfflineToast(false);
-    // oxlint-disable-next-line react/set-state-in-effect — 同步外部状态到 React state
+    // oxlint-disable-next-line: react/set-state-in-effect — 同步外部状态到 React state
   }, [online]);
 
   // 安装引导：监听 installable 变化，延迟显示避免首屏干扰
