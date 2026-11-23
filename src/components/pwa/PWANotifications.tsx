@@ -13,7 +13,17 @@ export function PWANotifications() {
     install,
   } = usePWANotifications();
 
-  if (!showUpdateToast && !showOfflineToast && !showInstallBanner) return null;
+  // 同一时间只显示一个提示，优先级：更新就绪 > 离线 > 安装引导。
+  // 堆叠会遮挡页面底部操作区，且移动端屏幕更小。
+  const activeToast = showUpdateToast
+    ? 'update'
+    : showOfflineToast
+      ? 'offline'
+      : showInstallBanner
+        ? 'install'
+        : null;
+
+  if (!activeToast) return null;
 
   return (
     <div
@@ -25,7 +35,7 @@ export function PWANotifications() {
       <div className="flex flex-col gap-3 pointer-events-auto">
 
         {/* 更新就绪 */}
-        {showUpdateToast && (
+        {activeToast === 'update' && (
           <div className="mx-auto max-w-md animate-slide-up rounded-2xl border border-gold-300 bg-cream-50/95 p-4 shadow-[0_20px_50px_-25px_rgba(43,38,33,0.4)] backdrop-blur-md">
             <div className="flex items-start gap-3">
               <div className="flex-shrink-0 mt-0.5 text-gold-600">🔄</div>
@@ -52,7 +62,7 @@ export function PWANotifications() {
         )}
 
         {/* 离线提示 */}
-        {showOfflineToast && (
+        {activeToast === 'offline' && (
           <div className="mx-auto max-w-md animate-slide-up rounded-2xl border border-rose-200 bg-rose-50/95 p-4 shadow-[0_20px_50px_-25px_rgba(43,38,33,0.4)] backdrop-blur-md">
             <div className="flex items-center gap-3">
               <div className="flex-shrink-0 text-rose-600">📡</div>
@@ -65,7 +75,7 @@ export function PWANotifications() {
         )}
 
         {/* 安装引导 */}
-        {showInstallBanner && (
+        {activeToast === 'install' && (
           <div className="mx-auto max-w-md animate-slide-up rounded-2xl border border-forest-300 bg-forest-50/95 p-4 shadow-[0_20px_50px_-25px_rgba(43,38,33,0.4)] backdrop-blur-md">
             <div className="flex items-start gap-3">
               <div className="flex-shrink-0 mt-0.5 text-forest-600">📱</div>

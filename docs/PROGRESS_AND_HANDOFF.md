@@ -23,7 +23,7 @@
 | M3 阶段回顾 | ✅ | 阈值/冷却、授权优先、候选观察、确认与改写、认知卡片 | `src/game/reflection.ts`、`insightRules.ts`、`ReflectionPage.tsx` |
 | M4 真实 AI | ⏸️ | 服务端适配层、prompt 版本、输出校验 | 暂缓（需付费计划），架构已就绪 |
 | M5 行动与日记 | ✅ | 现实行动、日记、阶段总结、存档 v4 | `src/pages/{Actions,Journal}Page.tsx`、store actions、saveSchema v4 |
-| PWA 移动端 | ✅ | 可安装、离线缓存、更新提示；manifest 单一来源、SW 仅生产注册、存储禁用安全降级、安装卡桌面置右下 | `vite.config.ts`、`src/hooks/usePWA.ts`、`src/services/preferences.ts`、`PWANotifications.tsx` |
+| PWA 移动端 | ✅ | 可安装、离线缓存、更新提示；manifest 单一来源、SW 仅生产注册、存储禁用安全降级、安装卡桌面置右下、同一时间只显示一个提示 | `vite.config.ts`、`src/hooks/usePWA.ts`、`src/services/preferences.ts`、`PWANotifications.tsx` |
 | PC 端适配 | ✅ | 桌面浏览器大屏布局：开始页双栏、档案双栏、行动两列、各页容器加宽；移动端不变 | `src/pages/*`、`src/components/layout/StatusBar.tsx`、`src/components/city/CityMap.tsx` |
 
 ## 常用命令
@@ -107,5 +107,6 @@ npm run build      # 路由级代码分割，首屏约 96 KB gzip
 
 1. **M5 + PC 端验收与部署**：运行 `docs/QODER_M5_REVIEW_PROMPT.md` 交给 Qoder 审查并部署（PC 端增强已并入本轮）。
 2. **PC 端视觉回归**：部署后在 1440 / 1920 宽屏复核首页、城市、档案、行动、日记，并确认 390px 移动端无回归。
-3. M4 真实 AI（赛后，需升级 Qoder Sites 计划）。
-4. 内容扩充：再写 5–10 个事件，让回顾的候选规则有更多变化。
+3. **PWA 部署验证**：旧 Service Worker 在部署后首次导航可能仍展示上一版页面，直到更新提示刷新；部署后分别用「全新浏览器」和「已有安装态（已添加到主屏幕）」各验一次。
+4. M4 真实 AI（赛后，需升级 Qoder Sites 计划）。
+5. 内容扩充：再写 5–10 个事件，让回顾的候选规则有更多变化。

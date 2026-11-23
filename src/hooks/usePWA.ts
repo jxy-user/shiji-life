@@ -167,14 +167,15 @@ export function usePWANotifications() {
   // 离线提示：直接派生，不需要额外状态
   const showOfflineToast = !online;
 
-  // 安装引导：延迟 3 秒显示，避免首屏干扰；读取失败按「未关闭」处理
+  // 安装引导：延迟 3 秒显示，避免首屏干扰；读取失败按「未关闭」处理。
+  // 更新就绪期间不启动计时，避免与更新提示堆叠（提示互斥由组件层兜底）。
   const [showInstallBanner, setShowInstallBanner] = useState(false);
   useEffect(() => {
-    if (!showInstallPrompt || installed) return;
+    if (!showInstallPrompt || installed || updateReady) return;
     if (readPreference(PWA_INSTALL_DISMISSED_KEY) === 'true') return;
     const timer = setTimeout(() => setShowInstallBanner(true), 3000);
     return () => clearTimeout(timer);
-  }, [showInstallPrompt, installed]);
+  }, [showInstallPrompt, installed, updateReady]);
 
   return {
     showUpdateToast,
