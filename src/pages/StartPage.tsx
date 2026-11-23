@@ -29,79 +29,85 @@ export default function StartPage() {
       />
       <div aria-hidden className="paper-grain absolute inset-0 opacity-80" />
 
-      <div className="relative z-10 mx-auto flex w-full max-w-md flex-1 flex-col items-center justify-center px-6 py-16">
-        {/* 微光：还没遇到 Lumi，只留一点光 */}
-        <div aria-hidden className="relative mb-11 h-20 w-20">
-          <div className="lumi-glow absolute inset-0 animate-soft-pulse rounded-full" />
+      <div className="relative z-10 mx-auto flex w-full max-w-md flex-1 flex-col items-center justify-center px-6 py-16 lg:max-w-4xl lg:flex-row lg:items-center lg:gap-24 lg:px-12">
+        {/* 大屏左列：品牌与标语；移动端仍是一列竖排 */}
+        <div className="flex flex-col items-center">
+          {/* 微光：还没遇到 Lumi，只留一点光 */}
+          <div aria-hidden className="relative mb-11 h-20 w-20">
+            <div className="lumi-glow absolute inset-0 animate-soft-pulse rounded-full" />
+          </div>
+
+          <p className="animate-rise-in text-[11px] tracking-[0.55em] text-ink-500">
+            未完成之城
+          </p>
+
+          <h1
+            className="mt-6 animate-rise-in font-display text-hero leading-none tracking-[0.14em] text-ink-900 [text-indent:0.14em] sm:text-7xl lg:text-[96px]"
+            style={{ animationDelay: '80ms' }}
+          >
+            拾己
+          </h1>
+
+          <p
+            className="mt-5 animate-rise-in text-[11px] tracking-[0.62em] text-ink-500"
+            style={{ animationDelay: '140ms' }}
+          >
+            LIFE
+          </p>
+
+          <div
+            className="my-9 h-px w-16 animate-rise-in bg-gradient-to-r from-transparent via-gold-400 to-transparent"
+            style={{ animationDelay: '200ms' }}
+          />
+
+          <p
+            className="animate-rise-in font-display text-lg text-ink-700"
+            style={{ animationDelay: '260ms' }}
+          >
+            先生活，再认识自己。
+          </p>
         </div>
 
-        <p className="animate-rise-in text-[11px] tracking-[0.55em] text-ink-500">
-          未完成之城
-        </p>
+        {/* 大屏右列：说明与入口 */}
+        <div className="mt-10 flex w-full max-w-[320px] flex-col lg:mt-0 lg:max-w-[360px]">
+          <p
+            className="animate-rise-in text-center text-[13px] leading-6 text-ink-500 lg:text-left lg:text-[14px] lg:leading-7"
+            style={{ animationDelay: '320ms' }}
+          >
+            在这座还没建完的城市里，选择没有标准答案。你经历的每件小事，都会在某个时刻被温柔地回望。
+          </p>
 
-        <h1
-          className="mt-6 animate-rise-in font-display text-hero leading-none tracking-[0.14em] text-ink-900 [text-indent:0.14em] sm:text-7xl"
-          style={{ animationDelay: '80ms' }}
-        >
-          拾己
-        </h1>
-
-        <p
-          className="mt-5 animate-rise-in text-[11px] tracking-[0.62em] text-ink-500"
-          style={{ animationDelay: '140ms' }}
-        >
-          LIFE
-        </p>
-
-        <div
-          className="my-9 h-px w-16 animate-rise-in bg-gradient-to-r from-transparent via-gold-400 to-transparent"
-          style={{ animationDelay: '200ms' }}
-        />
-
-        <p
-          className="animate-rise-in font-display text-lg text-ink-700"
-          style={{ animationDelay: '260ms' }}
-        >
-          先生活，再认识自己。
-        </p>
-
-        <p
-          className="mt-4 max-w-xs animate-rise-in text-center text-[13px] leading-6 text-ink-500"
-          style={{ animationDelay: '320ms' }}
-        >
-          在这座还没建完的城市里，选择没有标准答案。你经历的每件小事，都会在某个时刻被温柔地回望。
-        </p>
-
-        <div
-          className="mt-11 flex w-full max-w-[300px] animate-rise-in flex-col gap-3"
-          style={{ animationDelay: '380ms' }}
-        >
-          <Link to="/prologue" className={`${buttonStyles('primary', 'lg')} w-full`}>
-            开始新的旅程
-          </Link>
-
-          {canContinue ? (
-            <Link to="/city" className={`${buttonStyles('secondary', 'lg')} w-full`}>
-              继续旅程
+          <div
+            className="mt-9 flex w-full animate-rise-in flex-col gap-3 lg:mt-7"
+            style={{ animationDelay: '380ms' }}
+          >
+            <Link to="/prologue" className={`${buttonStyles('primary', 'lg')} w-full`}>
+              开始新的旅程
             </Link>
-          ) : (
-            <Button variant="secondary" size="lg" className="w-full" disabled>
-              继续旅程
-            </Button>
-          )}
 
-          {!hasSave && !saveBroken && (
-            <p className="text-center text-[11px] text-ink-500">还没有存档</p>
-          )}
+            {canContinue ? (
+              <Link to="/city" className={`${buttonStyles('secondary', 'lg')} w-full`}>
+                继续旅程
+              </Link>
+            ) : (
+              <Button variant="secondary" size="lg" className="w-full" disabled>
+                继续旅程
+              </Button>
+            )}
 
-          {saveBroken ? (
-            <p
-              role="status"
-              className="mx-auto max-w-[300px] text-center text-[11px] leading-5 text-ink-700"
-            >
-              上一份存档读不出来，可能需要重新开始。
-            </p>
-          ) : null}
+            {!hasSave && !saveBroken && (
+              <p className="text-center text-[11px] text-ink-500">还没有存档</p>
+            )}
+
+            {saveBroken ? (
+              <p
+                role="status"
+                className="mx-auto max-w-[300px] text-center text-[11px] leading-5 text-ink-700"
+              >
+                上一份存档读不出来，可能需要重新开始。
+              </p>
+            ) : null}
+          </div>
         </div>
       </div>
 

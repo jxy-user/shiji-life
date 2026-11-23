@@ -371,7 +371,7 @@ export default function JournalPage() {
   return (
     <div className="min-h-dvh bg-cream-50 pb-12 sm:pb-16">
       <header className="sticky top-0 z-10 border-b border-ink-100 bg-white/80 backdrop-blur-sm">
-        <div className="mx-auto max-w-3xl px-4 py-4 sm:px-6 sm:py-5">
+        <div className="mx-auto max-w-3xl px-4 py-4 sm:px-6 sm:py-5 lg:max-w-4xl">
           <nav className="flex items-center gap-2 text-sm text-ink-500" aria-label="面包屑">
             <a href="#/city" className="hover:text-ink-700">城市</a>
             <span aria-hidden="true">/</span>
@@ -382,7 +382,7 @@ export default function JournalPage() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-3xl px-4 sm:px-6">
+      <main className="mx-auto max-w-3xl px-4 sm:px-6 lg:max-w-4xl">
         <div className="mb-6 flex flex-wrap items-center gap-2" role="group" aria-label="筛选类型">
           {(['all', 'free', 'action_review', 'insight_link'] as const).map((t) => (
             <button

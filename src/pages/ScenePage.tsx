@@ -46,7 +46,7 @@ export default function ScenePage() {
 
         <div className="min-h-[26vh] flex-1" aria-hidden />
 
-        <section className="mx-auto w-full max-w-2xl rounded-t-[28px] border-t border-sand-300 bg-cream-50/95 px-6 pb-10 pt-7 shadow-[0_-20px_50px_-40px_rgba(43,38,33,0.5)] backdrop-blur-md">
+        <section className="mx-auto w-full max-w-2xl rounded-t-[28px] border-t border-sand-300 bg-cream-50/95 px-6 pb-10 pt-7 shadow-[0_-20px_50px_-40px_rgba(43,38,33,0.5)] backdrop-blur-md lg:max-w-3xl lg:px-8">
           <p className="text-[11px] tracking-[0.4em] text-gold-600">{scene.kicker}</p>
           <h1 className="mt-3 font-display text-2xl tracking-[0.04em] text-ink-900">
             {scene.name}

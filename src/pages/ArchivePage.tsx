@@ -71,7 +71,7 @@ export default function ArchivePage() {
     <main className="min-h-dvh bg-cream-50 pb-20">
       <StatusBar save={save} title="人生档案" />
 
-      <div className="mx-auto w-full max-w-3xl px-5 pt-8">
+      <div className="mx-auto w-full max-w-3xl px-5 pt-8 lg:max-w-5xl lg:px-6">
         <p className="text-[11px] tracking-[0.4em] text-gold-600">档案</p>
         <h1 className="mt-3 font-display text-3xl tracking-[0.04em] text-ink-900">
           人生档案
@@ -81,7 +81,8 @@ export default function ArchivePage() {
           未确认的猜测不会出现在这里。
         </p>
 
-        <section className="mt-10">
+        <div className="mt-10 grid gap-10 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:items-start lg:gap-12">
+        <section>
           <div className="flex items-baseline justify-between">
             <h2 className="font-display text-lg text-ink-900">经历</h2>
             <span className="text-[12px] text-ink-500">共 {experiences.length} 条</span>
@@ -189,7 +190,8 @@ export default function ArchivePage() {
           </p>
         </section>
 
-        <section className="mt-12">
+          <div className="space-y-12">
+        <section>
           <div className="flex items-baseline justify-between">
             <h2 className="font-display text-lg text-ink-900">关于自己的认识</h2>
             <span className="text-[12px] text-ink-500">共 {save.insights.length} 条</span>
@@ -278,7 +280,7 @@ export default function ArchivePage() {
         </section>
 
         {/* —— M5: 阶段总结 —— */}
-        <section className="mt-12" aria-labelledby="summary-title">
+        <section aria-labelledby="summary-title">
           <div className="flex items-baseline justify-between">
             <h2 id="summary-title" className="font-display text-lg text-ink-900">
               阶段总结
@@ -349,6 +351,8 @@ export default function ArchivePage() {
             </div>
           )}
         </section>
+          </div>
+        </div>
       </div>
     {showGenerateDialog && (
       <GenerateSummaryDialog

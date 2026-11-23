@@ -77,7 +77,7 @@ export default function CreatePage() {
     <main className="relative isolate min-h-dvh bg-cream-50 pb-16">
       <div aria-hidden className="paper-grain pointer-events-none absolute inset-0 opacity-60" />
 
-      <div className="relative z-10 mx-auto w-full max-w-xl px-6 pt-14">
+      <div className="relative z-10 mx-auto w-full max-w-xl px-6 pt-14 lg:max-w-2xl">
         <p className="text-[11px] tracking-[0.45em] text-gold-600">角色</p>
         <h1 className="mt-4 font-display text-3xl tracking-[0.05em] text-ink-900">
           你想怎样被称呼

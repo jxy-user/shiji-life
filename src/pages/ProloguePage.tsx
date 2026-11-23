@@ -62,7 +62,7 @@ export default function ProloguePage() {
         </svg>
       </div>
 
-      <div className="relative z-10 mx-auto flex w-full max-w-xl flex-1 flex-col px-6 py-10">
+      <div className="relative z-10 mx-auto flex w-full max-w-xl flex-1 flex-col px-6 py-10 lg:max-w-2xl">
         <div className="flex items-center justify-between text-[11px] tracking-[0.3em] text-cream-200/60">
           <span>序章</span>
           <button

@@ -101,7 +101,7 @@ export default function ReflectionPage() {
     <main className="min-h-dvh bg-cream-50 pb-20">
       <StatusBar save={save} title="回顾" />
 
-      <div className="mx-auto w-full max-w-2xl px-5 pt-8">
+      <div className="mx-auto w-full max-w-2xl px-5 pt-8 lg:max-w-3xl">
         <p className="text-[11px] tracking-[0.4em] text-gold-600">回顾</p>
         <h1 className="mt-3 font-display text-2xl text-ink-900">
           先看看哪些事可以一起看

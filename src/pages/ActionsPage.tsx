@@ -53,7 +53,8 @@ function ActionCard({
           <h3 className="text-base font-medium text-ink-900">{action.title}</h3>
           {linkedInsight && (
             <p className="mt-1 text-xs text-ink-500">
-              关联认知：「{linkedInsight.title}」（{linkedInsight.category}）
+              关联认知：「{linkedInsight.title}」（
+              {INSIGHT_CATEGORY_LABELS[linkedInsight.category as InsightCategory]}）
             </p>
           )}
           <div className="mt-2 flex flex-wrap items-center gap-2 text-xs">
@@ -434,7 +435,7 @@ export default function ActionsPage() {
   return (
     <div className="min-h-dvh bg-cream-50 pb-12 sm:pb-16">
       <header className="sticky top-0 z-10 border-b border-ink-100 bg-white/80 backdrop-blur-sm">
-        <div className="mx-auto max-w-3xl px-4 py-4 sm:px-6 sm:py-5">
+        <div className="mx-auto max-w-3xl px-4 py-4 sm:px-6 sm:py-5 lg:max-w-5xl">
           <nav className="flex items-center gap-2 text-sm text-ink-500" aria-label="面包屑">
             <a href="#/city" className="hover:text-ink-700">城市</a>
             <span aria-hidden="true">/</span>
@@ -445,7 +446,7 @@ export default function ActionsPage() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-3xl px-4 sm:px-6">
+      <main className="mx-auto max-w-3xl px-4 sm:px-6 lg:max-w-5xl">
         {actions.length === 0 ? (
           <section className="py-12 sm:py-16 text-center" aria-labelledby="empty-title">
             <h2 id="empty-title" className="text-lg font-medium text-ink-700">
@@ -464,7 +465,7 @@ export default function ActionsPage() {
           </section>
         ) : (
           <>
-            <div className="space-y-4" role="list" aria-label="行动列表">
+            <div className="space-y-4 lg:grid lg:grid-cols-2 lg:gap-4 lg:space-y-0" role="list" aria-label="行动列表">
               {actions.map((action: typeof actions[0]) => {
                 const linkedInsight = insights.find((i: typeof insights[0]) => i.id === action.linkedInsightId) || null
                 return (

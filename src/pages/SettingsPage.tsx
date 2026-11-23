@@ -41,7 +41,7 @@ export default function SettingsPage() {
     <main className="min-h-dvh bg-cream-50 pb-20">
       <StatusBar save={save} title="设置" />
 
-      <div className="mx-auto w-full max-w-2xl px-5 pt-8">
+      <div className="mx-auto w-full max-w-2xl px-5 pt-8 lg:max-w-3xl">
         <p className="text-[11px] tracking-[0.4em] text-gold-600">设置</p>
         <h1 className="mt-3 font-display text-3xl tracking-[0.04em] text-ink-900">
           由你决定

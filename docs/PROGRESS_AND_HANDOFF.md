@@ -1,13 +1,13 @@
 # 进度与协作交接
 
-> 更新于 2026-11-20。**开始任何开发前先读这一页**，再读 `AGENTS.md` 与对应章节。
+> 更新于 2026-11-23。**开始任何开发前先读这一页**，再读 `AGENTS.md` 与对应章节。
 > 以 `git log` 为最终事实；本文记录的是「为什么这样做」与「还差什么」。
 
 ## 一分钟了解
 
 《拾己 · LIFE》是一款 2D 互动人生探索游戏：玩家在「未完成之城」自由生活、经历事件、做出选择；经历积累到阈值后，AI 引路人「微光 Lumi」邀请回顾，提出**带证据的候选观察**；只有玩家确认的内容才写入人生档案。
 
-当前 **M3、M5 均已完成**，可以完整玩到：「开场 → 建角 → 城市 → 事件 → 经历 → 阶段回顾 → 认知卡片 → 现实行动 → 日记 → 阶段总结」。
+当前 **M3、M5 均已完成**，可以完整玩到：「开场 → 建角 → 城市 → 事件 → 经历 → 阶段回顾 → 认知卡片 → 现实行动 → 日记 → 阶段总结」。移动端已支持 PWA（可安装、可离线）。
 
 - 路由使用 **HashRouter**（`/#/city`），原因：Qoder Sites 静态托管没有 SPA 回退。
 - 部署在 **Qoder Sites**（公网链接由 Qoder 生成，会随部署变化）。
@@ -23,6 +23,8 @@
 | M3 阶段回顾 | ✅ | 阈值/冷却、授权优先、候选观察、确认与改写、认知卡片 | `src/game/reflection.ts`、`insightRules.ts`、`ReflectionPage.tsx` |
 | M4 真实 AI | ⏸️ | 服务端适配层、prompt 版本、输出校验 | 暂缓（需付费计划），架构已就绪 |
 | M5 行动与日记 | ✅ | 现实行动、日记、阶段总结、存档 v4 | `src/pages/{Actions,Journal}Page.tsx`、store actions、saveSchema v4 |
+| PWA 移动端 | ✅ | 可安装、离线缓存、更新提示；manifest 单一来源，SW 仅生产注册 | `vite.config.ts`、`src/hooks/usePWA.ts`、`PWANotifications.tsx` |
+| PC 端适配 | ✅ | 桌面浏览器大屏布局：开始页双栏、档案双栏、行动两列、各页容器加宽；移动端不变 | `src/pages/*`、`src/components/layout/StatusBar.tsx`、`src/components/city/CityMap.tsx` |
 
 ## 常用命令
 
@@ -41,10 +43,10 @@ npm run build      # 路由级代码分割，首屏约 96 KB gzip
 
 | 位置 | 职责 | 注意 |
 |---|---|---|
-| `src/game/saveSchema.ts` | 存档模型（v3）与全部 Zod 契约 | 改字段必须升版 + 迁移 |
+| `src/game/saveSchema.ts` | 存档模型（v4）与全部 Zod 契约 | 改字段必须升版 + 迁移 |
 | `src/game/saveVersion.ts` / `saveEnums.ts` | 无依赖常量 | 首屏轻量判断用，**不要**从这里引 zod |
 | `src/services/storage.ts` | 唯一的 localStorage 访问点 | 读写异常必须兜住，禁止让页面白屏 |
-| `src/services/saveService.ts` | 读写校验、v1→v2→v3 迁移 | 迁移只补默认值，不改写已有内容 |
+| `src/services/saveService.ts` | 读写校验、v1→v2→v3→v4 迁移 | 迁移只补默认值，不改写已有内容 |
 | `src/services/savePeek.ts` | 首屏「有没有可继续存档」 | 轻量检查，不含 zod |
 | `src/services/experienceService.ts` | 经历查询：可见 / 可分析 | M4 只能从 `getEligibleExperiences` 取数 |
 | `src/stores/useGameStore.ts` | 全部游戏状态变更的入口 | 事件完成必须是**一次写盘**（`completeEvent`） |
@@ -103,6 +105,7 @@ npm run build      # 路由级代码分割，首屏约 96 KB gzip
 
 ## 下一步建议顺序
 
-1. **M5 验收与部署**：运行 `docs/QODER_M5_REVIEW_PROMPT.md` 交给 Qoder 审查并部署。
-2. M4 真实 AI（赛后，需升级 Qoder Sites 计划）。
-3. 内容扩充：再写 5–10 个事件，让回顾的候选规则有更多变化。
+1. **M5 + PC 端验收与部署**：运行 `docs/QODER_M5_REVIEW_PROMPT.md` 交给 Qoder 审查并部署（PC 端增强已并入本轮）。
+2. **PC 端视觉回归**：部署后在 1440 / 1920 宽屏复核首页、城市、档案、行动、日记，并确认 390px 移动端无回归。
+3. M4 真实 AI（赛后，需升级 Qoder Sites 计划）。
+4. 内容扩充：再写 5–10 个事件，让回顾的候选规则有更多变化。

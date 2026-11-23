@@ -73,7 +73,7 @@ export default function CityPage() {
     <main className="min-h-dvh bg-cream-50 pb-16">
       <StatusBar save={save} showBackHome={false} title="未完成之城" />
 
-      <div className="mx-auto w-full max-w-5xl px-4 pt-6">
+      <div className="mx-auto w-full max-w-5xl px-4 pt-6 lg:max-w-6xl lg:px-6 lg:pt-8">
         <div className="mb-5 flex flex-wrap items-end justify-between gap-3 px-1">
           <div>
             <p className="text-[11px] tracking-[0.4em] text-gold-600">第一章 · 初入未完成之城</p>
@@ -120,7 +120,7 @@ export default function CityPage() {
         </nav>
 
         {readiness.shouldInvite ? (
-          <section className="mx-auto mt-8 animate-rise-in rounded-3xl border border-gold-300/70 bg-gradient-to-b from-cream-100 to-cream-50 p-5 sm:p-6">
+          <section className="mx-auto mt-8 animate-rise-in rounded-3xl border border-gold-300/70 bg-gradient-to-b from-cream-100 to-cream-50 p-5 sm:p-6 lg:max-w-4xl lg:p-7">
             <div className="flex items-start gap-4">
               <LumiSprite size={52} talking />
               <div className="min-w-0 flex-1">
@@ -163,7 +163,7 @@ export default function CityPage() {
         {exploredBeyondPlaza && !chapterCardDismissed ? (
           <section
             ref={chapterCardRef}
-            className="mx-auto mt-8 max-w-2xl animate-rise-in rounded-3xl border border-gold-300/60 bg-gradient-to-b from-cream-100 to-cream-50 p-6"
+            className="mx-auto mt-8 max-w-2xl animate-rise-in rounded-3xl border border-gold-300/60 bg-gradient-to-b from-cream-100 to-cream-50 p-6 lg:max-w-3xl"
           >
             <p className="text-[11px] tracking-[0.35em] text-gold-600">第一章 · 完成</p>
             <h2 className="mt-3 font-display text-xl text-ink-900">

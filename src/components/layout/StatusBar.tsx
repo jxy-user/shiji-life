@@ -16,7 +16,7 @@ type StatusBarProps = {
 export function StatusBar({ save, showBackHome = true, title }: StatusBarProps) {
   return (
     <header className="sticky top-0 z-30 border-b border-sand-300/70 bg-cream-50/85 backdrop-blur-md">
-      <div className="mx-auto flex h-14 w-full max-w-5xl items-center gap-3 px-4">
+      <div className="mx-auto flex h-14 w-full max-w-5xl items-center gap-3 px-4 lg:max-w-6xl lg:px-6">
         {showBackHome ? (
           <Link
             to="/city"
