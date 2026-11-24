@@ -42,7 +42,7 @@ function ActionCard({
     todo: 'text-ink-500',
     in_progress: 'text-sun-700',
     done: 'text-sage-700',
-    paused: 'text-ink-400',
+    paused: 'text-ink-500',
   }
 
   return (
@@ -63,17 +63,17 @@ function ActionCard({
               <span className="h-1.5 w-1.5 rounded-full bg-current" aria-hidden />
               {statusLabels[action.status]}
             </span>
-            <span className="text-ink-400">·</span>
+            <span className="text-ink-500">·</span>
             <span className="text-ink-500">{freqLabels[action.frequency]}</span>
             {action.dueDate && (
               <>
-                <span className="text-ink-400">·</span>
+                <span className="text-ink-500">·</span>
                 <span className="text-ink-500">截止：{new Date(action.dueDate).toLocaleDateString('zh-CN')}</span>
               </>
             )}
             {action.reminderTime && (
               <>
-                <span className="text-ink-400">·</span>
+                <span className="text-ink-500">·</span>
                 <span className="text-ink-500">提醒：{action.reminderTime}</span>
               </>
             )}
@@ -202,7 +202,7 @@ function CreateActionDialog({
             type="button"
             onClick={onClose}
             disabled={submitting}
-            className="rounded-lg p-1 text-ink-400 hover:bg-ink-100 disabled:opacity-50"
+            className="rounded-lg p-1 text-ink-500 hover:bg-ink-100 disabled:opacity-50"
             aria-label="关闭"
           >
             <Icon name="close" size={18} />
@@ -348,7 +348,7 @@ function CompleteActionDialog({
             type="button"
             onClick={onClose}
             disabled={submitting}
-            className="rounded-lg p-1 text-ink-400 hover:bg-ink-100 disabled:opacity-50"
+            className="rounded-lg p-1 text-ink-500 hover:bg-ink-100 disabled:opacity-50"
             aria-label="关闭"
           >
             <Icon name="close" size={18} />

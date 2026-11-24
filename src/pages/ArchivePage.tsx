@@ -475,7 +475,7 @@ function ChapterSummaryCard({
               setEditSummaryContent(summary.content)
               setEditingSummaryId(summary.id)
             }}
-            className="rounded-lg p-1.5 text-ink-400 hover:bg-ink-100 hover:text-ink-600"
+            className="rounded-lg p-1.5 text-ink-500 hover:bg-ink-100 hover:text-ink-600"
             aria-label={isEditing ? '取消编辑' : '编辑'}
           >
             {isEditing ? <Icon name="close" size={14} /> : <Icon name="edit" size={14} />}
@@ -483,7 +483,7 @@ function ChapterSummaryCard({
           <button
             type="button"
             onClick={onDelete}
-            className="rounded-lg p-1.5 text-ink-400 hover:bg-ink-100 hover:text-rose-600"
+            className="rounded-lg p-1.5 text-ink-500 hover:bg-ink-100 hover:text-rose-600"
             aria-label="删除"
           >
             <Icon name="trash" size={14} />
@@ -573,7 +573,7 @@ function GenerateSummaryDialog({
             type="button"
             onClick={onClose}
             disabled={submitting}
-            className="rounded-lg p-1 text-ink-400 hover:bg-ink-100 disabled:opacity-50"
+            className="rounded-lg p-1 text-ink-500 hover:bg-ink-100 disabled:opacity-50"
             aria-label="关闭"
           >
             <Icon name="close" size={18} />

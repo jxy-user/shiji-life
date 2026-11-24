@@ -64,11 +64,11 @@ function JournalEntryCard({
           <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${TYPE_COLORS[entry.type]}`}>
             {TYPE_LABELS[entry.type]}
           </span>
-          <time className="text-xs text-ink-400" dateTime={entry.createdAt}>
+          <time className="text-xs text-ink-500" dateTime={entry.createdAt}>
             {new Date(entry.createdAt).toLocaleString('zh-CN')}
           </time>
           {isUpdated && (
-            <span className="text-xs text-ink-400" title={`更新于 ${new Date(entry.updatedAt).toLocaleString('zh-CN')}`}>
+            <span className="text-xs text-ink-500" title={`更新于 ${new Date(entry.updatedAt).toLocaleString('zh-CN')}`}>
               · 已编辑
             </span>
           )}
@@ -77,7 +77,7 @@ function JournalEntryCard({
           <button
             type="button"
             onClick={() => setIsEditing(true)}
-            className="rounded-lg p-1.5 text-ink-400 hover:bg-ink-100 hover:text-ink-600"
+            className="rounded-lg p-1.5 text-ink-500 hover:bg-ink-100 hover:text-ink-600"
             aria-label={isEditing ? '取消编辑' : '编辑'}
           >
             {isEditing ? <Icon name="close" size={14} /> : <Icon name="edit" size={14} />}
@@ -87,7 +87,7 @@ function JournalEntryCard({
             onClick={() => {
               if (window.confirm('确定删除这条日记吗？')) onDelete(entry.id)
             }}
-            className="rounded-lg p-1.5 text-ink-400 hover:bg-ink-100 hover:text-rose-600"
+            className="rounded-lg p-1.5 text-ink-500 hover:bg-ink-100 hover:text-rose-600"
             aria-label="删除"
           >
             <Icon name="trash" size={14} />
@@ -203,7 +203,7 @@ function CreateJournalDialog({
             type="button"
             onClick={onClose}
             disabled={submitting}
-            className="rounded-lg p-1 text-ink-400 hover:bg-ink-100 disabled:opacity-50"
+            className="rounded-lg p-1 text-ink-500 hover:bg-ink-100 disabled:opacity-50"
             aria-label="关闭"
           >
             <Icon name="close" size={18} />

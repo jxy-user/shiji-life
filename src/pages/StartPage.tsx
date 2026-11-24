@@ -49,7 +49,7 @@ export default function StartPage() {
             style={{ animationDelay: '130ms' }}
           >
             <span className="h-px w-8 bg-sand-300" />
-            <span className="text-[10px] tracking-[0.5em] text-ink-400">
+            <span className="text-[10px] tracking-[0.5em] text-ink-500">
               LIFE
             </span>
             <span className="h-px w-8 bg-sand-300" />
@@ -107,15 +107,21 @@ export default function StartPage() {
                 上一份存档读不出来，可能需要重新开始。
               </p>
             ) : null}
+
+            <p className="text-center text-[11px] leading-5 text-ink-500 lg:text-left">
+              你随时可以拒绝回顾、删除经历，或关闭分析。
+            </p>
           </div>
         </div>
       </div>
 
       {/* 版权页式页脚 */}
-      <footer className="relative z-10 flex flex-col items-center gap-1.5 border-t border-sand-300/60 px-6 py-5 text-[10px] tracking-[0.18em] text-ink-400 sm:flex-row sm:justify-between lg:px-12">
+      <footer className="relative z-10 flex flex-col items-center gap-1.5 border-t border-sand-300/60 px-6 py-5 text-[10px] leading-5 tracking-[0.15em] text-ink-500 sm:flex-row sm:justify-between lg:px-12">
         <span>拾己 · LIFE</span>
         <span>第一章 · 未完成之城</span>
-        <span>不是心理测评，也不会给你贴标签</span>
+        <span className="text-center sm:text-right">
+          不是心理测评，也不会给你贴标签
+        </span>
       </footer>
     </main>
   )
