@@ -52,7 +52,7 @@ export default function ProloguePage() {
       />
       <div aria-hidden className="absolute inset-0 opacity-[0.08]">
         <svg viewBox="0 0 400 300" className="h-full w-full" preserveAspectRatio="none">
-          <g stroke="#ff4fa3" strokeWidth="0.5">
+          <g stroke="#c9a25a" strokeWidth="0.5">
             {Array.from({ length: 60 }).map((_, i) => {
               const x = (i * 37) % 400
               const y = (i * 53) % 300

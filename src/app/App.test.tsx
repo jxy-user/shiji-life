@@ -80,8 +80,13 @@ describe('路由', () => {
     renderAt('/city')
 
     expect(await screen.findByText(/上一份存档读不出来/)).toBeInTheDocument()
-    // 已知读不出来的存档不再提供继续入口，避免反复弹回
-    expect(screen.getByRole('button', { name: '继续上次的人生' })).toBeDisabled()
+    // 已读不出来的旧存档不再提供城市入口，避免反复弹回；人生线入口仍然可用
+    expect(
+      screen.getByRole('link', { name: '进入未完成之城（旧版）' }),
+    ).toHaveAttribute('href', '/prologue')
+    expect(
+      screen.getByRole('button', { name: '轻触门扉，推门进入' }),
+    ).toBeInTheDocument()
   })
 
   it('有存档时可以直接进入城市', async () => {

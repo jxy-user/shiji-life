@@ -52,15 +52,14 @@ export default function LifeReplayPage() {
 
   return (
     <main className="relative min-h-dvh overflow-hidden bg-cream-50 text-ink-900">
-      <div aria-hidden className="scanlines absolute inset-0 opacity-50" />
       <div
         aria-hidden
-        className="absolute -top-32 left-1/2 h-[360px] w-[680px] -translate-x-1/2 rounded-full bg-[radial-gradient(ellipse,rgba(255,79,163,0.22),transparent_70%)] blur-2xl"
+        className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_-12%,var(--color-gold-200)_0%,transparent_58%)] opacity-30"
       />
 
       <div className="relative z-10 mx-auto w-full max-w-2xl px-6 py-14 lg:max-w-3xl">
         <p className="text-[10px] tracking-[0.5em] text-sage-500">回放</p>
-        <h1 className="mt-4 font-display text-3xl font-black italic text-ink-900">
+        <h1 className="mt-4 font-display text-3xl tracking-[0.04em] text-ink-900">
           你走过的这一生
         </h1>
         <p className="mt-3 text-[12px] text-ink-500">
@@ -71,7 +70,7 @@ export default function LifeReplayPage() {
           {shown.map((choice, index) => (
             <li key={`${choice.nodeId}-${index}`} className="animate-rise-in">
               <div className="flex items-center gap-3">
-                <span className="font-display text-3xl font-black tabular-nums text-gold-500">
+                <span className="font-display text-3xl tabular-nums text-gold-500">
                   {choice.age}
                 </span>
                 <span className="text-[11px] tracking-[0.3em] text-ink-500">
@@ -104,7 +103,7 @@ export default function LifeReplayPage() {
             <p className="text-[11px] tracking-[0.35em] text-gold-500">
               这一生的关键词
             </p>
-            <p className="mt-3 font-display text-3xl font-black italic text-ink-900">
+            <p className="mt-3 font-display text-3xl tracking-[0.04em] text-ink-900">
               {summary.label}
             </p>
             <p className="mt-4 text-[14px] leading-8 text-ink-700">
@@ -118,7 +117,7 @@ export default function LifeReplayPage() {
               <button
                 type="button"
                 onClick={handleRestart}
-                className="rounded-md bg-gold-500 px-5 py-2.5 text-[13px] font-semibold text-cream-50 shadow-[0_0_20px_rgba(255,79,163,0.3)] transition-colors hover:bg-gold-400"
+                className="rounded-md bg-gold-500 px-5 py-2.5 text-[13px] font-semibold text-cream-50 transition-colors hover:bg-gold-400"
               >
                 再走一次
               </button>

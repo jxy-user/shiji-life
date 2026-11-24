@@ -20,16 +20,14 @@ export default function LifePage() {
   if (!save) {
     return (
       <main className="relative isolate flex min-h-dvh flex-col overflow-hidden bg-cream-50 text-ink-900">
-        <div aria-hidden className="neon-grid absolute inset-0 opacity-50" />
-        <div aria-hidden className="scanlines absolute inset-0 opacity-50" />
         <div
           aria-hidden
-          className="absolute -top-40 left-1/2 h-[380px] w-[640px] -translate-x-1/2 rounded-full bg-[radial-gradient(ellipse,rgba(255,79,163,0.28),transparent_70%)] blur-2xl"
+          className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_-10%,var(--color-gold-200)_0%,transparent_60%)] opacity-40"
         />
 
         <div className="relative z-10 mx-auto flex w-full max-w-xl flex-1 flex-col justify-center px-6 py-16">
-          <p className="text-[10px] tracking-[0.55em] text-sage-500">人生线</p>
-          <h1 className="neon-text mt-5 font-display text-4xl font-black italic leading-tight text-ink-900 lg:text-5xl">
+          <p className="text-[10px] tracking-[0.55em] text-gold-600">人生线</p>
+          <h1 className="mt-5 font-display text-4xl leading-tight tracking-[0.04em] text-ink-900 lg:text-5xl">
             从 18 岁，到 60 岁
           </h1>
           <p className="mt-6 text-[14px] leading-7 text-ink-500">
@@ -40,7 +38,7 @@ export default function LifePage() {
           <button
             type="button"
             onClick={start}
-            className="mt-10 rounded-md bg-gold-500 px-6 py-3 text-[15px] font-semibold tracking-[0.06em] text-cream-50 shadow-[0_0_24px_rgba(255,79,163,0.35)] transition-colors hover:bg-gold-400"
+            className="mt-10 rounded-md bg-gold-500 px-6 py-3 text-[15px] font-semibold tracking-[0.06em] text-cream-50 transition-colors hover:bg-gold-400"
           >
             开始这段人生
           </button>
@@ -80,8 +78,10 @@ export default function LifePage() {
 
   return (
     <main className="relative min-h-dvh overflow-hidden bg-cream-50 text-ink-900">
-      <div aria-hidden className="neon-grid absolute inset-0 opacity-40" />
-      <div aria-hidden className="scanlines absolute inset-0 opacity-40" />
+      <div
+        aria-hidden
+        className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_-12%,var(--color-gold-200)_0%,transparent_58%)] opacity-30"
+      />
 
       <div className="relative z-10 mx-auto flex min-h-dvh w-full max-w-2xl flex-col px-6 py-10 lg:max-w-3xl">
         <header className="flex items-center justify-between text-[11px] tracking-[0.2em] text-ink-500">
@@ -108,7 +108,7 @@ export default function LifePage() {
               <button
                 type="button"
                 onClick={handleContinue}
-                className="mt-10 rounded-md bg-gold-500 px-6 py-3 text-[15px] font-semibold text-cream-50 shadow-[0_0_24px_rgba(255,79,163,0.35)] transition-colors hover:bg-gold-400"
+                className="mt-10 rounded-md bg-gold-500 px-6 py-3 text-[15px] font-semibold text-cream-50 transition-colors hover:bg-gold-400"
               >
                 {save.finishedAt ? '看看这一生' : '继续'}
               </button>

@@ -6,18 +6,7 @@ import type { ReactNode, SVGProps } from 'react'
  * 用内联 SVG 代替 emoji：emoji 在不同系统上字形、颜色、基线都不一致，
  * 是「模板感」最明显的来源之一。这里统一 24px 视框、1.6px 描边、currentColor。
  */
-export type IconName =
-  | 'refresh'
-  | 'offline'
-  | 'install'
-  | 'smartphone'
-  | 'close'
-  | 'edit'
-  | 'trash'
-  | 'check'
-  | 'plus'
-  | 'arrow-left'
-  | 'chevron-right'
+export type IconName = 'refresh' | 'offline' | 'close' | 'edit' | 'trash'
 
 const PATHS: Record<IconName, ReactNode> = {
   refresh: (
@@ -35,19 +24,6 @@ const PATHS: Record<IconName, ReactNode> = {
       <circle cx="12" cy="19" r="1" />
     </>
   ),
-  install: (
-    <>
-      <path d="M12 3v11" />
-      <path d="M7.5 9.5L12 14l4.5-4.5" />
-      <path d="M4 20h16" />
-    </>
-  ),
-  smartphone: (
-    <>
-      <rect x="7" y="2.5" width="10" height="19" rx="2.2" />
-      <path d="M11 18.5h2" />
-    </>
-  ),
   close: <path d="M6 6l12 12M18 6L6 18" />,
   edit: (
     <>
@@ -63,15 +39,6 @@ const PATHS: Record<IconName, ReactNode> = {
       <path d="M10 10.5v6M14 10.5v6" />
     </>
   ),
-  check: <path d="M20 6.5L9.5 17 4 11.5" />,
-  plus: <path d="M12 5v14M5 12h14" />,
-  'arrow-left': (
-    <>
-      <path d="M19 12H5" />
-      <path d="M11.5 18.5L5 12l6.5-6.5" />
-    </>
-  ),
-  'chevron-right': <path d="M9 5l7 7-7 7" />,
 }
 
 type IconProps = {

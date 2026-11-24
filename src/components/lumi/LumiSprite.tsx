@@ -28,14 +28,14 @@ export function LumiSprite({ size = 72, talking = false, className }: LumiSprite
         >
           <defs>
             <radialGradient id="lumi-halo" cx="50%" cy="50%" r="50%">
-              <stop offset="0%" stopColor="#eafffb" stopOpacity="0.95" />
-              <stop offset="45%" stopColor="#3ee6c4" stopOpacity="0.55" />
-              <stop offset="100%" stopColor="#1e4a4a" stopOpacity="0" />
+              <stop offset="0%" stopColor="#fff8e8" stopOpacity="0.95" />
+              <stop offset="45%" stopColor="#e0c08a" stopOpacity="0.55" />
+              <stop offset="100%" stopColor="#5a4726" stopOpacity="0" />
             </radialGradient>
             <radialGradient id="lumi-body" cx="42%" cy="36%" r="70%">
-              <stop offset="0%" stopColor="#eafffb" />
-              <stop offset="42%" stopColor="#7ff0d8" />
-              <stop offset="100%" stopColor="#3ee6c4" />
+              <stop offset="0%" stopColor="#fff8e8" />
+              <stop offset="42%" stopColor="#f0d9a8" />
+              <stop offset="100%" stopColor="#e0c08a" />
             </radialGradient>
           </defs>
 
@@ -48,7 +48,7 @@ export function LumiSprite({ size = 72, talking = false, className }: LumiSprite
             cy="44"
             rx="15"
             ry="7"
-            fill="#eafffb"
+            fill="#fff8e8"
             opacity="0.5"
             transform="rotate(-18 26 44)"
           />
@@ -57,7 +57,7 @@ export function LumiSprite({ size = 72, talking = false, className }: LumiSprite
             cy="44"
             rx="15"
             ry="7"
-            fill="#eafffb"
+            fill="#fff8e8"
             opacity="0.5"
             transform="rotate(18 74 44)"
           />
@@ -67,14 +67,14 @@ export function LumiSprite({ size = 72, talking = false, className }: LumiSprite
 
           {/* 眼睛 */}
           <g className="animate-blink" style={{ transformOrigin: '50px 52px' }}>
-            <ellipse cx="42.5" cy="50" rx="2.4" ry="3.4" fill="#0b1026" opacity="0.82" />
-            <ellipse cx="57.5" cy="50" rx="2.4" ry="3.4" fill="#0b1026" opacity="0.82" />
+            <ellipse cx="42.5" cy="50" rx="2.4" ry="3.4" fill="#0d0c0b" opacity="0.82" />
+            <ellipse cx="57.5" cy="50" rx="2.4" ry="3.4" fill="#0d0c0b" opacity="0.82" />
           </g>
 
           {/* 一点点笑意 */}
           <path
             d="M46 59 Q50 62 54 59"
-            stroke="#0b1026"
+            stroke="#0d0c0b"
             strokeWidth="1.4"
             strokeLinecap="round"
             fill="none"

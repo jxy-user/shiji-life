@@ -2,7 +2,7 @@
 
 /*
  * 拾己 · LIFE 设计令牌
- * 基调：霓虹海滨（Neon Coast）。深蓝夜空、粉橙霓虹、青绿点缀。
+ * 基调：墨色与暖光。深色底、暖白字、金铜色点缀。
  * 命名沿用旧语义键，便于整体换肤；值全部映射到新配色。
  */
 @theme {
@@ -10,13 +10,13 @@
    * Qoder Sites 设计工作台变量契约。
    * 用于工作台调整全局外观 / 圆角 / 间距 / 字号 / 动效。
    */
-  --site-bg: #0b1026;
-  --site-fg: #f6f2ea;
-  --site-accent: #ff4fa3;
-  --site-on-accent: #0b1026;
-  --site-surface: #141a33;
-  --site-muted: #a9a3b8;
-  --site-border: #2a2a4a;
+  --site-bg: #0d0c0b;
+  --site-fg: #ece7dd;
+  --site-accent: #c9a25a;
+  --site-on-accent: #0d0c0b;
+  --site-surface: #171512;
+  --site-muted: #a39b8d;
+  --site-border: #2e2a24;
   --site-font:
     'PingFang SC', 'HarmonyOS Sans SC', 'Microsoft YaHei', 'Noto Sans SC',
     system-ui, -apple-system, 'Segoe UI', sans-serif;
@@ -25,54 +25,54 @@
   --site-type: 1;
   --site-motion: 1;
 
-  /* 夜空与表面（原纸张与墨色语义） */
+  /* 墨色与表面（原纸张与墨色语义） */
   --color-cream-50: var(--site-bg);
   --color-cream-100: var(--site-surface);
-  --color-cream-200: #1b2244;
+  --color-cream-200: #221e19;
   --color-sand-300: var(--site-border);
   --color-ink-900: var(--site-fg);
-  --color-ink-700: #d8d2e6;
+  --color-ink-700: #d4cdc0;
   --color-ink-500: var(--site-muted);
-  --color-ink-400: #8a84a0;
+  --color-ink-400: #7d7669;
 
-  /* 霓虹粉（主强调，原微光金语义） */
-  --color-gold-200: #3a1a33;
-  --color-gold-300: #7a2a5a;
-  --color-gold-400: #ff7bbd;
+  /* 暖金（主强调，原微光金语义） */
+  --color-gold-200: #2a2114;
+  --color-gold-300: #5a4726;
+  --color-gold-400: #d9b36a;
   --color-gold-500: var(--site-accent);
-  --color-gold-600: #ff9fd0;
+  --color-gold-600: #e0c08a;
 
-  /* 青绿（辅助，原城市绿语义） */
-  --color-sage-300: #1e4a4a;
-  --color-sage-500: #3ee6c4;
-  --color-sage-700: #7ff0d8;
+  /* 墨绿（辅助，原城市绿语义） */
+  --color-sage-300: #2a332b;
+  --color-sage-500: #8aa38c;
+  --color-sage-700: #b8cbb9;
 
-  /* 日落橙（行动相关，原阳光色语义） */
-  --color-sun-50: #2a1a12;
-  --color-sun-100: #3a2216;
-  --color-sun-200: #5a3018;
-  --color-sun-300: #ff8a3d;
-  --color-sun-400: #ff8a3d;
-  --color-sun-500: #ff8a3d;
-  --color-sun-600: #ff9f5e;
-  --color-sun-700: #ffb07a;
-  --color-sun-800: #ffc49a;
+  /* 暖橙（行动相关，原阳光色语义） */
+  --color-sun-50: #2a2114;
+  --color-sun-100: #3a2d18;
+  --color-sun-200: #5a4524;
+  --color-sun-300: #d9a45a;
+  --color-sun-400: #d9a45a;
+  --color-sun-500: #c9924a;
+  --color-sun-600: #d9a45a;
+  --color-sun-700: #e3b878;
+  --color-sun-800: #edd0a0;
 
-  /* 青绿（完成状态，原森林绿语义） */
-  --color-forest-50: #0f2a26;
-  --color-forest-100: #133a32;
-  --color-forest-200: #175046;
-  --color-forest-300: #3ee6c4;
-  --color-forest-400: #5cefcf;
-  --color-forest-500: #3ee6c4;
-  --color-forest-600: #5cefcf;
-  --color-forest-700: #7ff0d8;
-  --color-forest-800: #a5f5e4;
+  /* 墨绿（完成状态，原森林绿语义） */
+  --color-forest-50: #1b2a20;
+  --color-forest-100: #203428;
+  --color-forest-200: #2a4534;
+  --color-forest-300: #8fae95;
+  --color-forest-400: #a3c0a8;
+  --color-forest-500: #8aa38c;
+  --color-forest-600: #a3c0a8;
+  --color-forest-700: #b8cbb9;
+  --color-forest-800: #cfe0d0;
 
-  /* 字体：标题用粗黑体，正文用系统无衬线 */
+  /* 字体：标题用宋体，正文用系统无衬线 */
   --font-display:
-    'Arial Black', 'Helvetica Neue', 'PingFang SC', 'Microsoft YaHei',
-    system-ui, sans-serif;
+    'Songti SC', 'STSong', 'Noto Serif SC', 'Source Han Serif SC', 'SimSun',
+    serif;
   --font-body: var(--site-font);
 
   /* 间距与圆角：随工作台参数整体缩放，默认 1 保持原尺寸 */
@@ -87,8 +87,6 @@
 
   /* 动效 */
   --default-transition-duration: calc(200ms * var(--site-motion, 1));
-  --animate-soft-pulse: soft-pulse calc(5.5s * var(--site-motion, 1))
-    ease-in-out infinite;
   --animate-rise-in: rise-in calc(0.55s * var(--site-motion, 1))
     cubic-bezier(0.16, 1, 0.3, 1) both;
   --animate-float: float 6s ease-in-out infinite;
@@ -114,18 +112,6 @@
     }
     95% {
       transform: scaleY(0.1);
-    }
-  }
-
-  @keyframes soft-pulse {
-    0%,
-    100% {
-      opacity: 0.55;
-      transform: scale(1);
-    }
-    50% {
-      opacity: 0.9;
-      transform: scale(1.08);
     }
   }
 
@@ -197,67 +183,70 @@
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
   }
 
-  /* 极淡的方格纸：给页面一层纸本底纹，替代大面积渐变 */
-  .paper-grid {
-    background-image:
-      linear-gradient(
-        to right,
-        color-mix(in srgb, var(--color-sand-300) 34%, transparent) 1px,
-        transparent 1px
-      ),
-      linear-gradient(
-        to bottom,
-        color-mix(in srgb, var(--color-sand-300) 34%, transparent) 1px,
-        transparent 1px
-      );
-    background-size: 30px 30px;
-    background-position: center;
+  /* 门厅：由远及近的镜头 */
+  .door-approach {
+    animation: door-approach 2.6s cubic-bezier(0.22, 0.8, 0.3, 1) both;
   }
 
-  /* 扫描线：给深色背景一层屏幕/街机质感 */
-  .scanlines {
-    background-image: repeating-linear-gradient(
-      to bottom,
-      rgba(255, 255, 255, 0.035) 0px,
-      rgba(255, 255, 255, 0.035) 1px,
-      transparent 1px,
-      transparent 3px
-    );
+  /* 推门：镜头继续向前压近 */
+  .door-opening {
+    transform: scale(1.55);
+    filter: blur(6px) brightness(1.28);
+    transition:
+      transform 0.9s cubic-bezier(0.4, 0, 0.7, 1),
+      filter 0.9s ease;
   }
 
-  /* 霓虹网格地面：粉青双色细线，向下渐隐 */
-  .neon-grid {
-    background-image:
-      linear-gradient(to right, rgba(255, 79, 163, 0.16) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(62, 230, 196, 0.12) 1px, transparent 1px);
-    background-size: 46px 46px;
-    mask-image: linear-gradient(to bottom, black 0%, transparent 92%);
+  /* 门扉提示的呼吸 */
+  .door-invite {
+    animation: door-invite 3.4s ease-in-out infinite;
   }
 
-  /* 霓虹文字发光 */
-  .neon-text {
-    text-shadow:
-      0 0 10px rgba(255, 79, 163, 0.55),
-      0 0 28px rgba(255, 79, 163, 0.32);
+  /* 门前浮尘 */
+  .door-mote {
+    animation: door-mote 9s linear infinite;
   }
+}
 
-  /* 霓虹描边发光 */
-  .neon-ring {
-    box-shadow:
-      0 0 0 1px rgba(255, 79, 163, 0.5),
-      0 0 20px rgba(255, 79, 163, 0.22);
+@keyframes door-approach {
+  from {
+    transform: scale(1.28) translateY(2%);
+    filter: blur(10px) brightness(0.55);
+    opacity: 0;
   }
+  30% {
+    opacity: 1;
+  }
+  to {
+    transform: scale(1) translateY(0);
+    filter: blur(0) brightness(1);
+    opacity: 1;
+  }
+}
 
-  /* 微光的柔光球：中心是暖白光，向外过渡到金色并散开 */
-  .lumi-glow {
-    background: radial-gradient(
-      circle at 50% 44%,
-      #fffdf6 0%,
-      var(--color-gold-200) 20%,
-      var(--color-gold-300) 44%,
-      color-mix(in srgb, var(--color-gold-400) 45%, transparent) 66%,
-      transparent 78%
-    );
-    filter: blur(2px);
+@keyframes door-invite {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes door-mote {
+  0% {
+    transform: translateY(0);
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.8;
+  }
+  85% {
+    opacity: 0.5;
+  }
+  100% {
+    transform: translateY(-120px);
+    opacity: 0;
   }
 }

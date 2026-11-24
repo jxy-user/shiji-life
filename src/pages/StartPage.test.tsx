@@ -1,6 +1,6 @@
-import { render, screen } from '@testing-library/react'
-import { MemoryRouter } from 'react-router-dom'
-import { beforeEach, describe, expect, it } from 'vitest'
+import { act, fireEvent, render, screen } from '@testing-library/react'
+import { MemoryRouter, useLocation } from 'react-router-dom'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { LIFE_NODES } from '@/data/lifeStory'
 import { createInitialSave } from '@/game/saveSchema'
@@ -8,12 +8,22 @@ import { SAVE_KEY } from '@/services/storage'
 import { useLifeStore } from '@/stores/useLifeStore'
 import StartPage from './StartPage'
 
+function LocationProbe() {
+  const location = useLocation()
+  return <p data-testid="path">{location.pathname}</p>
+}
+
 function renderStart() {
   return render(
-    <MemoryRouter>
+    <MemoryRouter initialEntries={['/']}>
       <StartPage />
+      <LocationProbe />
     </MemoryRouter>,
   )
+}
+
+function arrive() {
+  fireEvent.click(screen.getByRole('button', { name: '跳过' }))
 }
 
 beforeEach(() => {
@@ -21,35 +31,50 @@ beforeEach(() => {
   useLifeStore.setState({ save: null })
 })
 
-describe('StartPage', () => {
-  it('展示作品名与人生线入口', () => {
+afterEach(() => {
+  vi.useRealTimers()
+})
+
+describe('StartPage 门厅', () => {
+  it('抵达门前显示标题与门扉提示，推门进入人生线', () => {
+    vi.useFakeTimers()
     renderStart()
 
     expect(screen.getByRole('heading', { name: '拾己' })).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: '开始人生 · 18 → 60' })).toHaveAttribute(
-      'href',
-      '/life',
-    )
+
+    const doorBefore = screen.getByRole('button', { name: '轻触门扉，推门进入' })
+    expect(doorBefore).toBeDisabled()
+
+    arrive()
+
+    expect(screen.queryByRole('button', { name: '跳过' })).not.toBeInTheDocument()
+    const door = screen.getByRole('button', { name: '轻触门扉，推门进入' })
+    expect(door).toBeEnabled()
+
+    fireEvent.click(door)
+    act(() => {
+      vi.advanceTimersByTime(800)
+    })
+
+    expect(screen.getByTestId('path')).toHaveTextContent('/life')
   })
 
-  it('没有人生存档时「继续上次的人生」不可用', () => {
-    renderStart()
-
-    expect(screen.getByRole('button', { name: '继续上次的人生' })).toBeDisabled()
-  })
-
-  it('有人生存档时提供继续入口', () => {
+  it('有人生存档时推门继续当前人生', () => {
+    vi.useFakeTimers()
     useLifeStore.getState().start()
-
     renderStart()
 
-    expect(screen.getByRole('link', { name: '继续上次的人生' })).toHaveAttribute(
-      'href',
-      '/life',
-    )
+    arrive()
+    fireEvent.click(screen.getByRole('button', { name: '轻触门扉，推门进入' }))
+    act(() => {
+      vi.advanceTimersByTime(800)
+    })
+
+    expect(screen.getByTestId('path')).toHaveTextContent('/life')
   })
 
-  it('人生已结束时可查看回放', () => {
+  it('人生已结束时推门进入回放', () => {
+    vi.useFakeTimers()
     useLifeStore.setState({
       save: {
         version: 1,
@@ -60,13 +85,22 @@ describe('StartPage', () => {
         pendingChoice: null,
       },
     })
-
     renderStart()
 
-    expect(screen.getByRole('link', { name: '查看上次的回放' })).toHaveAttribute(
-      'href',
-      '/life/replay',
-    )
+    arrive()
+    fireEvent.click(screen.getByRole('button', { name: '轻触门扉，推门进入' }))
+    act(() => {
+      vi.advanceTimersByTime(800)
+    })
+
+    expect(screen.getByTestId('path')).toHaveTextContent('/life/replay')
+  })
+
+  it('门前显示人生线当前年龄', () => {
+    useLifeStore.getState().start()
+    renderStart()
+
+    expect(screen.getByText('18 岁 · 未完成之城')).toBeInTheDocument()
   })
 
   it('旧存档损坏时旧版入口退回序章', () => {
