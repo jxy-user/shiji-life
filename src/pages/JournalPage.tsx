@@ -15,7 +15,7 @@ const TYPE_LABELS: Record<JournalType, string> = {
 
 const TYPE_COLORS: Record<JournalType, string> = {
   action_review: 'bg-sun-100 text-sun-700',
-  free: 'bg-ink-100 text-ink-700',
+  free: 'bg-cream-200 text-ink-700',
   insight_link: 'bg-sage-300/40 text-sage-700',
 }
 
@@ -77,7 +77,7 @@ function JournalEntryCard({
           <button
             type="button"
             onClick={() => setIsEditing(true)}
-            className="rounded-lg p-1.5 text-ink-500 hover:bg-ink-100 hover:text-ink-600"
+            className="rounded-lg p-1.5 text-ink-500 hover:bg-cream-200 hover:text-ink-500"
             aria-label={isEditing ? '取消编辑' : '编辑'}
           >
             {isEditing ? <Icon name="close" size={14} /> : <Icon name="edit" size={14} />}
@@ -87,7 +87,7 @@ function JournalEntryCard({
             onClick={() => {
               if (window.confirm('确定删除这条日记吗？')) onDelete(entry.id)
             }}
-            className="rounded-lg p-1.5 text-ink-500 hover:bg-ink-100 hover:text-rose-600"
+            className="rounded-lg p-1.5 text-ink-500 hover:bg-cream-200 hover:text-rose-600"
             aria-label="删除"
           >
             <Icon name="trash" size={14} />
@@ -109,7 +109,7 @@ function JournalEntryCard({
             <button
               type="button"
               onClick={handleCancel}
-              className="rounded-lg px-3 py-1.5 text-sm text-ink-600 hover:bg-ink-100"
+              className="rounded-lg px-3 py-1.5 text-sm text-ink-500 hover:bg-cream-200"
             >
               取消
             </button>
@@ -117,7 +117,7 @@ function JournalEntryCard({
               type="button"
               onClick={handleSave}
               disabled={!editContent.trim()}
-              className={`rounded-lg px-3 py-1.5 text-sm font-medium text-white transition-colors ${
+              className={`rounded-lg px-3 py-1.5 text-sm font-medium text-cream-50 transition-colors ${
                 editContent.trim()
                   ? 'bg-sun-700 hover:bg-sun-800'
                   : 'bg-sun-300 cursor-not-allowed'
@@ -143,7 +143,7 @@ function JournalEntryCard({
           </span>
         )}
         {linkedExperiences.length > 0 && (
-          <span className="inline-flex items-center gap-1 rounded-full bg-ink-50 px-2 py-0.5">
+          <span className="inline-flex items-center gap-1 rounded-full bg-cream-200 px-2 py-0.5">
             关联 {linkedExperiences.length} 条经历
           </span>
         )}
@@ -196,14 +196,14 @@ function CreateJournalDialog({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" role="dialog" aria-modal="true" aria-labelledby="create-journal-dialog-title">
-      <article className="w-full max-w-md rounded-xl bg-white p-6 shadow-lg max-h-[90vh] overflow-y-auto">
-        <header className="flex items-center justify-between sticky top-0 bg-white pb-4 border-b border-ink-100">
+      <article className="w-full max-w-md rounded-xl bg-cream-100 p-6 shadow-lg max-h-[90vh] overflow-y-auto">
+        <header className="flex items-center justify-between sticky top-0 bg-cream-100 pb-4 border-b border-sand-300">
           <h2 id="create-journal-dialog-title" className="text-lg font-semibold text-ink-900">新建日记</h2>
           <button
             type="button"
             onClick={onClose}
             disabled={submitting}
-            className="rounded-lg p-1 text-ink-500 hover:bg-ink-100 disabled:opacity-50"
+            className="rounded-lg p-1 text-ink-500 hover:bg-cream-200 disabled:opacity-50"
             aria-label="关闭"
           >
             <Icon name="close" size={18} />
@@ -223,7 +223,7 @@ function CreateJournalDialog({
                   className={`rounded-lg border-2 px-3 py-2 text-sm font-medium text-center transition-all ${
                     type === t
                       ? 'border-sun-500 bg-sun-50 text-sun-700'
-                      : 'border-ink-200 text-ink-600 hover:border-ink-300 disabled:opacity-50'
+                      : 'border-sand-300 text-ink-500 hover:border-ink-300 disabled:opacity-50'
                   }`}
                 >
                   {TYPE_LABELS[t]}
@@ -241,7 +241,7 @@ function CreateJournalDialog({
                 id="journal-action"
                 value={linkedActionId || ''}
                 onChange={(e) => setLinkedActionId(e.target.value || null)}
-                className="mt-1 w-full rounded-lg border border-ink-200 px-3 py-2 text-sm focus:border-sun-500 focus:outline-none focus:ring-1 focus:ring-sun-500"
+                className="mt-1 w-full rounded-lg border border-sand-300 px-3 py-2 text-sm focus:border-sun-500 focus:outline-none focus:ring-1 focus:ring-sun-500"
                 disabled={submitting}
               >
                 <option value="">选择一个行动</option>
@@ -263,7 +263,7 @@ function CreateJournalDialog({
                 id="journal-insight"
                 value={linkedInsightId || ''}
                 onChange={(e) => setLinkedInsightId(e.target.value || null)}
-                className="mt-1 w-full rounded-lg border border-ink-200 px-3 py-2 text-sm focus:border-sun-500 focus:outline-none focus:ring-1 focus:ring-sun-500"
+                className="mt-1 w-full rounded-lg border border-sand-300 px-3 py-2 text-sm focus:border-sun-500 focus:outline-none focus:ring-1 focus:ring-sun-500"
                 disabled={submitting}
               >
                 <option value="">选择一个认知</option>
@@ -283,7 +283,7 @@ function CreateJournalDialog({
               </label>
               <div className="mt-2 max-h-40 overflow-y-auto space-y-1">
                 {experiences.map((exp) => (
-                  <label key={exp.id} className="flex items-center gap-2 rounded-lg p-2 hover:bg-ink-50">
+                  <label key={exp.id} className="flex items-center gap-2 rounded-lg p-2 hover:bg-cream-200">
                     <input
                       type="checkbox"
                       checked={linkedExperienceIds.includes(exp.id)}
@@ -315,26 +315,26 @@ function CreateJournalDialog({
               rows={8}
               maxLength={2000}
               placeholder="随便写写，不需要文采，只给自己看……"
-              className="mt-1 w-full rounded-lg border border-ink-200 px-3 py-2 text-sm focus:border-sun-500 focus:outline-none focus:ring-1 focus:ring-sun-500 resize-none"
+              className="mt-1 w-full rounded-lg border border-sand-300 px-3 py-2 text-sm focus:border-sun-500 focus:outline-none focus:ring-1 focus:ring-sun-500 resize-none"
               required
               autoFocus
               disabled={submitting}
             />
           </div>
 
-          <div className="flex justify-end gap-2 pt-2 border-t border-ink-100">
+          <div className="flex justify-end gap-2 pt-2 border-t border-sand-300">
             <button
               type="button"
               onClick={onClose}
               disabled={submitting}
-              className="rounded-lg px-4 py-2 text-sm font-medium text-ink-600 hover:bg-ink-50 disabled:opacity-50"
+              className="rounded-lg px-4 py-2 text-sm font-medium text-ink-500 hover:bg-cream-200 disabled:opacity-50"
             >
               取消
             </button>
             <button
               type="submit"
               disabled={submitting || !content.trim()}
-              className="rounded-lg bg-sun-700 px-4 py-2 text-sm font-medium text-white hover:bg-sun-800 disabled:opacity-50"
+              className="rounded-lg bg-sun-700 px-4 py-2 text-sm font-medium text-cream-50 hover:bg-sun-800 disabled:opacity-50"
             >
               保存
             </button>
@@ -412,7 +412,7 @@ export default function JournalPage() {
             <button
               type="button"
               onClick={() => setShowCreateDialog(true)}
-              className="mt-6 inline-flex items-center rounded-lg bg-sun-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-sun-800"
+              className="mt-6 inline-flex items-center rounded-lg bg-sun-700 px-5 py-2.5 text-sm font-medium text-cream-50 hover:bg-sun-800"
             >
               写下第一条日记
             </button>
@@ -437,7 +437,7 @@ export default function JournalPage() {
           <button
             type="button"
             onClick={() => setShowCreateDialog(true)}
-            className="inline-flex items-center rounded-lg border border-ink-200 bg-white px-5 py-2.5 text-sm font-medium text-ink-700 hover:bg-ink-50"
+            className="inline-flex items-center rounded-lg border border-sand-300 bg-cream-100 px-5 py-2.5 text-sm font-medium text-ink-700 hover:bg-cream-200"
           >
             + 新建日记
           </button>

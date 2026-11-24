@@ -21,6 +21,9 @@ const ReflectionPage = lazy(() => import('@/pages/ReflectionPage'))
 const SettingsPage = lazy(() => import('@/pages/SettingsPage'))
 const ActionsPage = lazy(() => import('@/pages/ActionsPage'))
 const JournalPage = lazy(() => import('@/pages/JournalPage'))
+const PeoplePage = lazy(() => import('@/pages/PeoplePage'))
+const LifePage = lazy(() => import('@/pages/LifePage'))
+const LifeReplayPage = lazy(() => import('@/pages/LifeReplayPage'))
 
 function RouteFallback() {
   return (
@@ -57,6 +60,9 @@ export default function App() {
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/actions" element={<ActionsPage />} />
           <Route path="/journal" element={<JournalPage />} />
+          <Route path="/people" element={<PeoplePage />} />
+          <Route path="/life" element={<LifePage />} />
+          <Route path="/life/replay" element={<LifeReplayPage />} />
 
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

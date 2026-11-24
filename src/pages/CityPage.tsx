@@ -108,6 +108,9 @@ export default function CityPage() {
           <Link to="/archive" className="transition-colors hover:text-ink-900">
             人生档案
           </Link>
+          <Link to="/people" className="transition-colors hover:text-ink-900">
+            人物
+          </Link>
           <Link to="/journal" className="transition-colors hover:text-ink-900">
             日记
           </Link>

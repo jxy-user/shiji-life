@@ -250,7 +250,7 @@ describe('游戏状态', () => {
 
     const save = loadSave()
 
-    expect(save?.version).toBe(4)
+    expect(save?.version).toBe(5)
     expect(save?.experiences).toEqual([])
     expect(save?.seenEventIds).toEqual([])
     expect(save?.reflections).toEqual([])
@@ -258,6 +258,8 @@ describe('游戏状态', () => {
     expect(save?.actions).toEqual([])
     expect(save?.journalEntries).toEqual([])
     expect(save?.chapterSummaries).toEqual([])
+    expect(save?.relationships).toEqual([])
+    expect(save?.actionPoints).toBe(3)
     expect(save?.settings.reflectionThreshold).toBe(3)
     expect(save?.settings.analysisConsentDefault).toBe(false)
     expect(save?.gameDay).toBe(3)
@@ -307,7 +309,7 @@ describe('游戏状态', () => {
 
     const save = loadSave()
 
-    expect(save?.version).toBe(4)
+    expect(save?.version).toBe(5)
     expect(save?.experiences[0].choiceTags).toEqual([])
     expect(save?.experiences[0].analysisConsent).toBe(true)
     expect(save?.settings.analysisConsentDefault).toBe(true)
@@ -315,9 +317,11 @@ describe('游戏状态', () => {
     expect(save?.actions).toEqual([])
     expect(save?.journalEntries).toEqual([])
     expect(save?.chapterSummaries).toEqual([])
+    expect(save?.relationships).toEqual([])
+    expect(save?.actionPoints).toBe(3)
   })
 
-  it.each([0, -1, 1.5, 5])('版本号 %s 不被迁移，也不被当作有效存档', (version) => {
+  it.each([0, -1, 1.5, 6])('版本号 %s 不被迁移，也不被当作有效存档', (version) => {
     window.localStorage.setItem(
       SAVE_KEY,
       JSON.stringify({
@@ -385,10 +389,12 @@ describe('游戏状态', () => {
 
     const save = loadSave()
 
-    expect(save?.version).toBe(4)
+    expect(save?.version).toBe(5)
     expect(save?.actions).toEqual([])
     expect(save?.journalEntries).toEqual([])
     expect(save?.chapterSummaries).toEqual([])
+    expect(save?.relationships).toEqual([])
+    expect(save?.actionPoints).toBe(3)
     // 既有数据保留
     expect(save?.experiences).toHaveLength(1)
     expect(save?.experiences[0].choiceTags).toEqual(['approach'])
@@ -759,10 +765,12 @@ describe('M5 现实行动与日记', () => {
     )
 
     const save = loadSave()
-    expect(save?.version).toBe(4)
+    expect(save?.version).toBe(5)
     expect(save?.actions).toEqual([])
     expect(save?.journalEntries).toEqual([])
     expect(save?.chapterSummaries).toEqual([])
+    expect(save?.relationships).toEqual([])
+    expect(save?.actionPoints).toBe(3)
     expect(save?.experiences).toHaveLength(1)
   })
 
@@ -776,5 +784,78 @@ describe('M5 现实行动与日记', () => {
     expect(ok).toBe(false)
     // 原存档不应被覆盖
     expect(loadSave()?.profile.nickname).toBe('小满')
+  })
+})
+
+describe('v5 关系与行动力', () => {
+  it('初始存档有 3 点行动力与空关系列表', () => {
+    useGameStore.getState().beginJourney(profile)
+    const save = useGameStore.getState().save
+    expect(save?.actionPoints).toBe(3)
+    expect(save?.relationships).toEqual([])
+  })
+
+  it('打个招呼消耗 1 点行动力并提升理解度，同一天只算一次', () => {
+    useGameStore.getState().beginJourney(profile)
+
+    expect(useGameStore.getState().greetCharacter('lin')).toBe(true)
+    const save = useGameStore.getState().save
+    expect(save?.actionPoints).toBe(2)
+    expect(save?.relationships[0].characterId).toBe('lin')
+    expect(save?.relationships[0].affinity).toBe(2)
+    expect(save?.relationships[0].stage).toBe('stranger')
+
+    // 同一天第二次不生效，也不扣行动力
+    expect(useGameStore.getState().greetCharacter('lin')).toBe(false)
+    expect(useGameStore.getState().save?.actionPoints).toBe(2)
+  })
+
+  it('行动力耗尽后不能再互动', () => {
+    useGameStore.getState().beginJourney(profile)
+    useGameStore.getState().greetCharacter('lin')
+    useGameStore.getState().greetCharacter('zhou')
+    useGameStore.getState().greetCharacter('yu')
+    expect(useGameStore.getState().save?.actionPoints).toBe(0)
+    expect(useGameStore.getState().greetCharacter('lin')).toBe(false)
+    expect(useGameStore.getState().spendActionPoint()).toBe(false)
+  })
+
+  it('跨天恢复行动力', () => {
+    useGameStore.getState().beginJourney(profile)
+    useGameStore.getState().spendActionPoint()
+    useGameStore.getState().spendActionPoint()
+    useGameStore.getState().spendActionPoint()
+    expect(useGameStore.getState().save?.actionPoints).toBe(0)
+
+    useGameStore.getState().advanceTime()
+    useGameStore.getState().advanceTime()
+    useGameStore.getState().advanceTime()
+    useGameStore.getState().advanceTime()
+
+    expect(useGameStore.getState().save?.gameDay).toBe(2)
+    expect(useGameStore.getState().save?.actionPoints).toBe(3)
+  })
+
+  it('角色事件更新理解度并消耗行动力', () => {
+    useGameStore.getState().beginJourney(profile)
+    const result = useGameStore.getState().completeEvent({
+      eventId: 'lin_001',
+      eventTitle: '窗边的取景框',
+      sceneId: 'campus',
+      experienceType: 'social',
+      choiceId: 'ask',
+      choiceText: '问她刚才在拍什么',
+      choiceTags: ['approach'],
+      outcome: ['她说在等一个人走过。'],
+      effects: { affinity: 6, advanceTime: true },
+      characterId: 'lin',
+      markExplored: true,
+    })
+
+    expect(result.ok).toBe(true)
+    const save = useGameStore.getState().save
+    expect(save?.relationships[0].affinity).toBe(6)
+    expect(save?.actionPoints).toBe(2)
+    expect(save?.seenEventIds).toContain('lin_001')
   })
 })

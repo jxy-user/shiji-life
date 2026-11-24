@@ -81,7 +81,7 @@ describe('路由', () => {
 
     expect(await screen.findByText(/上一份存档读不出来/)).toBeInTheDocument()
     // 已知读不出来的存档不再提供继续入口，避免反复弹回
-    expect(screen.getByRole('button', { name: '继续旅程' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: '继续上次的人生' })).toBeDisabled()
   })
 
   it('有存档时可以直接进入城市', async () => {

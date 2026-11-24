@@ -40,24 +40,24 @@ export function CityMap({ onEnter, lumiSlot }: CityMapProps) {
       >
         <defs>
           <radialGradient id="map-glow" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#f4e2bd" stopOpacity="0.5" />
-            <stop offset="100%" stopColor="#f4e2bd" stopOpacity="0" />
+            <stop offset="0%" stopColor="#ff4fa3" stopOpacity="0.5" />
+            <stop offset="100%" stopColor="#ff4fa3" stopOpacity="0" />
           </radialGradient>
           <linearGradient id="map-ground" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="#f6efdf" />
-            <stop offset="100%" stopColor="#eee1cb" />
+            <stop offset="0%" stopColor="#0e1430" />
+            <stop offset="100%" stopColor="#0a0f22" />
           </linearGradient>
         </defs>
 
         <rect width="900" height="620" fill="url(#map-ground)" />
 
         {/* 绿地 */}
-        <ellipse cx="150" cy="150" rx="180" ry="120" fill="#dfe7d8" />
-        <ellipse cx="700" cy="140" rx="150" ry="100" fill="#e3ead9" />
-        <ellipse cx="820" cy="400" rx="110" ry="90" fill="#e9eee0" />
+        <ellipse cx="150" cy="150" rx="180" ry="120" fill="#0e2a2a" />
+        <ellipse cx="700" cy="140" rx="150" ry="100" fill="#102f2f" />
+        <ellipse cx="820" cy="400" rx="110" ry="90" fill="#0c2424" />
 
         {/* 道路 */}
-        <g stroke="#efe4d2" strokeWidth="34" strokeLinecap="round" fill="none">
+        <g stroke="#1c2448" strokeWidth="34" strokeLinecap="round" fill="none">
           <path d="M440 310 L170 440" />
           <path d="M440 310 L680 160" />
           <path d="M440 310 L160 175" />
@@ -68,51 +68,51 @@ export function CityMap({ onEnter, lumiSlot }: CityMapProps) {
 
         {/* 广场 */}
         <circle cx="445" cy="310" r="96" fill="url(#map-glow)" />
-        <circle cx="445" cy="310" r="66" fill="#f8f2e7" stroke="#dcc9ac" strokeWidth="2" />
-        <circle cx="445" cy="310" r="44" fill="none" stroke="#e2d3bb" strokeWidth="1.5" strokeDasharray="8 8" />
-        <circle cx="445" cy="310" r="12" fill="#e9c98c" stroke="#c08f45" strokeWidth="2" />
+        <circle cx="445" cy="310" r="66" fill="#141a33" stroke="#3a2a5a" strokeWidth="2" />
+        <circle cx="445" cy="310" r="44" fill="none" stroke="#2a2a4a" strokeWidth="1.5" strokeDasharray="8 8" />
+        <circle cx="445" cy="310" r="12" fill="#ff4fa3" stroke="#ff4fa3" strokeWidth="2" />
 
         {/* 广场西侧的老树（微光出现的地方） */}
         <g>
-          <path d="M332 404 v-22" stroke="#8a715c" strokeWidth="6" strokeLinecap="round" />
-          <circle cx="330" cy="362" r="24" fill="#b8cbba" />
-          <circle cx="312" cy="372" r="15" fill="#cddccf" />
-          <circle cx="348" cy="372" r="13" fill="#a9c0ad" />
+          <path d="M332 404 v-22" stroke="#1a2142" strokeWidth="6" strokeLinecap="round" />
+          <circle cx="330" cy="362" r="24" fill="#164a44" />
+          <circle cx="312" cy="372" r="15" fill="#1c5c52" />
+          <circle cx="348" cy="372" r="13" fill="#123a36" />
         </g>
 
         {/* 公园：树与池塘 */}
         <g>
-          <ellipse cx="118" cy="150" rx="46" ry="30" fill="#b8cbba" />
-          <ellipse cx="92" cy="140" rx="26" ry="18" fill="#cddccf" />
-          <ellipse cx="196" cy="112" rx="30" ry="20" fill="#a9c0ad" />
-          <ellipse cx="150" cy="196" rx="54" ry="24" fill="#c9d8cf" opacity="0.9" />
+          <ellipse cx="118" cy="150" rx="46" ry="30" fill="#164a44" />
+          <ellipse cx="92" cy="140" rx="26" ry="18" fill="#1c5c52" />
+          <ellipse cx="196" cy="112" rx="30" ry="20" fill="#123a36" />
+          <ellipse cx="150" cy="196" rx="54" ry="24" fill="#17483f" opacity="0.9" />
         </g>
 
         {/* 校园：主楼与庭院 */}
         <g>
-          <rect x="620" y="92" width="118" height="70" rx="6" fill="#e9dcc7" stroke="#c4b193" strokeWidth="2" />
-          <path d="M612 92 h134 l-10 -16 h-114 z" fill="#c9b79a" />
-          <g fill="#fdfbf6">
+          <rect x="620" y="92" width="118" height="70" rx="6" fill="#1a2142" stroke="#2a2a4a" strokeWidth="2" />
+          <path d="M612 92 h134 l-10 -16 h-114 z" fill="#2a2a4a" />
+          <g fill="#3ee6c4">
             <rect x="636" y="110" width="16" height="20" rx="2" />
             <rect x="664" y="110" width="16" height="20" rx="2" />
             <rect x="692" y="110" width="16" height="20" rx="2" />
           </g>
-          <ellipse cx="700" cy="190" rx="60" ry="26" fill="#e3ead9" />
-          <circle cx="640" cy="176" r="18" fill="#a9c0ad" />
+          <ellipse cx="700" cy="190" rx="60" ry="26" fill="#102f2f" />
+          <circle cx="640" cy="176" r="18" fill="#123a36" />
         </g>
 
         {/* 家：两间小屋 */}
         <g>
-          <rect x="96" y="410" width="76" height="54" rx="5" fill="#f2e6d2" stroke="#c9b79a" strokeWidth="2" />
-          <path d="M88 410 L134 378 L180 410 Z" fill="#c9a98a" />
-          <rect x="120" y="434" width="18" height="30" rx="3" fill="#b9a98f" />
-          <circle cx="200" cy="446" r="22" fill="#b8cbba" />
+          <rect x="96" y="410" width="76" height="54" rx="5" fill="#1a2142" stroke="#2a2a4a" strokeWidth="2" />
+          <path d="M88 410 L134 378 L180 410 Z" fill="#2a2a4a" />
+          <rect x="120" y="434" width="18" height="30" rx="3" fill="#0b1026" />
+          <circle cx="200" cy="446" r="22" fill="#164a44" />
         </g>
 
         {/* 街区（未开放） */}
         <g opacity="0.55">
-          <rect x="650" y="410" width="52" height="40" rx="4" fill="#efe0c9" stroke="#c4b193" strokeDasharray="6 5" />
-          <rect x="712" y="422" width="52" height="28" rx="4" fill="#efe0c9" stroke="#c4b193" strokeDasharray="6 5" />
+          <rect x="650" y="410" width="52" height="40" rx="4" fill="#141a33" stroke="#2a2a4a" strokeDasharray="6 5" />
+          <rect x="712" y="422" width="52" height="28" rx="4" fill="#141a33" stroke="#2a2a4a" strokeDasharray="6 5" />
         </g>
 
         {/* 工作室（未开放） */}
@@ -122,17 +122,17 @@ export function CityMap({ onEnter, lumiSlot }: CityMapProps) {
           width="62"
           height="42"
           rx="4"
-          fill="#efe0c9"
-          stroke="#c4b193"
+          fill="#141a33"
+          stroke="#2a2a4a"
           strokeDasharray="6 5"
           opacity="0.55"
         />
 
         {/* 远方：地平线上的一点光 */}
         <g opacity="0.75">
-          <path d="M760 470 q40 -34 90 -10 q40 18 80 -4 v24 h-170 z" fill="#e3ead9" />
-          <circle cx="846" cy="392" r="8" fill="#f4e2bd" />
-          <circle cx="846" cy="392" r="26" fill="#f4e2bd" opacity="0.4" />
+          <path d="M760 470 q40 -34 90 -10 q40 18 80 -4 v24 h-170 z" fill="#102f2f" />
+          <circle cx="846" cy="392" r="8" fill="#ff4fa3" />
+          <circle cx="846" cy="392" r="26" fill="#ff4fa3" opacity="0.4" />
         </g>
       </svg>
 

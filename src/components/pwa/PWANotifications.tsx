@@ -44,18 +44,18 @@ export function PWANotifications() {
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-ink-900">有新版本可用</p>
-                <p className="mt-1 text-xs text-ink-600">刷新页面即可体验最新内容，您的进度已自动保存。</p>
+                <p className="mt-1 text-xs text-ink-500">刷新页面即可体验最新内容，您的进度已自动保存。</p>
               </div>
               <div className="flex flex-col gap-2 ml-2">
                 <button
                   onClick={applyUpdate}
-                  className="whitespace-nowrap rounded-lg bg-sun-700 px-3 py-1.5 text-xs font-medium text-white hover:bg-sun-800 transition-colors"
+                  className="whitespace-nowrap rounded-lg bg-sun-700 px-3 py-1.5 text-xs font-medium text-cream-50 hover:bg-sun-800 transition-colors"
                 >
                   立即刷新
                 </button>
                 <button
                   onClick={dismissUpdateToast}
-                  className="whitespace-nowrap rounded-lg bg-ink-50 px-3 py-1.5 text-xs font-medium text-ink-600 hover:bg-ink-100 transition-colors"
+                  className="whitespace-nowrap rounded-lg bg-cream-200 px-3 py-1.5 text-xs font-medium text-ink-500 hover:bg-cream-200 transition-colors"
                 >
                   稍后
                 </button>
@@ -66,14 +66,14 @@ export function PWANotifications() {
 
         {/* 离线提示 */}
         {activeToast === 'offline' && (
-          <div className="mx-auto max-w-md animate-slide-up rounded-2xl border border-rose-200 bg-rose-50/95 p-4 shadow-[0_8px_24px_-16px_rgba(43,38,33,0.25)] backdrop-blur-md">
+          <div className="mx-auto max-w-md animate-slide-up rounded-2xl border border-rose-500/40 bg-[#2a1216]/95 p-4 shadow-[0_8px_24px_-16px_rgba(43,38,33,0.25)] backdrop-blur-md">
             <div className="flex items-center gap-3">
               <div className="flex-shrink-0 text-rose-600">
                 <Icon name="offline" size={18} />
               </div>
               <div className="flex-1">
-                <p className="text-sm font-medium text-rose-900">您当前处于离线状态</p>
-                <p className="mt-1 text-xs text-rose-700">游戏可继续游玩，数据仅保存在本设备，联网后自动保持可用。</p>
+                <p className="text-sm font-medium text-rose-200">您当前处于离线状态</p>
+                <p className="mt-1 text-xs text-rose-300">游戏可继续游玩，数据仅保存在本设备，联网后自动保持可用。</p>
               </div>
             </div>
           </div>
@@ -87,7 +87,7 @@ export function PWANotifications() {
                 <Icon name="install" size={18} />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-forest-900">安装「拾己 · LIFE」</p>
+                <p className="text-sm font-medium text-forest-700">安装「拾己 · LIFE」</p>
                 <p className="mt-1 text-xs text-forest-700">添加到主屏幕，像原生应用一样全屏体验，离线也能玩。</p>
               </div>
               <div className="flex flex-col gap-2 ml-2">
@@ -97,7 +97,7 @@ export function PWANotifications() {
                     writePreference(PWA_INSTALL_DISMISSED_KEY, 'true');
                     setShowInstallBanner(false);
                   }}
-                  className="whitespace-nowrap rounded-lg bg-forest-700 px-3 py-1.5 text-xs font-medium text-white hover:bg-forest-800 transition-colors"
+                  className="whitespace-nowrap rounded-lg bg-forest-700 px-3 py-1.5 text-xs font-medium text-cream-50 hover:bg-forest-800 transition-colors"
                 >
                   安装
                 </button>
@@ -106,7 +106,7 @@ export function PWANotifications() {
                     writePreference(PWA_INSTALL_DISMISSED_KEY, 'true');
                     setShowInstallBanner(false);
                   }}
-                  className="whitespace-nowrap rounded-lg bg-ink-50 px-3 py-1.5 text-xs font-medium text-ink-600 hover:bg-ink-100 transition-colors"
+                  className="whitespace-nowrap rounded-lg bg-cream-200 px-3 py-1.5 text-xs font-medium text-ink-500 hover:bg-cream-200 transition-colors"
                 >
                   不了
                 </button>
@@ -129,7 +129,7 @@ export function InstallButton() {
   return (
     <button
       onClick={install}
-      className="inline-flex items-center gap-2 rounded-lg bg-forest-700 px-4 py-2 text-sm font-medium text-white hover:bg-forest-800 transition-colors"
+      className="inline-flex items-center gap-2 rounded-lg bg-forest-700 px-4 py-2 text-sm font-medium text-cream-50 hover:bg-forest-800 transition-colors"
       aria-label="安装应用"
     >
       <Icon name="smartphone" size={16} />

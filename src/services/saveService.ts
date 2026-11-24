@@ -1,3 +1,4 @@
+import { MAX_ACTION_POINTS } from '@/game/relationships'
 import { saveSchema, type SaveData } from '@/game/saveSchema'
 import { SAVE_VERSION } from '@/game/saveVersion'
 import { readRawSave, writeRawSave } from '@/services/storage'
@@ -34,7 +35,7 @@ export function migrateSave(input: unknown): unknown {
   const version = readVersion(save)
 
   // 只迁移明确识别到的已知版本；未知版本不猜，交给 loadSave 拒绝。
-  // 逐级向上：v1 → v2 → v3 → v4，保证每一步都有确定的含义。
+  // 逐级向上：v1 → v2 → v3 → v4 → v5，保证每一步都有确定的含义。
   let current = version
 
   if (current === 1) {
@@ -77,6 +78,14 @@ export function migrateSave(input: unknown): unknown {
     if (!Array.isArray(save.journalEntries)) save.journalEntries = []
     if (!Array.isArray(save.chapterSummaries)) save.chapterSummaries = []
     save.version = 4
+    current = 4
+  }
+
+  if (current === 4) {
+    // v5 新增字段：旧存档默认没有任何关系，行动力按满值补
+    if (!Array.isArray(save.relationships)) save.relationships = []
+    if (typeof save.actionPoints !== 'number') save.actionPoints = MAX_ACTION_POINTS
+    save.version = 5
   }
 
   return save

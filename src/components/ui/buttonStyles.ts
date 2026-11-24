@@ -2,14 +2,14 @@ export type ButtonVariant = 'primary' | 'secondary' | 'ghost'
 export type ButtonSize = 'md' | 'lg'
 
 const base =
-  'inline-flex items-center justify-center gap-2 rounded-lg font-body transition-colors duration-200 disabled:cursor-not-allowed disabled:opacity-45'
+  'inline-flex items-center justify-center gap-2 rounded-md font-body font-semibold tracking-[0.06em] transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-45'
 
 const variants: Record<ButtonVariant, string> = {
   primary:
-    'bg-ink-900 text-(--site-on-accent) shadow-[0_1px_2px_rgba(43,38,33,0.22)] hover:bg-ink-700',
+    'bg-gold-500 text-cream-50 shadow-[0_0_22px_rgba(255,79,163,0.35)] hover:bg-gold-400 hover:shadow-[0_0_30px_rgba(255,79,163,0.5)]',
   secondary:
-    'border border-sand-300 bg-cream-50 text-ink-700 hover:border-gold-400 hover:text-ink-900',
-  ghost: 'text-ink-500 hover:bg-cream-200/70 hover:text-ink-900',
+    'border border-gold-500/60 text-gold-400 hover:border-gold-400 hover:bg-gold-500/10 hover:shadow-[0_0_18px_rgba(255,79,163,0.3)]',
+  ghost: 'text-ink-500 hover:text-ink-900',
 }
 
 const sizes: Record<ButtonSize, string> = {

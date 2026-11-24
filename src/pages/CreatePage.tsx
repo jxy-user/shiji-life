@@ -13,10 +13,10 @@ import {
 import { useGameStore } from '@/stores/useGameStore'
 
 const AVATAR_STYLES: Record<AvatarId, { label: string; bg: string; face: string; hair: string }> = {
-  sun: { label: '晨光', bg: '#f4e2bd', face: '#f8e8cf', hair: '#a9784a' },
-  ink: { label: '夜色', bg: '#d9d2c7', face: '#efe6d8', hair: '#3a3128' },
-  sage: { label: '青苔', bg: '#dbe6d8', face: '#f3ecdd', hair: '#5d7a63' },
-  clay: { label: '陶土', bg: '#efd9cc', face: '#f6e6d8', hair: '#8a5a45' },
+  sun: { label: '晨光', bg: '#ff4fa3', face: '#2a1a33', hair: '#ff8a3d' },
+  ink: { label: '夜色', bg: '#2a2a4a', face: '#1b2244', hair: '#0b1026' },
+  sage: { label: '青苔', bg: '#133a32', face: '#141a33', hair: '#5d7a63' },
+  clay: { label: '陶土', bg: '#3a2216', face: '#1e4a4a', hair: '#7a2a5a' },
 }
 
 const LIFE_STAGE_LABELS: Record<LifeStage, string> = {
@@ -44,9 +44,9 @@ function AvatarFace({ id, size = 64 }: { id: AvatarId; size?: number }) {
         d="M22 50 q2 -30 28 -30 q26 0 28 30 q-8 -14 -28 -14 q-20 0 -28 14 z"
         fill={style.hair}
       />
-      <ellipse cx="41" cy="54" rx="2.4" ry="3" fill="#3a3128" opacity="0.75" />
-      <ellipse cx="59" cy="54" rx="2.4" ry="3" fill="#3a3128" opacity="0.75" />
-      <path d="M45 64 q5 3.5 10 0" stroke="#9b6f2e" strokeWidth="1.6" fill="none" strokeLinecap="round" opacity="0.6" />
+      <ellipse cx="41" cy="54" rx="2.4" ry="3" fill="#0b1026" opacity="0.75" />
+      <ellipse cx="59" cy="54" rx="2.4" ry="3" fill="#0b1026" opacity="0.75" />
+      <path d="M45 64 q5 3.5 10 0" stroke="#ff4fa3" strokeWidth="1.6" fill="none" strokeLinecap="round" opacity="0.6" />
     </svg>
   )
 }

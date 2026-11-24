@@ -3,8 +3,10 @@ import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
 
 import { StatusBar } from '@/components/layout/StatusBar'
 import { SceneBackdrop } from '@/components/scene/SceneBackdrop'
-import { pendingEventFor } from '@/data/events'
+import { charactersInScene } from '@/data/characters'
+import { characterEventFor, pendingEventFor } from '@/data/events'
 import { SCENES, type SceneAction } from '@/data/scenes'
+import { RELATIONSHIP_STAGE_LABELS } from '@/game/relationships'
 import { SCENE_IDS, type SceneId } from '@/game/saveSchema'
 import { useGameStore } from '@/stores/useGameStore'
 
@@ -19,6 +21,8 @@ export default function ScenePage() {
   const changeEnergy = useGameStore((state) => state.changeEnergy)
   const advanceTime = useGameStore((state) => state.advanceTime)
   const setFlag = useGameStore((state) => state.setFlag)
+  const spendActionPoint = useGameStore((state) => state.spendActionPoint)
+  const greetCharacter = useGameStore((state) => state.greetCharacter)
 
   const [result, setResult] = useState<string | null>(null)
   const [lastActionId, setLastActionId] = useState<string | null>(null)
@@ -28,13 +32,36 @@ export default function ScenePage() {
 
   const scene = SCENES[sceneId]
   const pendingEvent = pendingEventFor(sceneId, save.seenEventIds)
+  const sceneCharacters = charactersInScene(sceneId)
 
   function runAction(action: SceneAction) {
+    if (!save) return
+    if (save.actionPoints <= 0) {
+      setResult('今天的行动力用完了。回家休息一会儿，或者等明天再来。')
+      return
+    }
+    spendActionPoint()
     changeEnergy(action.energy)
     if (action.advancesTime) advanceTime()
     if (sceneId !== 'plaza') setFlag('exploredBeyondPlaza')
     setResult(action.result)
     setLastActionId(action.id)
+  }
+
+  function handleGreet(characterId: string) {
+    if (!save) return
+    if (save.actionPoints <= 0) {
+      setResult('今天的行动力用完了。回家休息一会儿，或者等明天再来。')
+      return
+    }
+    const ok = greetCharacter(characterId)
+    if (!ok) {
+      setResult('今天已经打过招呼了，明天再来吧。')
+      return
+    }
+    const character = sceneCharacters.find((item) => item.id === characterId)
+    setResult(character?.greeting ?? '你打了招呼。')
+    setLastActionId(null)
   }
 
   return (
@@ -75,6 +102,82 @@ export default function ScenePage() {
                 走过去看看 →
               </p>
             </Link>
+          ) : null}
+
+          {sceneCharacters.length > 0 ? (
+            <div className="mt-6 space-y-3">
+              <p className="text-[11px] tracking-[0.3em] text-sage-500">在这里的人</p>
+              {sceneCharacters.map((character) => {
+                const relationship = save.relationships.find(
+                  (item) => item.characterId === character.id,
+                )
+                const affinity = relationship?.affinity ?? 0
+                const stageLabel = relationship
+                  ? RELATIONSHIP_STAGE_LABELS[relationship.stage]
+                  : '还没打过照面'
+                const nextEvent = characterEventFor(
+                  character.id,
+                  save.seenEventIds,
+                  affinity,
+                )
+
+                return (
+                  <div
+                    key={character.id}
+                    className="rounded-xl border border-sand-300 bg-cream-100/70 p-4"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="font-display text-[16px] text-ink-900">
+                          {character.name}
+                          <span className="ml-2 text-[11px] font-normal text-ink-500">
+                            {character.role}
+                          </span>
+                        </p>
+                        <p className="mt-1 text-[11px] text-ink-500">{stageLabel}</p>
+                      </div>
+                      <div className="flex shrink-0 items-center gap-2">
+                        <span className="text-[10px] tabular-nums text-ink-500">
+                          {affinity}
+                        </span>
+                        <span
+                          className="h-1.5 w-20 overflow-hidden rounded-full bg-sand-300"
+                          aria-label={`理解度 ${affinity}`}
+                        >
+                          <span
+                            className="block h-full bg-sage-500"
+                            style={{ width: `${affinity}%` }}
+                          />
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="mt-3 flex flex-wrap items-center gap-2">
+                      {nextEvent ? (
+                        <Link
+                          to={`/event/${nextEvent.id}`}
+                          className="inline-flex items-center rounded-lg bg-gold-500 px-3 py-1.5 text-[12px] font-semibold text-cream-50"
+                        >
+                          聊聊「{nextEvent.title}」
+                        </Link>
+                      ) : (
+                        <span className="text-[11px] text-ink-500">
+                          暂时没有新的话题
+                        </span>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => handleGreet(character.id)}
+                        disabled={save.actionPoints <= 0}
+                        className="inline-flex items-center rounded-lg border border-sand-300 px-3 py-1.5 text-[12px] text-ink-700 transition-colors hover:border-gold-400 disabled:opacity-45"
+                      >
+                        打个招呼 · 1 行动
+                      </button>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
           ) : null}
 
           <div className="mt-6 space-y-2.5">

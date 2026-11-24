@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 
 import { TIME_SLOT_LABELS, type SaveData } from '@/game/saveSchema'
+import { MAX_ACTION_POINTS } from '@/game/relationships'
 
 type StatusBarProps = {
   save: SaveData
@@ -33,6 +34,23 @@ export function StatusBar({ save, showBackHome = true, title }: StatusBarProps) 
         </p>
 
         <div className="flex items-center gap-3 text-[11px] text-ink-500">
+          <span
+            className="flex items-center gap-1.5 whitespace-nowrap"
+            aria-label={`行动力 ${save.actionPoints} / ${MAX_ACTION_POINTS}`}
+          >
+            <span className="flex gap-0.5" aria-hidden>
+              {Array.from({ length: MAX_ACTION_POINTS }).map((_, index) => (
+                <span
+                  key={index}
+                  className={[
+                    'h-1.5 w-1.5 rounded-full',
+                    index < save.actionPoints ? 'bg-sage-500' : 'bg-sand-300',
+                  ].join(' ')}
+                />
+              ))}
+            </span>
+            <span className="tabular-nums">行动 {save.actionPoints}</span>
+          </span>
           <span className="whitespace-nowrap">
             第 {save.gameDay} 天 · {TIME_SLOT_LABELS[save.timeSlot]}
           </span>

@@ -44,7 +44,7 @@ export default function ProloguePage() {
   })
 
   return (
-    <main className="relative isolate flex min-h-dvh flex-col overflow-hidden bg-[#211d19] text-cream-50">
+    <main className="relative isolate flex min-h-dvh flex-col overflow-hidden bg-[#0b1026] text-cream-50">
       {/* 夜与雨 */}
       <div
         aria-hidden
@@ -52,7 +52,7 @@ export default function ProloguePage() {
       />
       <div aria-hidden className="absolute inset-0 opacity-[0.08]">
         <svg viewBox="0 0 400 300" className="h-full w-full" preserveAspectRatio="none">
-          <g stroke="#f4e2bd" strokeWidth="0.5">
+          <g stroke="#ff4fa3" strokeWidth="0.5">
             {Array.from({ length: 60 }).map((_, i) => {
               const x = (i * 37) % 400
               const y = (i * 53) % 300

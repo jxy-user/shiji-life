@@ -90,7 +90,7 @@ function ActionCard({
               className={`inline-flex items-center rounded-lg border px-3 py-1.5 text-sm font-medium transition-colors ${
                 action.status === 'todo'
                   ? 'border-ink-900 bg-cream-100 text-ink-900'
-                  : 'border-sand-300 text-ink-600 hover:border-gold-400 hover:text-ink-900'
+                  : 'border-sand-300 text-ink-500 hover:border-gold-400 hover:text-ink-900'
               }`}
             >
               待办
@@ -101,7 +101,7 @@ function ActionCard({
               className={`inline-flex items-center rounded-lg border px-3 py-1.5 text-sm font-medium transition-colors ${
                 action.status === 'in_progress'
                   ? 'border-ink-900 bg-cream-100 text-ink-900'
-                  : 'border-sand-300 text-ink-600 hover:border-gold-400 hover:text-ink-900'
+                  : 'border-sand-300 text-ink-500 hover:border-gold-400 hover:text-ink-900'
               }`}
             >
               开始
@@ -112,7 +112,7 @@ function ActionCard({
               className={`inline-flex items-center rounded-lg border px-3 py-1.5 text-sm font-medium transition-colors ${
                 action.status === 'paused'
                   ? 'border-ink-900 bg-cream-100 text-ink-900'
-                  : 'border-sand-300 text-ink-600 hover:border-gold-400 hover:text-ink-900'
+                  : 'border-sand-300 text-ink-500 hover:border-gold-400 hover:text-ink-900'
               }`}
             >
               暂停
@@ -195,14 +195,14 @@ function CreateActionDialog({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" role="dialog" aria-modal="true" aria-labelledby="create-action-dialog-title">
-      <article className="w-full max-w-md rounded-xl bg-white p-6 shadow-lg">
+      <article className="w-full max-w-md rounded-xl bg-cream-100 p-6 shadow-lg">
         <header className="flex items-center justify-between">
           <h2 id="create-action-dialog-title" className="text-lg font-semibold text-ink-900">新建行动</h2>
           <button
             type="button"
             onClick={onClose}
             disabled={submitting}
-            className="rounded-lg p-1 text-ink-500 hover:bg-ink-100 disabled:opacity-50"
+            className="rounded-lg p-1 text-ink-500 hover:bg-cream-200 disabled:opacity-50"
             aria-label="关闭"
           >
             <Icon name="close" size={18} />
@@ -221,7 +221,7 @@ function CreateActionDialog({
               onChange={(e) => setTitle(e.target.value)}
               maxLength={60}
               placeholder="例如：每天睡前写 3 件开心的事"
-              className="mt-1 w-full rounded-lg border border-ink-200 px-3 py-2 text-sm focus:border-sun-500 focus:outline-none focus:ring-1 focus:ring-sun-500"
+              className="mt-1 w-full rounded-lg border border-sand-300 px-3 py-2 text-sm focus:border-sun-500 focus:outline-none focus:ring-1 focus:ring-sun-500"
               required
               autoFocus
               disabled={submitting}
@@ -236,7 +236,7 @@ function CreateActionDialog({
               id="action-insight"
               value={linkedInsightId || ''}
               onChange={(e) => setLinkedInsightId(e.target.value || null)}
-              className="mt-1 w-full rounded-lg border border-ink-200 px-3 py-2 text-sm focus:border-sun-500 focus:outline-none focus:ring-1 focus:ring-sun-500"
+              className="mt-1 w-full rounded-lg border border-sand-300 px-3 py-2 text-sm focus:border-sun-500 focus:outline-none focus:ring-1 focus:ring-sun-500"
               disabled={submitting}
             >
               <option value="">无（手动创建）</option>
@@ -256,7 +256,7 @@ function CreateActionDialog({
               id="action-frequency"
               value={frequency}
               onChange={(e) => setFrequency(e.target.value as 'once' | 'daily' | 'weekly' | 'custom')}
-              className="mt-1 w-full rounded-lg border border-ink-200 px-3 py-2 text-sm focus:border-sun-500 focus:outline-none focus:ring-1 focus:ring-sun-500"
+              className="mt-1 w-full rounded-lg border border-sand-300 px-3 py-2 text-sm focus:border-sun-500 focus:outline-none focus:ring-1 focus:ring-sun-500"
               disabled={submitting}
             >
               <option value="once">一次性</option>
@@ -275,7 +275,7 @@ function CreateActionDialog({
               type="date"
               value={dueDate}
               onChange={(e) => setDueDate(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-ink-200 px-3 py-2 text-sm focus:border-sun-500 focus:outline-none focus:ring-1 focus:ring-sun-500"
+              className="mt-1 w-full rounded-lg border border-sand-300 px-3 py-2 text-sm focus:border-sun-500 focus:outline-none focus:ring-1 focus:ring-sun-500"
               disabled={submitting}
             />
           </div>
@@ -289,7 +289,7 @@ function CreateActionDialog({
               type="time"
               value={reminderTime}
               onChange={(e) => setReminderTime(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-ink-200 px-3 py-2 text-sm focus:border-sun-500 focus:outline-none focus:ring-1 focus:ring-sun-500"
+              className="mt-1 w-full rounded-lg border border-sand-300 px-3 py-2 text-sm focus:border-sun-500 focus:outline-none focus:ring-1 focus:ring-sun-500"
               disabled={submitting}
             />
           </div>
@@ -299,14 +299,14 @@ function CreateActionDialog({
               type="button"
               onClick={onClose}
               disabled={submitting}
-              className="rounded-lg px-4 py-2 text-sm font-medium text-ink-600 hover:bg-ink-50 disabled:opacity-50"
+              className="rounded-lg px-4 py-2 text-sm font-medium text-ink-500 hover:bg-cream-200 disabled:opacity-50"
             >
               取消
             </button>
             <button
               type="submit"
               disabled={submitting || !title.trim()}
-              className="rounded-lg bg-sun-700 px-4 py-2 text-sm font-medium text-white hover:bg-sun-800 disabled:opacity-50"
+              className="rounded-lg bg-sun-700 px-4 py-2 text-sm font-medium text-cream-50 hover:bg-sun-800 disabled:opacity-50"
             >
               创建
             </button>
@@ -341,21 +341,21 @@ function CompleteActionDialog({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" role="dialog" aria-modal="true" aria-labelledby="complete-dialog-title">
-      <article className="w-full max-w-md rounded-xl bg-white p-6 shadow-lg">
+      <article className="w-full max-w-md rounded-xl bg-cream-100 p-6 shadow-lg">
         <header className="flex items-center justify-between">
           <h2 id="complete-dialog-title" className="text-lg font-semibold text-ink-900">完成行动 · 复盘</h2>
           <button
             type="button"
             onClick={onClose}
             disabled={submitting}
-            className="rounded-lg p-1 text-ink-500 hover:bg-ink-100 disabled:opacity-50"
+            className="rounded-lg p-1 text-ink-500 hover:bg-cream-200 disabled:opacity-50"
             aria-label="关闭"
           >
             <Icon name="close" size={18} />
           </button>
         </header>
 
-        <p className="mt-2 text-sm text-ink-600">行动：「{actionTitle}」</p>
+        <p className="mt-2 text-sm text-ink-500">行动：「{actionTitle}」</p>
         <p className="text-sm text-ink-500">这件事做完了吗？发生了什么？感受如何？符合预期吗？</p>
 
         <form onSubmit={handleSubmit} className="mt-4">
@@ -365,7 +365,7 @@ function CompleteActionDialog({
             rows={6}
             maxLength={2000}
             placeholder="随便写写，不需要文采，只给自己看……"
-            className="w-full rounded-lg border border-ink-200 px-3 py-2 text-sm focus:border-sun-500 focus:outline-none focus:ring-1 focus:ring-sun-500 resize-none"
+            className="w-full rounded-lg border border-sand-300 px-3 py-2 text-sm focus:border-sun-500 focus:outline-none focus:ring-1 focus:ring-sun-500 resize-none"
             disabled={submitting}
             aria-label="复盘内容"
           />
@@ -374,14 +374,14 @@ function CompleteActionDialog({
               type="button"
               onClick={onClose}
               disabled={submitting}
-              className="rounded-lg px-4 py-2 text-sm font-medium text-ink-600 hover:bg-ink-50 disabled:opacity-50"
+              className="rounded-lg px-4 py-2 text-sm font-medium text-ink-500 hover:bg-cream-200 disabled:opacity-50"
             >
               稍后再说
             </button>
             <button
               type="submit"
               disabled={submitting || !content.trim()}
-              className="rounded-lg bg-forest-700 px-4 py-2 text-sm font-medium text-white hover:bg-forest-800 disabled:opacity-50"
+              className="rounded-lg bg-forest-700 px-4 py-2 text-sm font-medium text-cream-50 hover:bg-forest-800 disabled:opacity-50"
             >
               保存复盘
             </button>
@@ -461,7 +461,7 @@ export default function ActionsPage() {
             <button
               type="button"
               onClick={() => setShowCreateDialog(true)}
-              className="mt-6 inline-flex items-center rounded-lg bg-sun-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-sun-800"
+              className="mt-6 inline-flex items-center rounded-lg bg-sun-700 px-5 py-2.5 text-sm font-medium text-cream-50 hover:bg-sun-800"
             >
               新建第一个行动
             </button>
@@ -487,7 +487,7 @@ export default function ActionsPage() {
               <button
                 type="button"
                 onClick={() => setShowCreateDialog(true)}
-                className="inline-flex items-center rounded-lg border border-ink-200 bg-white px-5 py-2.5 text-sm font-medium text-ink-700 hover:bg-ink-50"
+                className="inline-flex items-center rounded-lg border border-sand-300 bg-cream-100 px-5 py-2.5 text-sm font-medium text-ink-700 hover:bg-cream-200"
               >
                 + 新建行动
               </button>

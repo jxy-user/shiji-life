@@ -8,5 +8,6 @@
  * v2: 新增 experiences、seenEventIds、settings
  * v3: 新增 reflections、candidateInsights、insights、choiceTags、回顾设置
  * v4: 新增 actions、journalEntries、chapterSummaries（M5：现实行动、日记、阶段总结）
+ * v5: 新增 relationships、actionPoints（关系值与每日行动力）
  */
-export const SAVE_VERSION = 4
+export const SAVE_VERSION = 5

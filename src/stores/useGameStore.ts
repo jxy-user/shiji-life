@@ -15,6 +15,11 @@ import {
   type TimeSlot,
 } from '@/game/saveSchema'
 import { buildCandidateInsights } from '@/game/insightRules'
+import {
+  clampAffinity,
+  MAX_ACTION_POINTS,
+  relationshipStage,
+} from '@/game/relationships'
 import { getEligibleExperiences } from '@/services/experienceService'
 import { loadSave, persistSave } from '@/services/saveService'
 import { clearSave } from '@/services/storage'
@@ -59,9 +64,12 @@ export type CompleteEventInput = {
   outcome: string[]
   effects?: {
     energy?: number
+    affinity?: number
     advanceTime?: boolean
     flags?: Record<string, boolean>
   }
+  /** 归属角色；角色事件会更新理解度并消耗 1 点行动力 */
+  characterId?: string
   /** 非广场事件完成时，标记「已经探索过城市」 */
   markExplored?: boolean
 }
@@ -197,6 +205,13 @@ type GameState = {
   upsertChapterSummary: (input: GenerateChapterSummaryInput) => void
   /** 删除阶段总结 */
   deleteChapterSummary: (summaryId: string) => void
+
+  /** 首次遇见角色：建立关系记录（不消耗行动力） */
+  meetCharacter: (characterId: string) => void
+  /** 打个招呼：消耗 1 点行动力，每天每角色一次，理解度 +2 */
+  greetCharacter: (characterId: string) => boolean
+  /** 消耗 1 点行动力；没有剩余时返回 false */
+  spendActionPoint: () => boolean
 }
 
 /**
@@ -236,11 +251,57 @@ export const useGameStore = create<GameState>()((set, get) => {
       gameDay: save.gameDay + 1,
       timeSlot: 'morning',
       energy: Math.min(100, save.energy + NEW_DAY_ENERGY),
+      // 新的一天恢复行动力
+      actionPoints: MAX_ACTION_POINTS,
     }
   }
 
   function clampEnergy(value: number): number {
     return Math.max(0, Math.min(100, value))
+  }
+
+  /** 增加/减少某角色的理解度；不存在时按首次相遇建立记录 */
+  function upsertRelationship(
+    save: SaveData,
+    characterId: string,
+    delta: number,
+  ): SaveData {
+    const now = new Date().toISOString()
+    const existing = save.relationships.find(
+      (relationship) => relationship.characterId === characterId,
+    )
+
+    if (!existing) {
+      const affinity = clampAffinity(delta)
+      return {
+        ...save,
+        relationships: [
+          ...save.relationships,
+          {
+            characterId,
+            affinity,
+            stage: relationshipStage(affinity),
+            metAtGameDay: save.gameDay,
+            updatedAt: now,
+          },
+        ],
+      }
+    }
+
+    const affinity = clampAffinity(existing.affinity + delta)
+    return {
+      ...save,
+      relationships: save.relationships.map((relationship) =>
+        relationship.characterId === characterId
+          ? {
+              ...relationship,
+              affinity,
+              stage: relationshipStage(affinity),
+              updatedAt: now,
+            }
+          : relationship,
+      ),
+    }
   }
 
   function buildExperience(
@@ -342,6 +403,11 @@ export const useGameStore = create<GameState>()((set, get) => {
 
       if (input.effects?.energy) {
         next.energy = clampEnergy(next.energy + input.effects.energy)
+      }
+      if (input.characterId) {
+        // 角色事件：更新理解度并消耗 1 点行动力
+        next = upsertRelationship(next, input.characterId, input.effects?.affinity ?? 0)
+        next = { ...next, actionPoints: Math.max(0, next.actionPoints - 1) }
       }
       if (input.effects?.advanceTime) {
         next = advanceSaveTime(next)
@@ -772,6 +838,36 @@ export const useGameStore = create<GameState>()((set, get) => {
         ...save,
         chapterSummaries: save.chapterSummaries.filter((summary) => summary.id !== summaryId),
       }))
+    },
+
+    meetCharacter: (characterId) => {
+      const current = get().save
+      if (!current) return
+      if (current.relationships.some((r) => r.characterId === characterId)) return
+      commit(upsertRelationship(current, characterId, 0))
+    },
+
+    greetCharacter: (characterId) => {
+      const current = get().save
+      if (!current) return false
+      if (current.actionPoints <= 0) return false
+
+      // 同一天同一个角色只算一次招呼，避免刷理解度
+      const greetFlag = `greeted_${characterId}_day${current.gameDay}`
+      if (current.flags[greetFlag]) return false
+
+      const next = upsertRelationship(current, characterId, 2)
+      return commit({
+        ...next,
+        actionPoints: Math.max(0, next.actionPoints - 1),
+        flags: { ...next.flags, [greetFlag]: true },
+      })
+    },
+
+    spendActionPoint: () => {
+      const current = get().save
+      if (!current || current.actionPoints <= 0) return false
+      return commit({ ...current, actionPoints: current.actionPoints - 1 })
     },
   }
 })

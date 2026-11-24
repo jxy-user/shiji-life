@@ -303,7 +303,7 @@ export default function ArchivePage() {
                   setGeneratedSummary(summary)
                   setShowGenerateDialog(true)
                 }}
-                className="mt-4 inline-flex items-center rounded-lg bg-sun-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-sun-800"
+                className="mt-4 inline-flex items-center rounded-lg bg-sun-700 px-5 py-2.5 text-sm font-medium text-cream-50 hover:bg-sun-800"
               >
                 生成本章总结
               </button>
@@ -344,7 +344,7 @@ export default function ArchivePage() {
                     setGeneratedSummary(summary)
                     setShowGenerateDialog(true)
                   }}
-                  className="inline-flex items-center rounded-lg border border-ink-200 bg-white px-5 py-2.5 text-sm font-medium text-ink-700 hover:bg-ink-50"
+                  className="inline-flex items-center rounded-lg border border-sand-300 bg-cream-100 px-5 py-2.5 text-sm font-medium text-ink-700 hover:bg-cream-200"
                 >
                   + 生成新的阶段总结
                 </button>
@@ -475,7 +475,7 @@ function ChapterSummaryCard({
               setEditSummaryContent(summary.content)
               setEditingSummaryId(summary.id)
             }}
-            className="rounded-lg p-1.5 text-ink-500 hover:bg-ink-100 hover:text-ink-600"
+            className="rounded-lg p-1.5 text-ink-500 hover:bg-cream-200 hover:text-ink-500"
             aria-label={isEditing ? '取消编辑' : '编辑'}
           >
             {isEditing ? <Icon name="close" size={14} /> : <Icon name="edit" size={14} />}
@@ -483,7 +483,7 @@ function ChapterSummaryCard({
           <button
             type="button"
             onClick={onDelete}
-            className="rounded-lg p-1.5 text-ink-500 hover:bg-ink-100 hover:text-rose-600"
+            className="rounded-lg p-1.5 text-ink-500 hover:bg-cream-200 hover:text-rose-600"
             aria-label="删除"
           >
             <Icon name="trash" size={14} />
@@ -505,7 +505,7 @@ function ChapterSummaryCard({
             <button
               type="button"
               onClick={handleCancel}
-              className="rounded-lg px-3 py-1.5 text-sm text-ink-600 hover:bg-ink-100"
+              className="rounded-lg px-3 py-1.5 text-sm text-ink-500 hover:bg-cream-200"
             >
               取消
             </button>
@@ -513,7 +513,7 @@ function ChapterSummaryCard({
               type="button"
               onClick={handleSave}
               disabled={!editSummaryContent.trim()}
-              className={`rounded-lg px-3 py-1.5 text-sm font-medium text-white transition-colors ${
+              className={`rounded-lg px-3 py-1.5 text-sm font-medium text-cream-50 transition-colors ${
                 editSummaryContent.trim()
                   ? 'bg-sun-700 hover:bg-sun-800'
                   : 'bg-sun-300 cursor-not-allowed'
@@ -566,14 +566,14 @@ function GenerateSummaryDialog({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" role="dialog" aria-modal="true" aria-labelledby="generate-summary-dialog-title">
-      <article className="w-full max-w-2xl rounded-xl bg-white p-6 shadow-lg max-h-[90vh] overflow-y-auto">
-        <header className="flex items-center justify-between sticky top-0 bg-white pb-4 border-b border-ink-100">
+      <article className="w-full max-w-2xl rounded-xl bg-cream-100 p-6 shadow-lg max-h-[90vh] overflow-y-auto">
+        <header className="flex items-center justify-between sticky top-0 bg-cream-100 pb-4 border-b border-sand-300">
           <h2 id="generate-summary-dialog-title" className="text-lg font-semibold text-ink-900">生成阶段总结</h2>
           <button
             type="button"
             onClick={onClose}
             disabled={submitting}
-            className="rounded-lg p-1 text-ink-500 hover:bg-ink-100 disabled:opacity-50"
+            className="rounded-lg p-1 text-ink-500 hover:bg-cream-200 disabled:opacity-50"
             aria-label="关闭"
           >
             <Icon name="close" size={18} />
@@ -581,7 +581,7 @@ function GenerateSummaryDialog({
         </header>
 
         <div className="mt-4">
-          <p className="text-sm text-ink-600">
+          <p className="text-sm text-ink-500">
             微光根据你的经历、认知、行动与日记生成了以下草稿。你可以直接保存，也可以先修改再保存。
           </p>
           <textarea
@@ -589,19 +589,19 @@ function GenerateSummaryDialog({
             onChange={(e) => setContent(e.target.value)}
             rows={16}
             maxLength={5000}
-            className="mt-3 w-full rounded-lg border border-ink-200 px-3 py-2 text-sm focus:border-sun-500 focus:outline-none focus:ring-1 focus:ring-sun-500 resize-none"
+            className="mt-3 w-full rounded-lg border border-sand-300 px-3 py-2 text-sm focus:border-sun-500 focus:outline-none focus:ring-1 focus:ring-sun-500 resize-none"
             aria-label="阶段总结内容"
             disabled={submitting}
           />
           <p className="mt-2 text-xs text-ink-500">你可以随意修改、补充或删减。只有点击「保存为正式总结」后，内容才会进入档案。</p>
         </div>
 
-        <div className="mt-4 flex justify-end gap-2 pt-4 border-t border-ink-100">
+        <div className="mt-4 flex justify-end gap-2 pt-4 border-t border-sand-300">
           <button
             type="button"
             onClick={onClose}
             disabled={submitting}
-            className="rounded-lg px-4 py-2 text-sm font-medium text-ink-600 hover:bg-ink-50 disabled:opacity-50"
+            className="rounded-lg px-4 py-2 text-sm font-medium text-ink-500 hover:bg-cream-200 disabled:opacity-50"
           >
             放弃
           </button>
@@ -609,7 +609,7 @@ function GenerateSummaryDialog({
             type="button"
             onClick={handleSave}
             disabled={submitting || !content.trim()}
-            className="rounded-lg bg-sun-700 px-4 py-2 text-sm font-medium text-white hover:bg-sun-800 disabled:opacity-50"
+            className="rounded-lg bg-sun-700 px-4 py-2 text-sm font-medium text-cream-50 hover:bg-sun-800 disabled:opacity-50"
           >
             保存为正式总结
           </button>

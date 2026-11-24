@@ -3,6 +3,7 @@ import { Link, Navigate, useParams } from 'react-router-dom'
 
 import { StatusBar } from '@/components/layout/StatusBar'
 import { SceneBackdrop } from '@/components/scene/SceneBackdrop'
+import { findCharacter } from '@/data/characters'
 import { findEvent } from '@/data/events'
 import { SCENES } from '@/data/scenes'
 import type { EventChoice } from '@/game/eventSchema'
@@ -56,6 +57,7 @@ export default function EventPage() {
       choiceTags: choice.tags,
       outcome: choice.result,
       effects: choice.effects,
+      characterId: event.characterId,
       markExplored: event.sceneId !== 'plaza',
     })
 
@@ -126,6 +128,14 @@ export default function EventPage() {
                             </p>
                           ))}
                         </div>
+
+                        {event.characterId && outcome.choice.effects?.affinity ? (
+                          <p className="mt-3 border-t border-sand-300/60 pt-2 text-[11px] text-sage-500">
+                            {findCharacter(event.characterId)?.name ?? '对方'} · 理解度{' '}
+                            {outcome.choice.effects.affinity > 0 ? '+' : ''}
+                            {outcome.choice.effects.affinity}
+                          </p>
+                        ) : null}
                       </div>
 
                       {experience ? (

@@ -17,6 +17,7 @@ import { readRawSave } from '@/services/storage'
  * - v2：额外检查 experiences/seenEventIds/settings
  * - v3：额外检查 reflections/insights
  * - v4：额外检查 actions/journalEntries/chapterSummaries
+ * - v5：额外检查 relationships/actionPoints
  */
 
 const SCENE_SET = new Set<string>(SCENE_IDS)
@@ -94,6 +95,12 @@ export function hasPlayableSave(): boolean {
 
     if (version >= 4) {
       if (!Array.isArray(data.actions) || !Array.isArray(data.journalEntries) || !Array.isArray(data.chapterSummaries)) {
+        return false
+      }
+    }
+
+    if (version >= 5) {
+      if (!Array.isArray(data.relationships) || typeof data.actionPoints !== 'number') {
         return false
       }
     }

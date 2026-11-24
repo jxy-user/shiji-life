@@ -25,7 +25,7 @@ describe('首章流程', () => {
     const user = userEvent.setup()
     renderApp()
 
-    await user.click(screen.getByRole('link', { name: '开始新的旅程' }))
+    await user.click(screen.getByRole('link', { name: '进入未完成之城（旧版）' }))
 
     // 五幕：雨 → 房间 → 信（有一次选择）→ 地图 → 门
     await user.click(await screen.findByRole('button', { name: '继续' }))
@@ -54,7 +54,7 @@ describe('首章流程', () => {
     const user = userEvent.setup()
     renderApp()
 
-    await user.click(screen.getByRole('link', { name: '开始新的旅程' }))
+    await user.click(screen.getByRole('link', { name: '进入未完成之城（旧版）' }))
     await user.click(await screen.findByRole('button', { name: '跳过开场' }))
 
     expect(

@@ -7,7 +7,7 @@
 
 《拾己 · LIFE》是一款 2D 互动人生探索游戏：玩家在「未完成之城」自由生活、经历事件、做出选择；经历积累到阈值后，AI 引路人「微光 Lumi」邀请回顾，提出**带证据的候选观察**；只有玩家确认的内容才写入人生档案。
 
-当前 **M3、M5 均已完成**，可以完整玩到：「开场 → 建角 → 城市 → 事件 → 经历 → 阶段回顾 → 认知卡片 → 现实行动 → 日记 → 阶段总结」。移动端已支持 PWA（可安装、可离线）。
+当前主入口是**人生线**：从 18 岁到 60 岁，11 个重大抉择，每选一项推进一段新剧情，结束后逐条回放并给出倾向总结（`/life`、`/life/replay`）。旧的「未完成之城」城市生活（开场、建角、城市、人物、回顾、认知、行动、日记）仍保留，从首页底部入口进入。移动端已支持 PWA（可安装、可离线）。
 
 - 路由使用 **HashRouter**（`/#/city`），原因：Qoder Sites 静态托管没有 SPA 回退。
 - 部署在 **Qoder Sites**（公网链接由 Qoder 生成，会随部署变化）。
@@ -26,6 +26,8 @@
 | PWA 移动端 | ✅ | 可安装、离线缓存、更新提示；manifest 单一来源、SW 仅生产注册、存储禁用安全降级、安装卡桌面置右下、同一时间只显示一个提示 | `vite.config.ts`、`src/hooks/usePWA.ts`、`src/services/preferences.ts`、`PWANotifications.tsx` |
 | PC 端适配 | ✅ | 桌面浏览器大屏布局：开始页双栏、档案双栏、行动单列清单、各页容器加宽；移动端不变 | `src/pages/*`、`src/components/layout/StatusBar.tsx`、`src/components/city/CityMap.tsx` |
 | UI 视觉重构 | ✅ | 去 AI 模板感：统一线性图标、纸本手账/编辑式排版、去卡片与渐变、方角按钮、克制动效 | `src/components/ui/Icon.tsx`、`src/index.css`、`src/pages/*` |
+| 关系与行动力 | ✅ | 恋爱模拟器式骨架（非恋爱主题）：每日 3 行动力、3 位角色、理解度阶段、对话事件、人物页；存档 v5 | `src/data/characters.ts`、`src/game/relationships.ts`、`PeoplePage.tsx`、`ScenePage.tsx`、store v5 |
+| 人生线 18→60 | ✅ | 单线重大抉择：11 个节点、每选推进一段新剧情、结束时逐条回放并给出倾向总结；独立存档 `shiji-life:life:v1` | `src/data/lifeStory.ts`、`LifePage.tsx`、`LifeReplayPage.tsx`、`useLifeStore.ts` |
 
 ## 常用命令
 
@@ -44,10 +46,12 @@ npm run build      # 路由级代码分割，首屏约 96 KB gzip
 
 | 位置 | 职责 | 注意 |
 |---|---|---|
-| `src/game/saveSchema.ts` | 存档模型（v4）与全部 Zod 契约 | 改字段必须升版 + 迁移 |
+| `src/game/saveSchema.ts` | 存档模型（v5）与全部 Zod 契约 | 改字段必须升版 + 迁移 |
+| `src/game/relationships.ts` | 关系阶段与行动力常量（无 zod 依赖） | 阶段只描述理解程度，不是好感 |
 | `src/game/saveVersion.ts` / `saveEnums.ts` | 无依赖常量 | 首屏轻量判断用，**不要**从这里引 zod |
 | `src/services/storage.ts` | 唯一的 localStorage 访问点 | 读写异常必须兜住，禁止让页面白屏 |
-| `src/services/saveService.ts` | 读写校验、v1→v2→v3→v4 迁移 | 迁移只补默认值，不改写已有内容 |
+| `src/services/saveService.ts` | 读写校验、v1→v2→v3→v4→v5 迁移 | 迁移只补默认值，不改写已有内容 |
+| `src/data/characters.ts` | 城市角色定义（名字、场景、介绍） | 角色是居民，不是攻略对象 |
 | `src/services/savePeek.ts` | 首屏「有没有可继续存档」 | 轻量检查，不含 zod |
 | `src/services/experienceService.ts` | 经历查询：可见 / 可分析 | M4 只能从 `getEligibleExperiences` 取数 |
 | `src/stores/useGameStore.ts` | 全部游戏状态变更的入口 | 事件完成必须是**一次写盘**（`completeEvent`） |
@@ -57,7 +61,7 @@ npm run build      # 路由级代码分割，首屏约 96 KB gzip
 | `src/pages/ReflectionPage.tsx` | 回顾流程 | 确认前的内容不得出现在档案 |
 | `src/index.css` | 设计令牌 | 含 Qoder Sites 的 `--site-*` 变量，改动前先和 Qoder 协调 |
 
-## 存档模型（v4 当前）
+## 存档模型（v5 当前）
 
 ### v4（当前）
 - `profile`、`chapter`、`currentScene`、`gameDay`、`timeSlot`、`energy`、`flags`、`visitedScenes`
@@ -69,9 +73,11 @@ npm run build      # 路由级代码分割，首屏约 96 KB gzip
 - `actions[]`：`id`、`title`、`linkedInsightId?`、`frequency`（once/daily/weekly/custom）、`dueDate?`、`reminderTime?`、`status`（todo/in_progress/done/paused）、`createdAt`、`updatedAt`、`completedAt?`
 - `journalEntries[]`：`id`、`type`（action_review/free/insight_link）、`content`、`linkedActionId?`、`linkedInsightId?`、`linkedExperienceIds?`、`createdAt`、`updatedAt`
 - `chapterSummaries[]`：`id`、`chapter`、`content`、`generatedAt`、`isEdited`、`editedAt?`
+- `relationships[]`（v5）：`characterId`、`affinity`（理解度 0–100）、`stage`（stranger/acquaintance/trusted/understood）、`metAtGameDay`、`updatedAt`
+- `actionPoints`（v5）：当日剩余行动力（0–3），跨天恢复
 - `settings`：`analysisConsentDefault`、`reflectionThreshold`（3）、`minExperienceTypes`（2）、`invitationsEnabled`
 
-迁移规则：只迁移明确识别到的版本（1 → 2 → 3 → 4）；`0`、负数、小数、高于当前的版本一律拒绝，且**不覆盖原始字符串**。v3→v4 仅给三个新数组补 `[]`，不改动既有数据。
+迁移规则：只迁移明确识别到的版本（1 → 2 → 3 → 4 → 5）；`0`、负数、小数、高于当前的版本一律拒绝，且**不覆盖原始字符串**。v3→v4 仅给三个新数组补 `[]`；v4→v5 仅补 `relationships: []` 与 `actionPoints: 3`，不改动既有数据。
 
 ## 产品红线（改代码前必读）
 
@@ -106,8 +112,9 @@ npm run build      # 路由级代码分割，首屏约 96 KB gzip
 
 ## 下一步建议顺序
 
-1. **M5 + PC 端验收与部署**：运行 `docs/QODER_M5_REVIEW_PROMPT.md` 交给 Qoder 审查并部署（PC 端增强已并入本轮）。
-2. **PC 端视觉回归**：部署后在 1440 / 1920 宽屏复核首页、城市、档案、行动、日记，并确认 390px 移动端无回归。
-3. **PWA 部署验证**：旧 Service Worker 在部署后首次导航可能仍展示上一版页面，直到更新提示刷新；部署后分别用「全新浏览器」和「已有安装态（已添加到主屏幕）」各验一次。
-4. M4 真实 AI（赛后，需升级 Qoder Sites 计划）。
-5. 内容扩充：再写 5–10 个事件，让回顾的候选规则有更多变化。
+1. **主页面设计**：由 Qoder 负责，Claude 只需保持 `/life`、`/life/replay`、旧版城市入口可用，不主动改首页视觉。
+2. **人生线内容与回放打磨**：补足节点文案的差异感；回放当前每条停留 6 秒（约 1 分钟），可加入年份推进与转场；保持「不做评判」的收尾。
+3. **关系玩法验收（旧版）**：城市 → 人物 → 打招呼 / 角色事件 → 理解度阶段推进；确认 v4→v5 迁移不丢进度。
+4. **M5 + PC 端验收与部署**：运行 `docs/QODER_M5_REVIEW_PROMPT.md` 交给 Qoder 审查并部署。
+5. **PWA 部署验证**：部署后分别用「全新浏览器」和「已有安装态」各验一次。
+6. M4 真实 AI（赛后，需升级 Qoder Sites 计划）。

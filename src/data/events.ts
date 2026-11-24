@@ -262,6 +262,271 @@ const RAW_EVENTS: GameEvent[] = [
     ],
     memory: { askReason: false },
   },
+  /* —— 角色事件（v5：理解度玩法） —— */
+  {
+    id: 'lin_001',
+    title: '窗边的取景框',
+    chapter: 'chapter_01',
+    sceneId: 'campus',
+    experienceType: 'social',
+    trigger: 'scene_enter',
+    once: true,
+    characterId: 'lin',
+    minAffinity: 0,
+    narrative: [
+      '林夏把相机举在窗边，镜头对着走廊。',
+      '你经过的时候，她把相机放下了。',
+    ],
+    choices: [
+      {
+        id: 'ask',
+        text: '问她刚才在拍什么',
+        tags: ['approach'],
+        result: [
+          '她说在等一个人走过。',
+          '「还没等到。」她把相机重新举起来。',
+        ],
+        effects: { affinity: 6, advanceTime: true },
+      },
+      {
+        id: 'wait',
+        text: '站在旁边等她先开口',
+        tags: ['wait'],
+        result: [
+          '她看了你一眼，没有催你走。',
+          '过了一会儿，她说：「你也可以看。」',
+        ],
+        effects: { affinity: 3, advanceTime: true },
+      },
+      {
+        id: 'pass',
+        text: '假装没注意，继续走',
+        tags: ['avoid'],
+        result: ['你沿着走廊走过去了。', '身后传来很轻的快门声。'],
+        effects: { affinity: 0, advanceTime: true },
+      },
+    ],
+    memory: { askReason: false },
+  },
+  {
+    id: 'lin_002',
+    title: '没拍下的那张',
+    chapter: 'chapter_01',
+    sceneId: 'campus',
+    experienceType: 'social',
+    trigger: 'scene_enter',
+    once: true,
+    characterId: 'lin',
+    minAffinity: 30,
+    narrative: [
+      '林夏翻着相机里的照片，停在一张空镜头上。',
+      '「这张我按了快门，但什么都没拍到。」',
+    ],
+    choices: [
+      {
+        id: 'ask',
+        text: '问她当时想拍什么',
+        tags: ['approach'],
+        result: [
+          '她说想拍光落在墙上的样子。',
+          '「等我调好，光已经走了。」',
+        ],
+        effects: { affinity: 8, advanceTime: true },
+      },
+      {
+        id: 'comfort',
+        text: '说空镜头也挺好',
+        tags: ['observe'],
+        result: [
+          '她想了想，把那张照片留下了。',
+          '「也是，空白也算一张。」',
+        ],
+        effects: { affinity: 5, advanceTime: true },
+      },
+      {
+        id: 'silent',
+        text: '没说话，等她自己继续',
+        tags: ['wait'],
+        result: [
+          '她把相机合上了。',
+          '走廊里安静了一会儿，你们各自看着窗外。',
+        ],
+        effects: { affinity: 2, advanceTime: true },
+      },
+    ],
+    memory: { askReason: false },
+  },
+  {
+    id: 'zhou_001',
+    title: '跑完这一圈',
+    chapter: 'chapter_01',
+    sceneId: 'park',
+    experienceType: 'social',
+    trigger: 'scene_enter',
+    once: true,
+    characterId: 'zhou',
+    minAffinity: 0,
+    narrative: ['周野在跑道边系鞋带，抬头看见你。', '「今天也来走走？」'],
+    choices: [
+      {
+        id: 'ask',
+        text: '问他是不是每天都跑',
+        tags: ['approach'],
+        result: [
+          '「差不多。跑完脑子会空一点。」',
+          '他站起来活动了一下脚踝。',
+        ],
+        effects: { affinity: 6, advanceTime: true },
+      },
+      {
+        id: 'sit',
+        text: '在旁边的长椅坐下',
+        tags: ['observe'],
+        result: [
+          '他继续跑，你坐着。',
+          '第二圈经过时，他朝你挥了下手。',
+        ],
+        effects: { affinity: 3, advanceTime: true },
+      },
+      {
+        id: 'nod',
+        text: '点点头，走自己的路',
+        tags: ['avoid'],
+        result: ['他也没多说什么，重新跑了起来。'],
+        effects: { affinity: 0, advanceTime: true },
+      },
+    ],
+    memory: { askReason: false },
+  },
+  {
+    id: 'zhou_002',
+    title: '雨天不跑',
+    chapter: 'chapter_01',
+    sceneId: 'park',
+    experienceType: 'social',
+    trigger: 'scene_enter',
+    once: true,
+    characterId: 'zhou',
+    minAffinity: 30,
+    narrative: [
+      '下雨了。周野站在树下，没有跑。',
+      '「今天休息。」他说，把外套领子立起来。',
+    ],
+    choices: [
+      {
+        id: 'ask',
+        text: '问他休息时做什么',
+        tags: ['approach'],
+        result: [
+          '「发呆。偶尔看看别人跑。」',
+          '他笑了笑，「其实也挺好。」',
+        ],
+        effects: { affinity: 8, advanceTime: true },
+      },
+      {
+        id: 'share',
+        text: '把伞往他那边挪一点',
+        tags: ['care'],
+        result: [
+          '他愣了一下，道了谢。',
+          '两个人站在伞下，听雨打在叶子上。',
+        ],
+        effects: { affinity: 6, advanceTime: true },
+      },
+      {
+        id: 'leave',
+        text: '打个招呼就走',
+        tags: ['avoid'],
+        result: ['他朝你点点头。', '你走出很远，雨还在下。'],
+        effects: { affinity: 1, advanceTime: true },
+      },
+    ],
+    memory: { askReason: false },
+  },
+  {
+    id: 'yu_001',
+    title: '画一条长椅',
+    chapter: 'chapter_01',
+    sceneId: 'plaza',
+    experienceType: 'social',
+    trigger: 'scene_enter',
+    once: true,
+    characterId: 'yu',
+    minAffinity: 0,
+    narrative: ['余青在画广场上的长椅。', '画里的长椅空着，没有人。'],
+    choices: [
+      {
+        id: 'ask',
+        text: '问他为什么只画椅子',
+        tags: ['approach'],
+        result: ['「椅子比人好画。」他顿了顿，', '「而且椅子会等人。」'],
+        effects: { affinity: 6, advanceTime: true },
+      },
+      {
+        id: 'crouch',
+        text: '蹲下来看画',
+        tags: ['observe'],
+        result: [
+          '铅笔线很轻，但每一根都停得很准。',
+          '他没有抬头，只是把画板往你这边偏了一点。',
+        ],
+        effects: { affinity: 4, advanceTime: true },
+      },
+      {
+        id: 'pass',
+        text: '站着看一会儿就走',
+        tags: ['avoid'],
+        result: ['你看了几秒，继续往前走。', '身后铅笔还在纸上走着。'],
+        effects: { affinity: 1, advanceTime: true },
+      },
+    ],
+    memory: { askReason: false },
+  },
+  {
+    id: 'yu_002',
+    title: '画你看见的',
+    chapter: 'chapter_01',
+    sceneId: 'plaza',
+    experienceType: 'social',
+    trigger: 'scene_enter',
+    once: true,
+    characterId: 'yu',
+    minAffinity: 30,
+    narrative: ['余青把画板转向你。', '「你觉得，广场还缺什么？」'],
+    choices: [
+      {
+        id: 'chair',
+        text: '说缺一张能坐下来的椅子',
+        tags: ['answer'],
+        result: [
+          '他点点头，在角落添了一张小椅子。',
+          '「这样就有地方坐了。」',
+        ],
+        effects: { affinity: 8, advanceTime: true },
+      },
+      {
+        id: 'quiet',
+        text: '说缺一点安静',
+        tags: ['answer'],
+        result: [
+          '他没有画，只是把铅笔放下了。',
+          '「这个我画不出来。」',
+        ],
+        effects: { affinity: 6, advanceTime: true },
+      },
+      {
+        id: 'unknown',
+        text: '说我也不知道',
+        tags: ['unknown'],
+        result: [
+          '「不知道也没关系。」',
+          '他把画板转回去，继续画。',
+        ],
+        effects: { affinity: 3, advanceTime: true },
+      },
+    ],
+    memory: { askReason: false },
+  },
 ]
 
 /** 加载时统一校验：内容写错会在开发与构建阶段直接暴露 */
@@ -271,9 +536,29 @@ export function findEvent(eventId: string | undefined): GameEvent | undefined {
   return GAME_EVENTS.find((event) => event.id === eventId)
 }
 
-/** 场景里还没发生过的第一个事件 */
+/** 场景里还没发生过的第一个通用事件（角色事件只从角色卡触发） */
 export function pendingEventFor(sceneId: string, seenEventIds: string[]): GameEvent | undefined {
   return GAME_EVENTS.find(
-    (event) => event.sceneId === sceneId && !seenEventIds.includes(event.id),
+    (event) =>
+      !event.characterId &&
+      event.sceneId === sceneId &&
+      !seenEventIds.includes(event.id),
+  )
+}
+
+/**
+ * 某角色下一个可触发的事件。
+ * 只返回「足够熟悉 + 还没发生过」的第一条，保证剧情顺序稳定。
+ */
+export function characterEventFor(
+  characterId: string,
+  seenEventIds: string[],
+  affinity: number,
+): GameEvent | undefined {
+  return GAME_EVENTS.find(
+    (event) =>
+      event.characterId === characterId &&
+      !seenEventIds.includes(event.id) &&
+      affinity >= (event.minAffinity ?? 0),
   )
 }

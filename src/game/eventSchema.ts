@@ -16,6 +16,8 @@ import { EXPERIENCE_TYPES } from '@/types/game'
 export const choiceEffectsSchema = z.object({
   /** 精力变化，负数消耗 */
   energy: z.number().int().min(-40).max(40).optional(),
+  /** 与该角色的理解度变化（仅角色事件有效） */
+  affinity: z.number().int().min(-20).max(20).optional(),
   /** 是否推进一个时段 */
   advanceTime: z.boolean().optional(),
   /** 剧情标记，后续事件可据此出现 */
@@ -43,6 +45,10 @@ export const gameEventSchema = z.object({
   experienceType: z.enum(EXPERIENCE_TYPES),
   trigger: z.literal('scene_enter'),
   once: z.boolean(),
+  /** 归属角色；有角色的事件只从角色卡触发，不在场景里自动弹出 */
+  characterId: z.string().min(1).max(40).optional(),
+  /** 触发所需的最低理解度（仅角色事件） */
+  minAffinity: z.number().int().min(0).max(100).optional(),
   narrative: z.array(z.string().min(1).max(140)).min(1).max(4),
   choices: z.array(eventChoiceSchema).min(2).max(4),
   memory: z.object({

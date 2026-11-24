@@ -1,5 +1,11 @@
 import { z } from 'zod'
 
+import {
+  AFFINITY_MAX,
+  AFFINITY_MIN,
+  MAX_ACTION_POINTS,
+  RELATIONSHIP_STAGES,
+} from '@/game/relationships'
 import { SCENE_IDS, TIME_SLOTS, type SceneId, type TimeSlot } from '@/game/saveEnums'
 import { SAVE_VERSION } from '@/game/saveVersion'
 import { EXPERIENCE_TYPES, INSIGHT_CATEGORIES } from '@/types/game'
@@ -197,6 +203,22 @@ export const chapterSummarySchema = z.object({
 
 export type ChapterSummary = z.infer<typeof chapterSummarySchema>
 
+/**
+ * 与一位城市角色的关系（v5）
+ *
+ * affinity 表示「理解程度」而非恋爱好感；stage 由 affinity 推导并快照保存，
+ * 便于档案与回顾直接读取，避免各处重复计算。
+ */
+export const relationshipSchema = z.object({
+  characterId: z.string().min(1).max(40),
+  affinity: z.number().int().min(AFFINITY_MIN).max(AFFINITY_MAX),
+  stage: z.enum(RELATIONSHIP_STAGES),
+  metAtGameDay: z.number().int().min(1),
+  updatedAt: z.string(),
+})
+
+export type Relationship = z.infer<typeof relationshipSchema>
+
 export const saveSchema = z.object({
   version: z.literal(SAVE_VERSION),
   profile: playerProfileSchema,
@@ -224,6 +246,10 @@ export const saveSchema = z.object({
   journalEntries: z.array(journalEntrySchema).max(500),
   /** 阶段总结（M5） */
   chapterSummaries: z.array(chapterSummarySchema).max(20),
+  /** 与城市角色的关系（v5）：理解度与阶段 */
+  relationships: z.array(relationshipSchema).max(20),
+  /** 当日剩余行动力（v5）：跨天恢复到 MAX_ACTION_POINTS */
+  actionPoints: z.number().int().min(0).max(MAX_ACTION_POINTS),
   settings: z.object({
     /** 新经历是否默认允许用于回顾；默认关闭，只影响之后创建的经历 */
     analysisConsentDefault: z.boolean(),
@@ -261,6 +287,8 @@ export function createInitialSave(profile: PlayerProfile): SaveData {
     actions: [],
     journalEntries: [],
     chapterSummaries: [],
+    relationships: [],
+    actionPoints: MAX_ACTION_POINTS,
     settings: {
       analysisConsentDefault: false,
       reflectionThreshold: 3,
