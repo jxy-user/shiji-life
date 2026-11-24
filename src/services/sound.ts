@@ -1,12 +1,38 @@
 /**
  * 轻量音效：用 Web Audio API 现场合成，不加载任何音频文件。
  *
- * 浏览器要求用户交互后才能出声，所以在「开始人生」等首次点击时调用
- * unlockAudio()；未解锁时所有音效静默返回，不会抛错。
+ * 浏览器要求用户交互后才能出声：任意页面的第一次点击都会解锁；
+ * 静音状态持久化在 localStorage，设置一次就记住。
  */
 
+const MUTE_KEY = 'shiji-life:sound-muted'
+
 let context: AudioContext | null = null
-let muted = false
+
+function readMuted(): boolean {
+  if (typeof window === 'undefined') return false
+  try {
+    return window.localStorage.getItem(MUTE_KEY) === 'true'
+  } catch {
+    return false
+  }
+}
+
+let muted = readMuted()
+
+export function isMuted(): boolean {
+  return muted
+}
+
+export function setMuted(value: boolean): void {
+  muted = value
+  if (typeof window === 'undefined') return
+  try {
+    window.localStorage.setItem(MUTE_KEY, String(value))
+  } catch {
+    // 存储不可用时只影响本次会话
+  }
+}
 
 function getContext(): AudioContext | null {
   if (typeof window === 'undefined') return null
@@ -31,8 +57,14 @@ export function unlockAudio(): void {
   getContext()
 }
 
-export function setMuted(value: boolean): void {
-  muted = value
+// 任意页面的第一次点击都解锁音频：直接深链进入回放时，
+// 也能在用户第一次交互之后正常出声。
+if (typeof window !== 'undefined') {
+  const unlock = () => {
+    getContext()
+    window.removeEventListener('pointerdown', unlock)
+  }
+  window.addEventListener('pointerdown', unlock, { once: true })
 }
 
 type ToneOptions = {

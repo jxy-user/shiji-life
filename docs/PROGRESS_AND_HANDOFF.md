@@ -30,7 +30,8 @@
 | 视觉基调（墨色暖光） | ✅ | 2026-11-24 删除 GTA6 霓虹风（粉/青绿/扫描线/网格/发光）；改为墨色底、暖白字、金铜点缀，标题回到宋体；场景/地图/微光 SVG 同步换色。首页门厅由 Qoder 设计 | `src/index.css`、`src/components/{city,scene,lumi}`、`LifePage.tsx`、`LifeReplayPage.tsx` |
 | 交互动画 | ✅ | 文字→动画：人生线分段播放（场景→问题→选项，结果分两段浮现，可跳过）、年龄轴、11 个节点线条绘制图标、选项火花/高亮、结果倾向徽章；回放时间轴、进度条、倾向标签云；场景页行动结果摘要 | `src/components/life/*`、`LifePage.tsx`、`LifeReplayPage.tsx`、`ScenePage.tsx` |
 | 电影感 | ✅ | 宽银幕黑边（上下 6.5vh）+ 深暗角 + 流动胶片颗粒 + 偶发划痕（`CinemaFrame`）、节点标题卡（黑场 1.4s，金线/年龄缩放/「第 N 幕」）、场景/问题/结果逐字打字机、结果前 420ms 黑场、镜头缓推（kenburns 1.10）、转场淡入（cine-in）；回放结尾做居中片尾字幕 | `src/components/effects/CinemaFrame.tsx`、`src/components/life/Typewriter.tsx`、`src/index.css`、`LifePage.tsx`、`LifeReplayPage.tsx` |
-| 音效与未知感 | ✅ | Web Audio 合成音效（标题闷响/选项轻点/选中上扬/结果和弦/片尾 ding），首次点击后解锁；**结果页不再显示选择倾向标签**（避免玩家预知类别），倾向统计只在最终回放出现 | `src/services/sound.ts`、`LifePage.tsx`、`LifeReplayPage.tsx` |
+| 音效与未知感 | ✅ | Web Audio 合成音效（标题闷响/选项轻点/选中上扬/结果和弦/片尾 ding），首次点击后解锁，**带持久化开关**；**结果页不再显示选择倾向标签**（避免玩家预知类别），倾向统计只在最终回放出现 | `src/services/sound.ts`、`SoundToggle.tsx`、`LifePage.tsx`、`LifeReplayPage.tsx` |
+| 可访问性与时序 | ✅ | 标题卡（1.4s）结束后才开始「场景→问题→选项」；隐藏阶段按钮 `disabled`；打字机不接 `aria-live`，改为打完一次性 `sr-only` 播报 | `LifePage.tsx`、`Typewriter.tsx` |
 | 关系与行动力 | ✅ | 恋爱模拟器式骨架（非恋爱主题）：每日 3 行动力、3 位角色、理解度阶段、对话事件、人物页；存档 v5 | `src/data/characters.ts`、`src/game/relationships.ts`、`PeoplePage.tsx`、`ScenePage.tsx`、store v5 |
 | 人生线 18→60 | ✅ | 单线重大抉择：11 个节点、每选推进一段新剧情、结束时逐条回放并给出倾向总结；独立存档 `shiji-life:life:v1` | `src/data/lifeStory.ts`、`LifePage.tsx`、`LifeReplayPage.tsx`、`useLifeStore.ts` |
 

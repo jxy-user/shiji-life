@@ -4,6 +4,7 @@ import { Link, Navigate, useNavigate } from 'react-router-dom'
 import { AuroraBand } from '@/components/effects/AuroraBand'
 import { CinemaFrame } from '@/components/effects/CinemaFrame'
 import { TagGlyph } from '@/components/life/LifeGlyph'
+import { SoundToggle } from '@/components/life/SoundToggle'
 import { LIFE_TAGS, LIFE_TAG_LABELS, summarizeLife } from '@/data/lifeStory'
 import { sfx } from '@/services/sound'
 import { useLifeStore } from '@/stores/useLifeStore'
@@ -75,7 +76,10 @@ export default function LifeReplayPage() {
       <AuroraBand />
 
       <div className="relative z-10 mx-auto w-full max-w-2xl px-6 pb-[8vh] pt-[8vh] lg:max-w-3xl">
-        <p className="text-[10px] tracking-[0.5em] text-sage-500">回放</p>
+        <div className="flex items-center justify-between">
+          <p className="text-[10px] tracking-[0.5em] text-sage-500">回放</p>
+          <SoundToggle />
+        </div>
         <h1 className="mt-4 font-display text-3xl tracking-[0.04em] text-ink-900">
           你走过的这一生
         </h1>

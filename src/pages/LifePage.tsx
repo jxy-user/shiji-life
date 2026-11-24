@@ -6,8 +6,12 @@ import { CinemaFrame } from '@/components/effects/CinemaFrame'
 import ClickSpark, { type ClickSparkHandle } from '@/components/effects/ClickSpark'
 import { LifeGlyph } from '@/components/life/LifeGlyph'
 import { LifeTimeline } from '@/components/life/LifeTimeline'
+import { SoundToggle } from '@/components/life/SoundToggle'
 import { Typewriter } from '@/components/life/Typewriter'
 import { sfx, unlockAudio } from '@/services/sound'
+
+/** 标题卡时长：舞台动画要等标题卡结束后再开始，否则会被整段盖住 */
+const TITLE_MS = 1400
 import { LIFE_NODES, type LifeChoice, type LifeNode } from '@/data/lifeStory'
 import { useLifeStore, type LifeChoiceRecord } from '@/stores/useLifeStore'
 
@@ -181,10 +185,13 @@ export default function LifePage() {
           />
         </div>
 
-        <footer className="mt-10 flex items-center justify-between border-t border-sand-300/60 pt-4 text-[11px] text-ink-500">
-          <button type="button" onClick={handleRestart} className="hover:text-ink-900">
-            重新开始
-          </button>
+        <footer className="mt-10 flex flex-wrap items-center justify-between gap-3 border-t border-sand-300/60 pt-4 text-[11px] text-ink-500">
+          <div className="flex items-center gap-4">
+            <button type="button" onClick={handleRestart} className="hover:text-ink-900">
+              重新开始
+            </button>
+            <SoundToggle />
+          </div>
           <span>选择没有标准答案</span>
         </footer>
       </div>
@@ -229,7 +236,7 @@ function LifeStage({
   useEffect(() => {
     if (!showTitle) return
     sfx.thud()
-    const timer = window.setTimeout(() => setShowTitle(false), 1400)
+    const timer = window.setTimeout(() => setShowTitle(false), TITLE_MS)
     return () => window.clearTimeout(timer)
   }, [showTitle])
 
@@ -246,12 +253,13 @@ function LifeStage({
       )
       timers.push(window.setTimeout(() => setResultStage(2), 1250))
     } else if (node) {
-      timers.push(window.setTimeout(() => setStage(1), 420))
+      // 等标题卡完全退场后再开始「场景 → 问题 → 选项」
+      timers.push(window.setTimeout(() => setStage(1), TITLE_MS + 620))
       timers.push(
         window.setTimeout(() => {
           setStage(2)
           sfx.tick()
-        }, 1250),
+        }, TITLE_MS + 1500),
       )
     }
 
@@ -275,6 +283,7 @@ function LifeStage({
         >
           <span className="h-px w-14 origin-center animate-[title-line_1400ms_ease_both] bg-gold-500/70" />
           <p className="mt-7 animate-[title-zoom_1400ms_ease_both] font-display text-8xl tabular-nums text-gold-500">
+
             {node.age}
           </p>
           <p className="mt-5 text-[11px] tracking-[0.6em] text-ink-400">
@@ -297,7 +306,12 @@ function LifeStage({
       ) : null}
 
       {pending ? (
-        <section className="animate-[cine-in_700ms_ease_both]" aria-live="polite">
+        <section className="animate-[cine-in_700ms_ease_both]">
+          {/* 打字机逐字更新不适合连着 aria-live：等打完再一次性播报 */}
+          <p className="sr-only" role="status" aria-live="polite">
+            {resultStage >= 2 ? `${pending.label}。${pending.result}` : ''}
+          </p>
+
           {/* 结果出现前的一小段黑场，像镜头切换 */}
           {!reduced && resultStage < 1 ? (
             <div
@@ -345,8 +359,9 @@ function LifeStage({
           <button
             type="button"
             onClick={onContinue}
+            disabled={resultStage < 2}
             className={[
-              'mt-10 rounded-md bg-gold-500 px-6 py-3 text-[15px] font-semibold text-cream-50 transition-all duration-500 hover:bg-gold-400',
+              'mt-10 rounded-md bg-gold-500 px-6 py-3 text-[15px] font-semibold text-cream-50 transition-all duration-500 hover:bg-gold-400 disabled:cursor-not-allowed',
               resultStage >= 2
                 ? 'translate-y-0 opacity-100'
                 : 'pointer-events-none translate-y-2 opacity-0',
@@ -357,13 +372,22 @@ function LifeStage({
         </section>
       ) : node ? (
         <section className="animate-[cine-in_700ms_ease_both]">
+          {/* 选项全部就位后，一次性播报场景与问题 */}
+          <p className="sr-only" role="status" aria-live="polite">
+            {stage >= 2 ? `${node.scene}${node.prompt}` : ''}
+          </p>
+
           <div className="flex items-start justify-between gap-8">
             <div className="min-w-0">
               <p className="text-[11px] tracking-[0.35em] text-gold-500">
                 {node.age} 岁 · {node.title}
               </p>
               <p className="mt-4 font-display text-[15px] leading-8 text-ink-500">
-                <Typewriter key={node.id} text={node.scene} speed={34} instant={reduced} />
+                {!showTitle ? (
+                  <Typewriter key={node.id} text={node.scene} speed={30} instant={reduced} />
+                ) : (
+                  <span className="invisible">{node.scene}</span>
+                )}
               </p>
               <h2
                 className={[
@@ -405,7 +429,7 @@ function LifeStage({
                 <button
                   key={choice.id}
                   type="button"
-                  disabled={picking !== null}
+                  disabled={picking !== null || stage < 2}
                   onClick={(event) => onChoose(choice, event)}
                   style={{ transitionDelay: stage >= 2 ? `${index * 80}ms` : '0ms' }}
                   className={[
