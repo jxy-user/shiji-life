@@ -91,15 +91,6 @@ export function DoorScene() {
           <stop offset="38%" stopColor="#ffd79a" stopOpacity="0.4" />
           <stop offset="100%" stopColor="#ffb45e" stopOpacity="0" />
         </linearGradient>
-        <linearGradient id="door-ray-side" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#ffe3b0" stopOpacity="0.55" />
-          <stop offset="55%" stopColor="#ffc47a" stopOpacity="0.18" />
-          <stop offset="100%" stopColor="#ffb45e" stopOpacity="0" />
-        </linearGradient>
-        <linearGradient id="door-ray-up" x1="0" y1="1" x2="0" y2="0">
-          <stop offset="0%" stopColor="#ffe3b0" stopOpacity="0.5" />
-          <stop offset="100%" stopColor="#ffcf8a" stopOpacity="0" />
-        </linearGradient>
         <linearGradient id="door-ground" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor="#1a2036" />
           <stop offset="45%" stopColor="#0d1120" />
@@ -225,84 +216,32 @@ export function DoorScene() {
         <ellipse cx="800" cy="520" rx="330" ry="280" fill="url(#door-glow-wide)" opacity="0.85" filter="url(#door-blur-lg)" />
         <ellipse cx="800" cy="520" rx="150" ry="160" fill="url(#door-glow-core)" opacity="0.9" filter="url(#door-blur-md)" />
 
-        {/* 门缝体积光（丁达尔）：多束散射 + 空气漫射 */}
+        {/* 门缝体积光：光从一条竖缝透出，只向门前方投出一束窄光 */}
         <g style={{ mixBlendMode: 'screen' }}>
+          {/* 门缝附近的空气辉光：柔和的圆，不是向外的光束 */}
           <ellipse
             cx="800"
-            cy="640"
-            rx="470"
-            ry="330"
-            fill="url(#door-glow-wide)"
-            opacity="0.4"
-            filter="url(#door-blur-lg)"
-          />
-
-          {/* 主光柱 + 核心 */}
-          <path
-            d="M793 460 L807 460 L936 900 L664 900 Z"
-            fill="url(#door-ray-main)"
-            opacity="0.82"
-            filter="url(#door-blur-md)"
-          />
-          <path
-            d="M795 460 L805 460 L872 900 L728 900 Z"
-            fill="url(#door-ray-main)"
+            cy="560"
+            rx="130"
+            ry="210"
+            fill="url(#door-glow-core)"
             opacity="0.45"
-            filter="url(#door-blur-sm)"
-          />
-
-          {/* 空气里的细光束：让光有分叉的层次 */}
-          <path
-            d="M796 470 L804 470 L700 900 L610 900 Z"
-            fill="#ffe8bb"
-            opacity="0.18"
-            filter="url(#door-blur-sm)"
-          />
-          <path
-            d="M796 470 L804 470 L830 900 L890 900 Z"
-            fill="#ffe8bb"
-            opacity="0.15"
-            filter="url(#door-blur-sm)"
-          />
-          <path
-            d="M796 470 L804 470 L980 900 L1040 900 Z"
-            fill="#ffe8bb"
-            opacity="0.11"
-            filter="url(#door-blur-sm)"
-          />
-
-          {/* 左右散射光束：靠近门缝更亮，向外递减 */}
-          <path
-            d="M794 500 L800 500 L596 900 L414 900 Z"
-            fill="url(#door-ray-side)"
-            opacity="0.58"
-            filter="url(#door-blur-md)"
-          />
-          <path
-            d="M794 560 L800 560 L512 900 L330 900 Z"
-            fill="url(#door-ray-side)"
-            opacity="0.4"
-            filter="url(#door-blur-md)"
-          />
-          <path
-            d="M806 500 L800 500 L1004 900 L1186 900 Z"
-            fill="url(#door-ray-side)"
-            opacity="0.58"
-            filter="url(#door-blur-md)"
-          />
-          <path
-            d="M806 560 L800 560 L1088 900 L1270 900 Z"
-            fill="url(#door-ray-side)"
-            opacity="0.4"
             filter="url(#door-blur-md)"
           />
 
-          {/* 向上漫到拱顶 */}
+          {/* 门前向下投出的一束窄光：底部只比门缝略宽 */}
           <path
-            d="M793 470 L807 470 L864 250 L736 250 Z"
-            fill="url(#door-ray-up)"
-            opacity="0.4"
+            d="M793 470 L807 470 L852 900 L748 900 Z"
+            fill="url(#door-ray-main)"
+            opacity="0.8"
             filter="url(#door-blur-md)"
+          />
+          {/* 光带亮核 */}
+          <path
+            d="M796 480 L804 480 L818 900 L782 900 Z"
+            fill="url(#door-ray-main)"
+            opacity="0.42"
+            filter="url(#door-blur-sm)"
           />
         </g>
 
@@ -402,8 +341,8 @@ export function DoorScene() {
           strokeOpacity="0.32"
           strokeWidth="2"
         />
-        {/* 门洞上方的暖光：门缝的光漫到拱顶 */}
-        <ellipse cx="800" cy="452" rx="142" ry="92" fill="url(#door-glow-core)" opacity="0.3" filter="url(#door-blur-md)" />
+        {/* 门洞内壁的一点反光，不做成向四周散的光 */}
+        <ellipse cx="800" cy="452" rx="96" ry="64" fill="url(#door-glow-core)" opacity="0.16" filter="url(#door-blur-md)" />
 
         {/* 两扇木门 */}
         <path
@@ -572,12 +511,12 @@ export function DoorScene() {
         ))}
       </g>
 
-      {/* 光柱里被照亮的尘埃：让光束有体积感 */}
+      {/* 光带里被照亮的尘埃：集中在门缝正下方 */}
       <g fill="#fff4d6">
         {[
-          [704, 748, 1.5], [748, 812, 2.1], [812, 768, 1.7], [862, 836, 1.4],
-          [688, 860, 1.9], [900, 872, 1.5], [776, 726, 1.2], [824, 742, 1],
-          [932, 792, 1.3], [664, 806, 1.6], [968, 858, 1.1], [716, 888, 1.8],
+          [772, 700, 1.4], [800, 760, 1.8], [826, 820, 1.5], [786, 860, 1.9],
+          [814, 880, 1.3], [796, 680, 1.1], [808, 720, 1.2], [774, 800, 1.6],
+          [830, 848, 1.2], [800, 900, 1.5], [788, 640, 1], [812, 660, 1.1],
         ].map(([cx, cy, r], index) => (
           <circle
             key={`beam-mote-${cx}-${cy}`}
