@@ -212,20 +212,20 @@ export function DoorScene() {
 
       {/* —— 门厅主体 —— */}
       <g transform="translate(0 34)">
-        {/* 门后的暖光：宽光晕 + 核心 */}
-        <ellipse cx="800" cy="520" rx="330" ry="280" fill="url(#door-glow-wide)" opacity="0.85" filter="url(#door-blur-lg)" />
-        <ellipse cx="800" cy="520" rx="150" ry="160" fill="url(#door-glow-core)" opacity="0.9" filter="url(#door-blur-md)" />
+        {/* 门后的暖光：收在门洞附近，不做成向外扩散的大圆光 */}
+        <ellipse cx="800" cy="520" rx="130" ry="200" fill="url(#door-glow-wide)" opacity="0.45" filter="url(#door-blur-md)" />
+        <ellipse cx="800" cy="520" rx="64" ry="130" fill="url(#door-glow-core)" opacity="0.55" filter="url(#door-blur-sm)" />
 
         {/* 门缝体积光：光从一条竖缝透出，只向门前方投出一束窄光 */}
         <g style={{ mixBlendMode: 'screen' }}>
-          {/* 门缝附近的空气辉光：柔和的圆，不是向外的光束 */}
+          {/* 门缝附近的空气辉光：只在缝的周围，不向四周扩散 */}
           <ellipse
             cx="800"
             cy="560"
-            rx="130"
-            ry="210"
+            rx="68"
+            ry="170"
             fill="url(#door-glow-core)"
-            opacity="0.45"
+            opacity="0.32"
             filter="url(#door-blur-md)"
           />
 
