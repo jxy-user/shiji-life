@@ -24,7 +24,8 @@
 | M4 真实 AI | ⏸️ | 服务端适配层、prompt 版本、输出校验 | 暂缓（需付费计划），架构已就绪 |
 | M5 行动与日记 | ✅ | 现实行动、日记、阶段总结、存档 v4 | `src/pages/{Actions,Journal}Page.tsx`、store actions、saveSchema v4 |
 | PWA 移动端 | ✅ | 可安装、离线缓存、更新提示；manifest 单一来源、SW 仅生产注册、存储禁用安全降级、安装卡桌面置右下、同一时间只显示一个提示 | `vite.config.ts`、`src/hooks/usePWA.ts`、`src/services/preferences.ts`、`PWANotifications.tsx` |
-| PC 端适配 | ✅ | 桌面浏览器大屏布局：开始页双栏、档案双栏、行动单列清单、各页容器加宽；移动端不变 | `src/pages/*`、`src/components/layout/StatusBar.tsx`、`src/components/city/CityMap.tsx` |
+| PC 端适配 | ✅ | 桌面浏览器大屏布局：开始页双栏、档案双栏、行动单列清单、各页容器加宽 | `src/pages/*`、`src/components/layout/StatusBar.tsx`、`src/components/city/CityMap.tsx` |
+| 仅桌面端 | ✅ | viewport 固定 `width=1280`；移除移动端 PWA 安装引导与 `preferences.ts`；只保留更新/离线提示 | `index.html`、`src/hooks/usePWA.ts`、`src/components/pwa/PWANotifications.tsx` |
 | UI 视觉重构 | ✅ | 去 AI 模板感：统一线性图标、纸本手账/编辑式排版、去卡片与渐变、方角按钮、克制动效 | `src/components/ui/Icon.tsx`、`src/index.css`、`src/pages/*` |
 | 关系与行动力 | ✅ | 恋爱模拟器式骨架（非恋爱主题）：每日 3 行动力、3 位角色、理解度阶段、对话事件、人物页；存档 v5 | `src/data/characters.ts`、`src/game/relationships.ts`、`PeoplePage.tsx`、`ScenePage.tsx`、store v5 |
 | 人生线 18→60 | ✅ | 单线重大抉择：11 个节点、每选推进一段新剧情、结束时逐条回放并给出倾向总结；独立存档 `shiji-life:life:v1` | `src/data/lifeStory.ts`、`LifePage.tsx`、`LifeReplayPage.tsx`、`useLifeStore.ts` |

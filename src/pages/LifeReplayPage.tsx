@@ -36,7 +36,8 @@ export default function LifeReplayPage() {
     return () => clearTimeout(timer)
   }, [save, visible, total])
 
-  if (!save || save.choices.length === 0) {
+  // 只有真正走完（finishedAt）的人生才允许回放；深链直接访问会被带回人生线
+  if (!save || save.choices.length === 0 || !save.finishedAt) {
     return <Navigate to="/life" replace />
   }
 

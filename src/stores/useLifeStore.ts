@@ -21,6 +21,24 @@ export type LifeSave = {
   currentIndex: number
   choices: LifeChoiceRecord[]
   finishedAt: string | null
+  /** 刚做出、还没被「继续」确认的选择；刷新后仍能显示结果 */
+  pendingChoice: LifeChoiceRecord | null
+}
+
+/** 校验单条选择记录：存档被手工改坏时不能让回放页崩掉 */
+function isValidChoice(value: unknown): value is LifeChoiceRecord {
+  if (typeof value !== 'object' || value === null) return false
+  const item = value as Record<string, unknown>
+  return (
+    typeof item.nodeId === 'string' &&
+    typeof item.age === 'number' &&
+    typeof item.title === 'string' &&
+    typeof item.choiceId === 'string' &&
+    typeof item.label === 'string' &&
+    typeof item.result === 'string' &&
+    Array.isArray(item.tags) &&
+    item.tags.every((tag) => typeof tag === 'string')
+  )
 }
 
 function readLifeSave(): LifeSave | null {
@@ -29,15 +47,28 @@ function readLifeSave(): LifeSave | null {
     const raw = window.localStorage.getItem(LIFE_SAVE_KEY)
     if (!raw) return null
     const data = JSON.parse(raw) as Partial<LifeSave>
-    if (
-      data.version !== 1 ||
-      typeof data.startedAt !== 'string' ||
-      typeof data.currentIndex !== 'number' ||
-      !Array.isArray(data.choices)
-    ) {
-      return null
+    if (data.version !== 1 || !Array.isArray(data.choices)) return null
+
+    const choices = data.choices.filter(isValidChoice)
+    // 坏记录被过滤后，保证 currentIndex 不超过实际选择数，避免跳过或重复提问
+    const rawIndex =
+      typeof data.currentIndex === 'number' && Number.isInteger(data.currentIndex)
+        ? data.currentIndex
+        : choices.length
+    const currentIndex = Math.min(Math.max(0, rawIndex), choices.length, LIFE_NODES.length)
+    const finishedAt =
+      typeof data.finishedAt === 'string' && choices.length >= LIFE_NODES.length
+        ? data.finishedAt
+        : null
+
+    return {
+      version: 1,
+      startedAt: typeof data.startedAt === 'string' ? data.startedAt : new Date().toISOString(),
+      currentIndex,
+      choices,
+      finishedAt,
+      pendingChoice: isValidChoice(data.pendingChoice) ? data.pendingChoice : null,
     }
-    return data as LifeSave
   } catch {
     return null
   }
@@ -57,6 +88,8 @@ type LifeState = {
   reload: () => void
   start: () => void
   choose: (choiceId: string) => void
+  /** 确认查看过结果，进入下一节点 */
+  clearPending: () => void
   reset: () => void
 }
 
@@ -72,6 +105,7 @@ export const useLifeStore = create<LifeState>((set, get) => ({
       currentIndex: 0,
       choices: [],
       finishedAt: null,
+      pendingChoice: null,
     }
     writeLifeSave(save)
     set({ save })
@@ -101,8 +135,17 @@ export const useLifeStore = create<LifeState>((set, get) => ({
       ...current,
       currentIndex: nextIndex,
       choices: [...current.choices, record],
+      pendingChoice: record,
       finishedAt: finished ? new Date().toISOString() : null,
     }
+    writeLifeSave(next)
+    set({ save: next })
+  },
+
+  clearPending: () => {
+    const current = get().save
+    if (!current || !current.pendingChoice) return
+    const next: LifeSave = { ...current, pendingChoice: null }
     writeLifeSave(next)
     set({ save: next })
   },

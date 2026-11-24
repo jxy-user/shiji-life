@@ -858,4 +858,63 @@ describe('v5 关系与行动力', () => {
     expect(save?.actionPoints).toBe(2)
     expect(save?.seenEventIds).toContain('lin_001')
   })
+
+  it('行动力为 0 时角色事件拒绝结算且不写已读', () => {
+    useGameStore.getState().beginJourney(profile)
+    useGameStore.getState().spendActionPoint()
+    useGameStore.getState().spendActionPoint()
+    useGameStore.getState().spendActionPoint()
+
+    const result = useGameStore.getState().completeEvent({
+      eventId: 'lin_001',
+      eventTitle: '窗边的取景框',
+      sceneId: 'campus',
+      experienceType: 'social',
+      choiceId: 'ask',
+      choiceText: '问她刚才在拍什么',
+      outcome: ['她说在等一个人走过。'],
+      effects: { affinity: 6 },
+      characterId: 'lin',
+      requiredAffinity: 0,
+    })
+
+    expect(result.ok).toBe(false)
+    expect(useGameStore.getState().save?.seenEventIds).not.toContain('lin_001')
+    expect(useGameStore.getState().save?.relationships).toEqual([])
+  })
+
+  it('理解度不足时角色事件拒绝结算', () => {
+    useGameStore.getState().beginJourney(profile)
+
+    const result = useGameStore.getState().completeEvent({
+      eventId: 'lin_002',
+      eventTitle: '没拍下的那张',
+      sceneId: 'campus',
+      experienceType: 'social',
+      choiceId: 'ask',
+      choiceText: '问她当时想拍什么',
+      outcome: ['她说想拍光落在墙上的样子。'],
+      effects: { affinity: 8 },
+      characterId: 'lin',
+      requiredAffinity: 30,
+    })
+
+    expect(result.ok).toBe(false)
+    expect(useGameStore.getState().save?.seenEventIds).not.toContain('lin_002')
+  })
+
+  it('睡到明天早晨会恢复行动力', () => {
+    useGameStore.getState().beginJourney(profile)
+    useGameStore.getState().spendActionPoint()
+    useGameStore.getState().spendActionPoint()
+    useGameStore.getState().spendActionPoint()
+
+    const before = useGameStore.getState().save!
+    useGameStore.getState().restUntilMorning()
+    const after = useGameStore.getState().save!
+
+    expect(after.gameDay).toBe(before.gameDay + 1)
+    expect(after.timeSlot).toBe('morning')
+    expect(after.actionPoints).toBe(3)
+  })
 })

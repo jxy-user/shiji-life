@@ -1,8 +1,7 @@
-import { useState } from 'react'
 import { Link, Navigate, useNavigate } from 'react-router-dom'
 
 import { LIFE_NODES, type LifeChoice } from '@/data/lifeStory'
-import { useLifeStore, type LifeChoiceRecord } from '@/stores/useLifeStore'
+import { useLifeStore } from '@/stores/useLifeStore'
 
 /**
  * 人生线：18 → 60 岁
@@ -15,9 +14,8 @@ export default function LifePage() {
   const save = useLifeStore((state) => state.save)
   const start = useLifeStore((state) => state.start)
   const choose = useLifeStore((state) => state.choose)
+  const clearPending = useLifeStore((state) => state.clearPending)
   const reset = useLifeStore((state) => state.reset)
-
-  const [result, setResult] = useState<LifeChoiceRecord | null>(null)
 
   if (!save) {
     return (
@@ -57,30 +55,27 @@ export default function LifePage() {
     )
   }
 
-  // 已走完且没有待展示的结果：直接进入回放
-  if (!result && save.finishedAt) {
+  // 已走完且没有待确认的结果：直接进入回放
+  if (!save.pendingChoice && save.finishedAt) {
     return <Navigate to="/life/replay" replace />
   }
 
+  const pending = save.pendingChoice
   const node = LIFE_NODES[save.currentIndex]
   const progress = Math.min(save.choices.length, LIFE_NODES.length)
 
   function handleChoose(choice: LifeChoice) {
     choose(choice.id)
-    // 从最新存档取刚写入的记录，避免依赖闭包里的旧 save
-    const latest = useLifeStore.getState().save
-    const record = latest?.choices[latest.choices.length - 1]
-    if (record) setResult(record)
   }
 
   function handleContinue() {
-    setResult(null)
+    clearPending()
     if (useLifeStore.getState().save?.finishedAt) navigate('/life/replay')
   }
 
   function handleRestart() {
+    if (!window.confirm('重新开始会清空这一段人生的选择，确定吗？')) return
     reset()
-    setResult(null)
   }
 
   return (
@@ -99,15 +94,15 @@ export default function LifePage() {
         </header>
 
         <div className="mt-10 flex-1">
-          {result ? (
+          {pending ? (
             <section className="animate-rise-in" aria-live="polite">
               <p className="text-[11px] tracking-[0.35em] text-gold-500">
-                {result.age} 岁 · {result.title}
+                {pending.age} 岁 · {pending.title}
               </p>
               <p className="mt-4 text-[12px] text-ink-500">你选择了</p>
-              <h2 className="mt-1 font-display text-xl text-ink-900">{result.label}</h2>
+              <h2 className="mt-1 font-display text-xl text-ink-900">{pending.label}</h2>
               <p className="mt-6 font-display text-[16px] leading-8 text-ink-700">
-                {result.result}
+                {pending.result}
               </p>
 
               <button

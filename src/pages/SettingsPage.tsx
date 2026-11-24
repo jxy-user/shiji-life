@@ -3,6 +3,7 @@ import { Link, Navigate, useNavigate } from 'react-router-dom'
 
 import { StatusBar } from '@/components/layout/StatusBar'
 import { useGameStore } from '@/stores/useGameStore'
+import { useLifeStore } from '@/stores/useLifeStore'
 
 /**
  * 设置（M2 版本）
@@ -30,6 +31,8 @@ export default function SettingsPage() {
       return
     }
     if (resetProgress()) {
+      // 人生线是独立存档，删除全部数据时必须一并清空
+      useLifeStore.getState().reset()
       navigate('/', { replace: true })
     } else {
       setDeleteFailed(true)

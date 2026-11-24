@@ -88,22 +88,22 @@ export default function StartPage() {
             className="mt-10 flex w-full animate-rise-in flex-col gap-3"
             style={{ animationDelay: '310ms' }}
           >
-            <Link to="/life" className={`${buttonStyles('primary', 'lg')} w-full`}>
-              开始人生 · 18 → 60
+            <Link
+              to={lifeSave?.finishedAt ? '/life/replay' : '/life'}
+              className={`${buttonStyles('primary', 'lg')} w-full`}
+            >
+              {lifeSave?.finishedAt
+                ? '查看上次的回放'
+                : lifeSave
+                  ? '继续上次的人生'
+                  : '开始人生 · 18 → 60'}
             </Link>
 
-            {lifeSave ? (
-              <Link
-                to={lifeSave.finishedAt ? '/life/replay' : '/life'}
-                className={`${buttonStyles('secondary', 'lg')} w-full`}
-              >
-                {lifeSave.finishedAt ? '查看上次的回放' : '继续上次的人生'}
-              </Link>
-            ) : (
+            {!lifeSave ? (
               <Button variant="secondary" size="lg" className="w-full" disabled>
                 继续上次的人生
               </Button>
-            )}
+            ) : null}
 
             <p className="text-center text-[11px] leading-5 text-ink-500 lg:text-left">
               每选一项，就往前走一段。没有标准答案，也不会有人给你打分。

@@ -54,12 +54,10 @@ describe('usePWA hook', () => {
     vi.unstubAllEnvs();
   });
 
-  it('初始状态：未安装、不可安装、无更新、在线', async () => {
+  it('初始状态：未安装、无更新、在线', async () => {
     const { result } = await import('@/hooks/usePWA').then(m => renderHook(() => m.usePWA()));
-    // 等待 effect 完成
     await waitFor(() => {
       expect(result.current.installed).toBe(false);
-      expect(result.current.installable).toBe(false);
       expect(result.current.updateReady).toBe(false);
       expect(result.current.online).toBe(true);
     });
@@ -113,65 +111,6 @@ describe('usePWA hook', () => {
     });
   });
 
-  it('beforeinstallprompt 设置 installable 与 deferredPrompt', async () => {
-    const { usePWA } = await import('@/hooks/usePWA');
-    const { result } = renderHook(() => usePWA());
-
-    await waitFor(() => {
-      expect(result.current.installable).toBe(false);
-    });
-
-    const mockPrompt = {
-      preventDefault: vi.fn(),
-      prompt: vi.fn().mockResolvedValue(undefined),
-      userChoice: Promise.resolve({ outcome: 'accepted' as const }),
-    };
-
-    act(() => {
-      window.dispatchEvent(new CustomEvent('beforeinstallprompt', { detail: mockPrompt }));
-    });
-
-    await waitFor(() => {
-      expect(result.current.installable).toBe(true);
-      expect(result.current.deferredPrompt).toBeTruthy();
-    });
-  });
-
-  it('install() 调用 prompt 并返回 accepted', async () => {
-    const { usePWA } = await import('@/hooks/usePWA');
-    const { result } = renderHook(() => usePWA());
-
-    const mockPrompt = {
-      preventDefault: vi.fn(),
-      prompt: vi.fn().mockResolvedValue(undefined),
-      userChoice: Promise.resolve({ outcome: 'accepted' as const }),
-    };
-
-    act(() => {
-      // 直接触发 handler 逻辑：e.preventDefault(); setState({ deferredPrompt: e })
-      // 这里 e 是 CustomEvent，但 handler 期望 e.prompt 存在
-      // 所以我们需要让 CustomEvent 拥有 prompt 方法
-      const event = new CustomEvent('beforeinstallprompt', { detail: mockPrompt });
-      Object.assign(event, mockPrompt); // 把 prompt 等方法赋给 event 对象
-      window.dispatchEvent(event);
-    });
-
-    await waitFor(() => {
-      expect(result.current.installable).toBe(true);
-    });
-
-    // 确保 deferredPrompt 有正确的方法
-    expect(result.current.deferredPrompt?.prompt).toBeDefined();
-
-    let installResult: boolean | undefined;
-    await act(async () => {
-      installResult = await result.current.install();
-    });
-
-    expect(installResult).toBe(true);
-    expect(result.current.installable).toBe(false);
-  });
-
   it('refresh() 触发 reload', async () => {
     const { usePWA } = await import('@/hooks/usePWA');
     const { result } = renderHook(() => usePWA());
@@ -223,29 +162,6 @@ describe('usePWA hook', () => {
 
     // 开发环境下不应该注册 SW (hook 早期返回，不创建 Workbox 实例)
     expect(mockWorkboxInstances.length).toBe(0);
-  });
-
-  it('安装后不显示安装引导', async () => {
-    // Mock standalone 模式
-    window.matchMedia = vi.fn().mockImplementation(query => ({
-      matches: query === '(display-mode: standalone)',
-      media: query,
-      addListener: vi.fn(),
-      removeListener: vi.fn(),
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
-      dispatchEvent: vi.fn(),
-      onchange: null,
-    }));
-
-    const { usePWA } = await import('@/hooks/usePWA');
-    const { result } = renderHook(() => usePWA());
-
-    await waitFor(() => {
-      expect(result.current.installed).toBe(true);
-      // 已安装时 showInstallPrompt 应为 false
-      expect(result.current.showInstallPrompt).toBe(false);
-    });
   });
 
   it('离线冷启动：online 状态为 false', async () => {

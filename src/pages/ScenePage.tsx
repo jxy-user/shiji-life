@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
 
 import { StatusBar } from '@/components/layout/StatusBar'
@@ -23,9 +23,13 @@ export default function ScenePage() {
   const setFlag = useGameStore((state) => state.setFlag)
   const spendActionPoint = useGameStore((state) => state.spendActionPoint)
   const greetCharacter = useGameStore((state) => state.greetCharacter)
+  const restUntilMorning = useGameStore((state) => state.restUntilMorning)
 
   const [result, setResult] = useState<string | null>(null)
   const [lastActionId, setLastActionId] = useState<string | null>(null)
+  const [runningActionId, setRunningActionId] = useState<string | null>(null)
+  // 同步锁：React 状态更新是异步的，双击时两次事件可能读到同一份旧状态
+  const busyRef = useRef(false)
 
   if (!save) return <Navigate to="/" replace />
   if (!isSceneId(sceneId)) return <Navigate to="/city" replace />
@@ -35,32 +39,55 @@ export default function ScenePage() {
   const sceneCharacters = charactersInScene(sceneId)
 
   function runAction(action: SceneAction) {
-    if (!save) return
-    if (save.actionPoints <= 0) {
-      setResult('今天的行动力用完了。回家休息一会儿，或者等明天再来。')
+    if (!save || busyRef.current) return
+    busyRef.current = true
+    setRunningActionId(action.id)
+
+    // 以 store 的原子结果为准：扣不到行动力就什么都不执行
+    if (!spendActionPoint()) {
+      setResult('今天的行动力用完了。可以睡一觉，等明天再来。')
+      busyRef.current = false
+      setRunningActionId(null)
       return
     }
-    spendActionPoint()
+
     changeEnergy(action.energy)
     if (action.advancesTime) advanceTime()
     if (sceneId !== 'plaza') setFlag('exploredBeyondPlaza')
     setResult(action.result)
     setLastActionId(action.id)
+
+    // 短暂锁住，防止同一次点击被双击重复结算
+    setTimeout(() => {
+      busyRef.current = false
+      setRunningActionId(null)
+    }, 350)
   }
 
   function handleGreet(characterId: string) {
-    if (!save) return
-    if (save.actionPoints <= 0) {
-      setResult('今天的行动力用完了。回家休息一会儿，或者等明天再来。')
-      return
-    }
+    if (!save || busyRef.current) return
+    busyRef.current = true
     const ok = greetCharacter(characterId)
+    busyRef.current = false
+
     if (!ok) {
-      setResult('今天已经打过招呼了，明天再来吧。')
+      const latest = useGameStore.getState().save
+      setResult(
+        latest && latest.actionPoints <= 0
+          ? '今天的行动力用完了。可以睡一觉，等明天再来。'
+          : '今天已经打过招呼了，明天再来吧。',
+      )
       return
     }
+
     const character = sceneCharacters.find((item) => item.id === characterId)
     setResult(character?.greeting ?? '你打了招呼。')
+    setLastActionId(null)
+  }
+
+  function handleRest() {
+    restUntilMorning()
+    setResult('你回到房间，睡了一觉。第二天早上，行动力恢复了。')
     setLastActionId(null)
   }
 
@@ -136,20 +163,6 @@ export default function ScenePage() {
                         </p>
                         <p className="mt-1 text-[11px] text-ink-500">{stageLabel}</p>
                       </div>
-                      <div className="flex shrink-0 items-center gap-2">
-                        <span className="text-[10px] tabular-nums text-ink-500">
-                          {affinity}
-                        </span>
-                        <span
-                          className="h-1.5 w-20 overflow-hidden rounded-full bg-sand-300"
-                          aria-label={`理解度 ${affinity}`}
-                        >
-                          <span
-                            className="block h-full bg-sage-500"
-                            style={{ width: `${affinity}%` }}
-                          />
-                        </span>
-                      </div>
                     </div>
 
                     <div className="mt-3 flex flex-wrap items-center gap-2">
@@ -187,8 +200,9 @@ export default function ScenePage() {
                 type="button"
                 onClick={() => runAction(action)}
                 aria-pressed={lastActionId === action.id}
+                disabled={runningActionId !== null}
                 className={[
-                  'flex w-full items-center justify-between gap-4 rounded-2xl border px-4 py-3 text-left transition-all',
+                  'flex w-full items-center justify-between gap-4 rounded-2xl border px-4 py-3 text-left transition-all disabled:cursor-not-allowed disabled:opacity-60',
                   lastActionId === action.id
                     ? 'border-gold-400 bg-gold-200/30'
                     : 'border-sand-300 bg-cream-50 hover:border-gold-300 hover:bg-cream-100/60',
@@ -223,13 +237,22 @@ export default function ScenePage() {
             ) : null}
           </div>
 
-          <button
-            type="button"
-            onClick={() => navigate('/city')}
-            className="mt-6 w-full rounded-full border border-sand-300 px-5 py-3 text-[13px] tracking-[0.08em] text-ink-700 transition-colors hover:border-gold-400 hover:text-ink-900"
-          >
-            回到城市
-          </button>
+          <div className="mt-6 flex flex-col gap-2 sm:flex-row">
+            <button
+              type="button"
+              onClick={handleRest}
+              className="w-full rounded-lg border border-sand-300 px-5 py-3 text-[13px] tracking-[0.08em] text-ink-700 transition-colors hover:border-gold-400 hover:text-ink-900"
+            >
+              睡到明天早晨
+            </button>
+            <button
+              type="button"
+              onClick={() => navigate('/city')}
+              className="w-full rounded-lg border border-sand-300 px-5 py-3 text-[13px] tracking-[0.08em] text-ink-700 transition-colors hover:border-gold-400 hover:text-ink-900"
+            >
+              回到城市
+            </button>
+          </div>
         </section>
       </div>
     </main>

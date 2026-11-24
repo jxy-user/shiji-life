@@ -56,20 +56,6 @@ export default function PeoplePage() {
                     </p>
                     <p className="mt-1 text-[12px] text-ink-500">{stageLabel}</p>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-[10px] tabular-nums text-ink-500">
-                      {affinity}
-                    </span>
-                    <span
-                      className="h-1.5 w-28 overflow-hidden rounded-full bg-sand-300"
-                      aria-label={`理解度 ${affinity}`}
-                    >
-                      <span
-                        className="block h-full bg-sage-500"
-                        style={{ width: `${affinity}%` }}
-                      />
-                    </span>
-                  </div>
                 </div>
 
                 <div className="mt-3 space-y-1.5 text-[12px] leading-6 text-ink-500">

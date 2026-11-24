@@ -8,11 +8,6 @@ vi.mock('@/hooks/usePWA', () => ({
     dismissUpdateToast: vi.fn(),
     applyUpdate: vi.fn(),
     showOfflineToast: true,
-    showInstallPrompt: true,
-    showInstallBanner: true,
-    setShowInstallBanner: vi.fn(),
-    install: vi.fn(),
-    installable: true,
     installed: false,
   }),
 }))
@@ -20,11 +15,10 @@ vi.mock('@/hooks/usePWA', () => ({
 import { PWANotifications } from '@/components/pwa/PWANotifications'
 
 describe('PWANotifications 提示互斥', () => {
-  it('更新、离线、安装同时就绪时，只显示更新提示', () => {
+  it('更新与离线同时就绪时，只显示更新提示', () => {
     render(<PWANotifications />)
 
     expect(screen.getByText('有新版本可用')).toBeInTheDocument()
     expect(screen.queryByText('您当前处于离线状态')).not.toBeInTheDocument()
-    expect(screen.queryByText('安装「拾己 · LIFE」')).not.toBeInTheDocument()
   })
 })

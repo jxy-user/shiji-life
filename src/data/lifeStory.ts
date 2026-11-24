@@ -351,10 +351,13 @@ export type LifeSummary = {
   label: string
   description: string
   counts: Record<LifeTag, number>
+  isTie: boolean
 }
 
-/** 统计选择倾向；平票时按固定的标签顺序取第一个，保证结果稳定 */
-export function summarizeLife(choices: ReadonlyArray<{ tags: readonly string[] }>): LifeSummary {
+/** 统计选择倾向；平票时不写「更常」，改为中性描述 */
+export function summarizeLife(
+  choices: ReadonlyArray<{ tags?: readonly string[] } | null | undefined>,
+): LifeSummary {
   const counts: Record<LifeTag, number> = {
     explore: 0,
     steady: 0,
@@ -364,20 +367,34 @@ export function summarizeLife(choices: ReadonlyArray<{ tags: readonly string[] }
   }
 
   for (const choice of choices) {
-    for (const tag of choice.tags) {
+    // 存档被手工改坏时（例如 choices: [null]）也不能让回放页崩掉
+    for (const tag of choice?.tags ?? []) {
       if (tag in counts) counts[tag as LifeTag] += 1
     }
   }
 
-  const top = LIFE_TAGS.reduce(
-    (best, tag) => (counts[tag] > counts[best] ? tag : best),
-    LIFE_TAGS[0],
-  )
+  const maxCount = Math.max(...LIFE_TAGS.map((tag) => counts[tag]))
+  const leaders = LIFE_TAGS.filter((tag) => counts[tag] === maxCount)
+  const isTie = maxCount > 0 && leaders.length > 1
+  const top = leaders[0] ?? LIFE_TAGS[0]
+
+  if (maxCount === 0) {
+    return {
+      tag: top,
+      label: '还没有答案',
+      description: '这一段还没有做出什么选择。',
+      counts,
+      isTie: false,
+    }
+  }
 
   return {
     tag: top,
-    label: LIFE_TAG_LABELS[top],
-    description: TAG_DESCRIPTIONS[top],
+    label: isTie ? '几种都有一点' : LIFE_TAG_LABELS[top],
+    description: isTie
+      ? '你的选择比较分散，没有哪一种明显更多。几条路都走过一点。'
+      : TAG_DESCRIPTIONS[top],
     counts,
+    isTie,
   }
 }

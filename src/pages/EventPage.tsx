@@ -43,6 +43,16 @@ export default function EventPage() {
     ? save.experiences.find((item) => item.id === outcome.experienceId)
     : undefined
 
+  // 角色事件的门槛校验：直接访问深层链接也不能绕过
+  const character = event.characterId ? findCharacter(event.characterId) : null
+  const relationship = character
+    ? save.relationships.find((item) => item.characterId === character.id)
+    : null
+  const affinity = relationship?.affinity ?? 0
+  const lackingAffinity = Boolean(character) && affinity < (event.minAffinity ?? 0)
+  const lackingAction = Boolean(character) && save.actionPoints <= 0
+  const blocked = lackingAffinity || lackingAction
+
   function choose(choice: EventChoice) {
     if (!save || !event || outcome) return
 
@@ -58,8 +68,12 @@ export default function EventPage() {
       outcome: choice.result,
       effects: choice.effects,
       characterId: event.characterId,
+      requiredAffinity: event.minAffinity,
       markExplored: event.sceneId !== 'plaza',
     })
+
+    // store 拒绝结算（门槛/行动力不足）时不渲染结果，也不写已读
+    if (!result.ok) return
 
     // 双击时第二次幂等调用也能拿到同一条经历，不覆盖已渲染的结果
     setOutcome((previous) => previous ?? { choice, experienceId: result.experienceId })
@@ -82,7 +96,29 @@ export default function EventPage() {
               {event.title}
             </h1>
 
-            {alreadySeen ? (
+            {blocked ? (
+              <div className="mt-6 space-y-4">
+                <p className="font-display text-[15px] leading-7 text-ink-700">
+                  {lackingAction
+                    ? '今天的行动力用完了。先休息一下，明天再来。'
+                    : '你们还不太熟，这件事现在聊不起来。先多见几次面吧。'}
+                </p>
+                <div className="flex flex-wrap gap-3">
+                  <Link
+                    to={`/scene/${event.sceneId}`}
+                    className="inline-flex rounded-lg bg-ink-900 px-5 py-2.5 text-[13px] text-cream-50 transition-colors hover:bg-ink-700"
+                  >
+                    回到{SCENES[event.sceneId].name}
+                  </Link>
+                  <Link
+                    to="/city"
+                    className="inline-flex rounded-lg border border-sand-300 px-5 py-2.5 text-[13px] text-ink-700 transition-colors hover:border-gold-400"
+                  >
+                    回到城市
+                  </Link>
+                </div>
+              </div>
+            ) : alreadySeen ? (
               <div className="mt-6">
                 <p className="font-display text-[15px] leading-7 text-ink-700">
                   这件事已经过去了。

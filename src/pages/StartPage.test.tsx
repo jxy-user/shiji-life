@@ -57,6 +57,7 @@ describe('StartPage', () => {
         currentIndex: LIFE_NODES.length,
         choices: [],
         finishedAt: new Date().toISOString(),
+        pendingChoice: null,
       },
     })
 

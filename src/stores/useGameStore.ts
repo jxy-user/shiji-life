@@ -70,6 +70,8 @@ export type CompleteEventInput = {
   }
   /** 归属角色；角色事件会更新理解度并消耗 1 点行动力 */
   characterId?: string
+  /** 角色事件所需的最低理解度；不满足时拒绝结算，防止直接访问事件页绕过门槛 */
+  requiredAffinity?: number
   /** 非广场事件完成时，标记「已经探索过城市」 */
   markExplored?: boolean
 }
@@ -212,6 +214,8 @@ type GameState = {
   greetCharacter: (characterId: string) => boolean
   /** 消耗 1 点行动力；没有剩余时返回 false */
   spendActionPoint: () => boolean
+  /** 直接睡到明天早晨（无行动力时的兜底出口） */
+  restUntilMorning: () => void
 }
 
 /**
@@ -395,6 +399,21 @@ export const useGameStore = create<GameState>()((set, get) => {
         return { ok: true, experienceId: existing?.id ?? null }
       }
 
+      // 角色事件：必须还有行动力，且理解度达到门槛。
+      // 校验放在 store 内，直接访问事件页也无法绕过。
+      if (input.characterId) {
+        if (current.actionPoints <= 0) {
+          return { ok: false, experienceId: null }
+        }
+        const relationship = current.relationships.find(
+          (item) => item.characterId === input.characterId,
+        )
+        const affinity = relationship?.affinity ?? 0
+        if (affinity < (input.requiredAffinity ?? 0)) {
+          return { ok: false, experienceId: null }
+        }
+      }
+
       let next: SaveData = {
         ...current,
         seenEventIds: [...current.seenEventIds, input.eventId],
@@ -517,9 +536,11 @@ export const useGameStore = create<GameState>()((set, get) => {
         id: createId(),
         status: 'invited',
         trigger: 'threshold',
-        experienceIds: getEligibleExperiences(current).map(
-          (experience) => experience.id,
-        ),
+        // 回顾不需要把全部经历都塞进邀请；截断到 schema 允许的上限，
+        // 否则超过 50 条授权经历时写盘会因校验失败而静默失败
+        experienceIds: getEligibleExperiences(current)
+          .slice(0, 50)
+          .map((experience) => experience.id),
         createdAt: new Date().toISOString(),
         respondedAt: null,
         completedAt: null,
@@ -857,17 +878,33 @@ export const useGameStore = create<GameState>()((set, get) => {
       if (current.flags[greetFlag]) return false
 
       const next = upsertRelationship(current, characterId, 2)
-      return commit({
+      commit({
         ...next,
         actionPoints: Math.max(0, next.actionPoints - 1),
         flags: { ...next.flags, [greetFlag]: true },
       })
+      // 返回值表示「本次是否成功扣减」，与写盘结果解耦：
+      // 存储不可用时仍可在内存中继续游玩，由 persistenceError 统一提示
+      return true
     },
 
     spendActionPoint: () => {
       const current = get().save
       if (!current || current.actionPoints <= 0) return false
-      return commit({ ...current, actionPoints: current.actionPoints - 1 })
+      commit({ ...current, actionPoints: current.actionPoints - 1 })
+      return true
+    },
+
+    restUntilMorning: () => {
+      const current = get().save
+      if (!current) return
+      // 从任意时段推进到「明天早晨」，跨夜会恢复行动力
+      let next: SaveData = current
+      for (let step = 0; step < 4; step += 1) {
+        next = advanceSaveTime(next)
+        if (next.timeSlot === 'morning' && next.gameDay > current.gameDay) break
+      }
+      commit(next)
     },
   }
 })
