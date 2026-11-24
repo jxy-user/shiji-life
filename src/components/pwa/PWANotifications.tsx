@@ -1,3 +1,4 @@
+import { Icon } from '@/components/ui/Icon';
 import { usePWANotifications } from '@/hooks/usePWA';
 import { PWA_INSTALL_DISMISSED_KEY, writePreference } from '@/services/preferences';
 
@@ -36,9 +37,11 @@ export function PWANotifications() {
 
         {/* 更新就绪 */}
         {activeToast === 'update' && (
-          <div className="mx-auto max-w-md animate-slide-up rounded-2xl border border-gold-300 bg-cream-50/95 p-4 shadow-[0_20px_50px_-25px_rgba(43,38,33,0.4)] backdrop-blur-md">
+          <div className="mx-auto max-w-md animate-slide-up rounded-2xl border border-gold-300 bg-cream-50/95 p-4 shadow-[0_8px_24px_-16px_rgba(43,38,33,0.25)] backdrop-blur-md">
             <div className="flex items-start gap-3">
-              <div className="flex-shrink-0 mt-0.5 text-gold-600">🔄</div>
+              <div className="flex-shrink-0 mt-0.5 text-gold-600">
+                <Icon name="refresh" size={18} />
+              </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-ink-900">有新版本可用</p>
                 <p className="mt-1 text-xs text-ink-600">刷新页面即可体验最新内容，您的进度已自动保存。</p>
@@ -63,9 +66,11 @@ export function PWANotifications() {
 
         {/* 离线提示 */}
         {activeToast === 'offline' && (
-          <div className="mx-auto max-w-md animate-slide-up rounded-2xl border border-rose-200 bg-rose-50/95 p-4 shadow-[0_20px_50px_-25px_rgba(43,38,33,0.4)] backdrop-blur-md">
+          <div className="mx-auto max-w-md animate-slide-up rounded-2xl border border-rose-200 bg-rose-50/95 p-4 shadow-[0_8px_24px_-16px_rgba(43,38,33,0.25)] backdrop-blur-md">
             <div className="flex items-center gap-3">
-              <div className="flex-shrink-0 text-rose-600">📡</div>
+              <div className="flex-shrink-0 text-rose-600">
+                <Icon name="offline" size={18} />
+              </div>
               <div className="flex-1">
                 <p className="text-sm font-medium text-rose-900">您当前处于离线状态</p>
                 <p className="mt-1 text-xs text-rose-700">游戏可继续游玩，数据仅保存在本设备，联网后自动保持可用。</p>
@@ -76,9 +81,11 @@ export function PWANotifications() {
 
         {/* 安装引导 */}
         {activeToast === 'install' && (
-          <div className="mx-auto max-w-md animate-slide-up rounded-2xl border border-forest-300 bg-forest-50/95 p-4 shadow-[0_20px_50px_-25px_rgba(43,38,33,0.4)] backdrop-blur-md">
+          <div className="mx-auto max-w-md animate-slide-up rounded-2xl border border-forest-300 bg-forest-50/95 p-4 shadow-[0_8px_24px_-16px_rgba(43,38,33,0.25)] backdrop-blur-md">
             <div className="flex items-start gap-3">
-              <div className="flex-shrink-0 mt-0.5 text-forest-600">📱</div>
+              <div className="flex-shrink-0 mt-0.5 text-forest-600">
+                <Icon name="install" size={18} />
+              </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-forest-900">安装「拾己 · LIFE」</p>
                 <p className="mt-1 text-xs text-forest-700">添加到主屏幕，像原生应用一样全屏体验，离线也能玩。</p>
@@ -125,7 +132,7 @@ export function InstallButton() {
       className="inline-flex items-center gap-2 rounded-lg bg-forest-700 px-4 py-2 text-sm font-medium text-white hover:bg-forest-800 transition-colors"
       aria-label="安装应用"
     >
-      <span>📱</span>
+      <Icon name="smartphone" size={16} />
       安装到主屏幕
     </button>
   );

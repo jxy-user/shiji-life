@@ -74,7 +74,7 @@ export default function CityPage() {
       <StatusBar save={save} showBackHome={false} title="未完成之城" />
 
       <div className="mx-auto w-full max-w-5xl px-4 pt-6 lg:max-w-6xl lg:px-6 lg:pt-8">
-        <div className="mb-5 flex flex-wrap items-end justify-between gap-3 px-1">
+        <div className="mb-5 flex flex-wrap items-end justify-between gap-3 border-b border-sand-300/60 px-1 pb-5">
           <div>
             <p className="text-[11px] tracking-[0.4em] text-gold-600">第一章 · 初入未完成之城</p>
             <h1 className="mt-2 font-display text-2xl tracking-[0.05em] text-ink-900">
@@ -104,7 +104,7 @@ export default function CityPage() {
           }
         />
 
-        <nav className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[12px] tracking-[0.1em] text-ink-500">
+        <nav className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 border-t border-sand-300/50 pt-4 text-[11px] tracking-[0.16em] text-ink-500">
           <Link to="/archive" className="transition-colors hover:text-ink-900">
             人生档案
           </Link>
@@ -120,7 +120,7 @@ export default function CityPage() {
         </nav>
 
         {readiness.shouldInvite ? (
-          <section className="mx-auto mt-8 animate-rise-in rounded-3xl border border-gold-300/70 bg-gradient-to-b from-cream-100 to-cream-50 p-5 sm:p-6 lg:max-w-4xl lg:p-7">
+          <section className="mx-auto mt-8 animate-rise-in rounded-2xl border border-gold-300/70 bg-cream-100 p-5 sm:p-6 lg:max-w-4xl lg:p-7">
             <div className="flex items-start gap-4">
               <LumiSprite size={52} talking />
               <div className="min-w-0 flex-1">
@@ -163,7 +163,7 @@ export default function CityPage() {
         {exploredBeyondPlaza && !chapterCardDismissed ? (
           <section
             ref={chapterCardRef}
-            className="mx-auto mt-8 max-w-2xl animate-rise-in rounded-3xl border border-gold-300/60 bg-gradient-to-b from-cream-100 to-cream-50 p-6 lg:max-w-3xl"
+            className="mx-auto mt-8 max-w-2xl animate-rise-in rounded-2xl border border-gold-300/60 bg-cream-100 p-6 lg:max-w-3xl"
           >
             <p className="text-[11px] tracking-[0.35em] text-gold-600">第一章 · 完成</p>
             <h2 className="mt-3 font-display text-xl text-ink-900">

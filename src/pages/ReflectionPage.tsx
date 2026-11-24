@@ -63,7 +63,7 @@ export default function ReflectionPage() {
       <main className="relative min-h-dvh bg-cream-50">
         <StatusBar save={save} title="回顾邀请" />
         <div className="mx-auto flex min-h-[70dvh] w-full max-w-lg flex-col justify-center px-5">
-          <section className="rounded-3xl border border-gold-300/70 bg-gradient-to-b from-cream-100 to-cream-50 p-6">
+          <section className="rounded-2xl border border-gold-300/70 bg-cream-100 p-6">
             <LumiSprite size={64} talking />
             <p className="mt-4 font-display text-[16px] leading-8 text-ink-900">
               最近我们一起经历了不少事。我有一些小发现，但不确定是不是我理解的那样。你愿意聊聊吗？
@@ -380,7 +380,7 @@ function DoneScreen({ save }: { save: NonNullable<ReturnType<typeof useGameStore
     <main className="min-h-dvh bg-cream-50">
       <StatusBar save={save} title="回顾" />
       <div className="mx-auto flex min-h-[70dvh] w-full max-w-lg flex-col justify-center px-5">
-        <section className="rounded-3xl border border-sand-300 bg-cream-50 p-6">
+        <section className="rounded-2xl border border-sand-300 bg-cream-50 p-6">
           <LumiSprite size={56} />
           <h1 className="mt-4 font-display text-xl text-ink-900">这次就到这里。</h1>
           <p className="mt-2 text-[13px] leading-6 text-ink-500">

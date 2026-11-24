@@ -72,7 +72,7 @@ export default function EventPage() {
         <StatusBar save={save} title={SCENES[event.sceneId].name} />
 
         <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col justify-center px-4 py-10 lg:max-w-3xl">
-          <section className="rounded-3xl border border-sand-300 bg-cream-50/95 p-6 shadow-[0_30px_70px_-45px_rgba(43,38,33,0.55)] backdrop-blur-md sm:p-8">
+          <section className="rounded-2xl border border-sand-300 bg-cream-50/95 p-6 shadow-[0_18px_40px_-32px_rgba(43,38,33,0.32)] backdrop-blur-md sm:p-8">
             <p className="text-[11px] tracking-[0.4em] text-gold-600">
               {SCENES[event.sceneId].name}
             </p>

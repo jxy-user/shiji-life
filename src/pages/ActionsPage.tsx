@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useGameStore } from '@/stores/useGameStore'
+import { Icon } from '@/components/ui/Icon'
 import { INSIGHT_CATEGORY_LABELS, type InsightCategory } from '@/types/game'
 
 function ActionCard({
@@ -38,15 +39,15 @@ function ActionCard({
     paused: '暂停',
   }
   const statusColors: Record<string, string> = {
-    todo: 'bg-ink-100 text-ink-700',
-    in_progress: 'bg-sun-100 text-sun-700',
-    done: 'bg-forest-100 text-forest-700',
-    paused: 'bg-stone-100 text-stone-600',
+    todo: 'text-ink-500',
+    in_progress: 'text-sun-700',
+    done: 'text-sage-700',
+    paused: 'text-ink-400',
   }
 
   return (
     <article
-      className="group relative rounded-xl border border-ink-100 bg-white p-4 sm:p-5 shadow-sm transition-shadow hover:shadow-md"
+      className="group relative border-b border-sand-300/60 py-5"
     >
       <header className="flex items-start gap-3">
         <div className="flex-1 min-w-0">
@@ -58,7 +59,8 @@ function ActionCard({
             </p>
           )}
           <div className="mt-2 flex flex-wrap items-center gap-2 text-xs">
-            <span className={`inline-flex items-center rounded-full px-2 py-0.5 ${statusColors[action.status]}`}>
+            <span className={`inline-flex items-center gap-1.5 ${statusColors[action.status]}`}>
+              <span className="h-1.5 w-1.5 rounded-full bg-current" aria-hidden />
               {statusLabels[action.status]}
             </span>
             <span className="text-ink-400">·</span>
@@ -85,10 +87,10 @@ function ActionCard({
             <button
               type="button"
               onClick={() => onStatusChange(action.id, 'todo')}
-              className={`inline-flex items-center rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
+              className={`inline-flex items-center rounded-lg border px-3 py-1.5 text-sm font-medium transition-colors ${
                 action.status === 'todo'
-                  ? 'bg-ink-900 text-white'
-                  : 'bg-ink-50 text-ink-700 hover:bg-ink-100'
+                  ? 'border-ink-900 bg-cream-100 text-ink-900'
+                  : 'border-sand-300 text-ink-600 hover:border-gold-400 hover:text-ink-900'
               }`}
             >
               待办
@@ -96,10 +98,10 @@ function ActionCard({
             <button
               type="button"
               onClick={() => onStatusChange(action.id, 'in_progress')}
-              className={`inline-flex items-center rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
+              className={`inline-flex items-center rounded-lg border px-3 py-1.5 text-sm font-medium transition-colors ${
                 action.status === 'in_progress'
-                  ? 'bg-sun-700 text-white'
-                  : 'bg-sun-50 text-sun-700 hover:bg-sun-100'
+                  ? 'border-ink-900 bg-cream-100 text-ink-900'
+                  : 'border-sand-300 text-ink-600 hover:border-gold-400 hover:text-ink-900'
               }`}
             >
               开始
@@ -107,10 +109,10 @@ function ActionCard({
             <button
               type="button"
               onClick={() => onStatusChange(action.id, 'paused')}
-              className={`inline-flex items-center rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
+              className={`inline-flex items-center rounded-lg border px-3 py-1.5 text-sm font-medium transition-colors ${
                 action.status === 'paused'
-                  ? 'bg-stone-600 text-white'
-                  : 'bg-stone-100 text-stone-700 hover:bg-stone-200'
+                  ? 'border-ink-900 bg-cream-100 text-ink-900'
+                  : 'border-sand-300 text-ink-600 hover:border-gold-400 hover:text-ink-900'
               }`}
             >
               暂停
@@ -121,16 +123,17 @@ function ActionCard({
           <button
             type="button"
             onClick={() => onComplete(action.id)}
-            className="inline-flex items-center rounded-lg bg-forest-700 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-forest-800"
+            className="inline-flex items-center rounded-lg bg-ink-900 px-3 py-1.5 text-sm font-medium text-cream-50 transition-colors hover:bg-ink-700"
           >
             完成并复盘
           </button>
         )}
         {action.status === 'done' && (
-          <span className="inline-flex items-center rounded-lg bg-forest-50 px-3 py-1.5 text-sm font-medium text-forest-700">
+          <span className="inline-flex items-center gap-1.5 text-sm text-sage-700">
+            <span className="h-1.5 w-1.5 rounded-full bg-current" aria-hidden />
             已完成
             {action.completedAt && (
-              <span className="ml-2 text-xs text-forest-500">
+              <span className="ml-1.5 text-xs text-ink-500">
                 {new Date(action.completedAt).toLocaleString('zh-CN')}
               </span>
             )}
@@ -141,7 +144,7 @@ function ActionCard({
           onClick={() => {
             if (window.confirm('确定删除这条行动吗？')) onDelete(action.id)
           }}
-          className="ml-auto inline-flex items-center rounded-lg px-3 py-1.5 text-sm font-medium text-ink-500 transition-colors hover:bg-ink-50"
+          className="ml-auto inline-flex items-center rounded-lg px-3 py-1.5 text-sm text-ink-500 transition-colors hover:text-ink-900"
         >
           删除
         </button>
@@ -192,7 +195,7 @@ function CreateActionDialog({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" role="dialog" aria-modal="true" aria-labelledby="create-action-dialog-title">
-      <article className="w-full max-w-md rounded-xl bg-white p-6 shadow-xl">
+      <article className="w-full max-w-md rounded-xl bg-white p-6 shadow-lg">
         <header className="flex items-center justify-between">
           <h2 id="create-action-dialog-title" className="text-lg font-semibold text-ink-900">新建行动</h2>
           <button
@@ -202,7 +205,7 @@ function CreateActionDialog({
             className="rounded-lg p-1 text-ink-400 hover:bg-ink-100 disabled:opacity-50"
             aria-label="关闭"
           >
-            ✕
+            <Icon name="close" size={18} />
           </button>
         </header>
 
@@ -338,7 +341,7 @@ function CompleteActionDialog({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" role="dialog" aria-modal="true" aria-labelledby="complete-dialog-title">
-      <article className="w-full max-w-md rounded-xl bg-white p-6 shadow-xl">
+      <article className="w-full max-w-md rounded-xl bg-white p-6 shadow-lg">
         <header className="flex items-center justify-between">
           <h2 id="complete-dialog-title" className="text-lg font-semibold text-ink-900">完成行动 · 复盘</h2>
           <button
@@ -348,7 +351,7 @@ function CompleteActionDialog({
             className="rounded-lg p-1 text-ink-400 hover:bg-ink-100 disabled:opacity-50"
             aria-label="关闭"
           >
-            ✕
+            <Icon name="close" size={18} />
           </button>
         </header>
 
@@ -434,19 +437,19 @@ export default function ActionsPage() {
 
   return (
     <div className="min-h-dvh bg-cream-50 pb-12 sm:pb-16">
-      <header className="sticky top-0 z-10 border-b border-ink-100 bg-white/80 backdrop-blur-sm">
-        <div className="mx-auto max-w-3xl px-4 py-4 sm:px-6 sm:py-5 lg:max-w-5xl">
+      <header className="sticky top-0 z-10 border-b border-sand-300/60 bg-cream-50/90 backdrop-blur-sm">
+        <div className="mx-auto max-w-3xl px-4 py-4 sm:px-6 sm:py-5 lg:max-w-4xl">
           <nav className="flex items-center gap-2 text-sm text-ink-500" aria-label="面包屑">
             <a href="#/city" className="hover:text-ink-700">城市</a>
             <span aria-hidden="true">/</span>
             <span className="font-medium text-ink-900">我的行动</span>
           </nav>
-          <h1 className="mt-2 text-2xl font-bold tracking-tight text-ink-900 sm:text-3xl">我的行动</h1>
+          <h1 className="mt-2 font-display text-2xl tracking-[0.04em] text-ink-900 sm:text-3xl">我的行动</h1>
           <p className="mt-1 text-sm text-ink-500">从认知出发，带一件小事回到现实。没完成也没关系，可以暂停，也可以放弃。</p>
         </div>
       </header>
 
-      <main className="mx-auto max-w-3xl px-4 sm:px-6 lg:max-w-5xl">
+      <main className="mx-auto max-w-3xl px-4 sm:px-6 lg:max-w-4xl">
         {actions.length === 0 ? (
           <section className="py-12 sm:py-16 text-center" aria-labelledby="empty-title">
             <h2 id="empty-title" className="text-lg font-medium text-ink-700">
@@ -465,7 +468,7 @@ export default function ActionsPage() {
           </section>
         ) : (
           <>
-            <div className="space-y-4 lg:grid lg:grid-cols-2 lg:gap-4 lg:space-y-0" role="list" aria-label="行动列表">
+            <div className="mt-6 divide-y divide-sand-300/60 border-t border-sand-300/60" role="list" aria-label="行动列表">
               {actions.map((action: typeof actions[0]) => {
                 const linkedInsight = insights.find((i: typeof insights[0]) => i.id === action.linkedInsightId) || null
                 return (

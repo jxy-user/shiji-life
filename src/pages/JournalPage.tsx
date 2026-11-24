@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react'
 import { useGameStore } from '@/stores/useGameStore'
 import { useShallow } from 'zustand/react/shallow'
+import { Icon } from '@/components/ui/Icon'
 import { TIME_SLOT_LABELS } from '@/game/saveSchema'
 import { INSIGHT_CATEGORY_LABELS, type InsightCategory } from '@/types/game'
 
@@ -15,7 +16,7 @@ const TYPE_LABELS: Record<JournalType, string> = {
 const TYPE_COLORS: Record<JournalType, string> = {
   action_review: 'bg-sun-100 text-sun-700',
   free: 'bg-ink-100 text-ink-700',
-  insight_link: 'bg-purple-100 text-purple-700',
+  insight_link: 'bg-sage-300/40 text-sage-700',
 }
 
 function JournalEntryCard({
@@ -57,7 +58,7 @@ function JournalEntryCard({
   }
 
   return (
-    <article className="relative rounded-xl border border-ink-100 bg-white p-4 sm:p-5 shadow-sm">
+    <article className="relative border-b border-sand-300/60 py-5">
       <header className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-2">
           <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${TYPE_COLORS[entry.type]}`}>
@@ -79,7 +80,7 @@ function JournalEntryCard({
             className="rounded-lg p-1.5 text-ink-400 hover:bg-ink-100 hover:text-ink-600"
             aria-label={isEditing ? '取消编辑' : '编辑'}
           >
-            {isEditing ? '✕' : '✎'}
+            {isEditing ? <Icon name="close" size={14} /> : <Icon name="edit" size={14} />}
           </button>
           <button
             type="button"
@@ -89,7 +90,7 @@ function JournalEntryCard({
             className="rounded-lg p-1.5 text-ink-400 hover:bg-ink-100 hover:text-rose-600"
             aria-label="删除"
           >
-            🗑
+            <Icon name="trash" size={14} />
           </button>
         </div>
       </header>
@@ -137,7 +138,7 @@ function JournalEntryCard({
           </span>
         )}
         {linkedInsight && (
-          <span className="inline-flex items-center gap-1 rounded-full bg-purple-50 px-2 py-0.5 text-purple-700">
+          <span className="inline-flex items-center gap-1 rounded-full bg-sage-300/30 px-2 py-0.5 text-sage-700">
             认知：[{INSIGHT_CATEGORY_LABELS[linkedInsight.category as InsightCategory]}] {linkedInsight.title}
           </span>
         )}
@@ -195,7 +196,7 @@ function CreateJournalDialog({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" role="dialog" aria-modal="true" aria-labelledby="create-journal-dialog-title">
-      <article className="w-full max-w-md rounded-xl bg-white p-6 shadow-xl max-h-[90vh] overflow-y-auto">
+      <article className="w-full max-w-md rounded-xl bg-white p-6 shadow-lg max-h-[90vh] overflow-y-auto">
         <header className="flex items-center justify-between sticky top-0 bg-white pb-4 border-b border-ink-100">
           <h2 id="create-journal-dialog-title" className="text-lg font-semibold text-ink-900">新建日记</h2>
           <button
@@ -205,7 +206,7 @@ function CreateJournalDialog({
             className="rounded-lg p-1 text-ink-400 hover:bg-ink-100 disabled:opacity-50"
             aria-label="关闭"
           >
-            ✕
+            <Icon name="close" size={18} />
           </button>
         </header>
 
@@ -370,14 +371,14 @@ export default function JournalPage() {
 
   return (
     <div className="min-h-dvh bg-cream-50 pb-12 sm:pb-16">
-      <header className="sticky top-0 z-10 border-b border-ink-100 bg-white/80 backdrop-blur-sm">
+      <header className="sticky top-0 z-10 border-b border-sand-300/60 bg-cream-50/90 backdrop-blur-sm">
         <div className="mx-auto max-w-3xl px-4 py-4 sm:px-6 sm:py-5 lg:max-w-4xl">
           <nav className="flex items-center gap-2 text-sm text-ink-500" aria-label="面包屑">
             <a href="#/city" className="hover:text-ink-700">城市</a>
             <span aria-hidden="true">/</span>
             <span className="font-medium text-ink-900">日记</span>
           </nav>
-          <h1 className="mt-2 text-2xl font-bold tracking-tight text-ink-900 sm:text-3xl">日记</h1>
+          <h1 className="mt-2 font-display text-2xl tracking-[0.04em] text-ink-900 sm:text-3xl">日记</h1>
           <p className="mt-1 text-sm text-ink-500">默认不进入任何分析。你写下的内容属于你，随时可以修改或删除。</p>
         </div>
       </header>
@@ -391,8 +392,8 @@ export default function JournalPage() {
               onClick={() => setFilterType(t)}
               className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
                 filterType === t
-                  ? 'bg-ink-900 text-white'
-                  : 'bg-white text-ink-700 hover:bg-ink-50 border border-ink-200'
+                  ? 'bg-ink-900 text-cream-50'
+                  : 'bg-cream-50 text-ink-700 hover:bg-cream-100 border border-sand-300'
               }`}
             >
               {t === 'all' ? '全部' : TYPE_LABELS[t as JournalType]}
@@ -417,7 +418,7 @@ export default function JournalPage() {
             </button>
           </section>
         ) : (
-          <div className="space-y-4" role="list" aria-label="日记列表">
+          <div className="mt-2 divide-y divide-sand-300/60 border-t border-sand-300/60" role="list" aria-label="日记列表">
             {entryWithRelations.map((entry: typeof entryWithRelations[0]) => (
               <JournalEntryCard
                 key={entry.id}

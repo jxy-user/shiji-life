@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react'
 import { Link, Navigate, useNavigate } from 'react-router-dom'
 
 import { StatusBar } from '@/components/layout/StatusBar'
+import { Icon } from '@/components/ui/Icon'
 import { SCENES } from '@/data/scenes'
 import { TIME_SLOT_LABELS } from '@/game/saveSchema'
 import { getVisibleExperiences } from '@/services/experienceService'
@@ -103,7 +104,7 @@ export default function ArchivePage() {
               </Link>
             </div>
           ) : (
-            <ul className="mt-4 space-y-3">
+            <ul className="mt-2 divide-y divide-sand-300/60 border-t border-sand-300/60">
               {experiences.map((experience) => {
                 const sceneName = SCENES[experience.sceneId].name
                 const confirming = pendingDeleteId === experience.id
@@ -111,7 +112,7 @@ export default function ArchivePage() {
                 return (
                   <li
                     key={experience.id}
-                    className="rounded-2xl border border-sand-300 bg-cream-50 p-4 sm:p-5"
+                    className="py-5"
                   >
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <span className="rounded-full bg-gold-200/50 px-3 py-1 text-[11px] tracking-[0.08em] text-gold-600">
@@ -137,7 +138,7 @@ export default function ArchivePage() {
                       </p>
                     ) : null}
 
-                    <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-sand-300/60 pt-3">
+                    <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
                       <button
                         type="button"
                         role="switch"
@@ -218,11 +219,11 @@ export default function ArchivePage() {
                     <h3 className="text-[11px] tracking-[0.25em] text-gold-600">
                       {INSIGHT_CATEGORY_LABELS[category]}
                     </h3>
-                    <ul className="mt-2 space-y-2.5">
+                    <ul className="mt-3 space-y-4">
                       {items.map((insight) => (
                         <li
                           key={insight.id}
-                          className="rounded-2xl border border-sand-300 bg-cream-50 p-4"
+                          className="border-l-2 border-sage-500/45 pl-4"
                         >
                           <div className="flex items-start justify-between gap-3">
                             <p className="font-display text-[15px] text-ink-900">
@@ -406,7 +407,8 @@ function generateChapterSummary(data: {
     const doneActions = actions.filter((a) => a.status === 'done')
     summary += `你建立了 ${actions.length} 个现实行动，其中 ${doneActions.length} 个已完成。\n`
     actions.forEach((a) => {
-      const statusLabel = a.status === 'done' ? '✓' : a.status === 'in_progress' ? '→' : a.status === 'paused' ? '⏸' : '○'
+      const statusLabel =
+        a.status === 'done' ? '完成' : a.status === 'in_progress' ? '进行中' : a.status === 'paused' ? '暂停' : '待办'
       summary += `${statusLabel} ${a.title}\n`
     })
     summary += '\n'
@@ -456,7 +458,7 @@ function ChapterSummaryCard({
   const chapterLabel = summary.chapter === 'chapter_01' ? '第 1 章' : summary.chapter
 
   return (
-    <article className="rounded-2xl border border-sand-300 bg-cream-50 p-4 sm:p-5">
+    <article className="border-l-2 border-gold-400/60 pl-5">
       <header className="flex items-start justify-between gap-3">
         <div>
           <h3 className="font-display text-[15px] text-ink-900">{chapterLabel}</h3>
@@ -476,7 +478,7 @@ function ChapterSummaryCard({
             className="rounded-lg p-1.5 text-ink-400 hover:bg-ink-100 hover:text-ink-600"
             aria-label={isEditing ? '取消编辑' : '编辑'}
           >
-            {isEditing ? '✕' : '✎'}
+            {isEditing ? <Icon name="close" size={14} /> : <Icon name="edit" size={14} />}
           </button>
           <button
             type="button"
@@ -484,7 +486,7 @@ function ChapterSummaryCard({
             className="rounded-lg p-1.5 text-ink-400 hover:bg-ink-100 hover:text-rose-600"
             aria-label="删除"
           >
-            🗑
+            <Icon name="trash" size={14} />
           </button>
         </div>
       </header>
@@ -564,7 +566,7 @@ function GenerateSummaryDialog({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" role="dialog" aria-modal="true" aria-labelledby="generate-summary-dialog-title">
-      <article className="w-full max-w-2xl rounded-xl bg-white p-6 shadow-xl max-h-[90vh] overflow-y-auto">
+      <article className="w-full max-w-2xl rounded-xl bg-white p-6 shadow-lg max-h-[90vh] overflow-y-auto">
         <header className="flex items-center justify-between sticky top-0 bg-white pb-4 border-b border-ink-100">
           <h2 id="generate-summary-dialog-title" className="text-lg font-semibold text-ink-900">生成阶段总结</h2>
           <button
@@ -574,7 +576,7 @@ function GenerateSummaryDialog({
             className="rounded-lg p-1 text-ink-400 hover:bg-ink-100 disabled:opacity-50"
             aria-label="关闭"
           >
-            ✕
+            <Icon name="close" size={18} />
           </button>
         </header>
 

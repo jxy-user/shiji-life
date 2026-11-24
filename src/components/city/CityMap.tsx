@@ -31,7 +31,7 @@ type CityMapProps = {
 
 export function CityMap({ onEnter, lumiSlot }: CityMapProps) {
   return (
-    <div className="relative mx-auto aspect-[4/3] w-full max-w-5xl overflow-hidden rounded-3xl border border-sand-300/70 bg-cream-100 shadow-[0_30px_60px_-40px_rgba(43,38,33,0.45)] sm:aspect-[16/10] lg:max-w-6xl lg:rounded-[32px]">
+    <div className="relative mx-auto aspect-[4/3] w-full max-w-5xl overflow-hidden rounded-2xl border border-sand-300/70 bg-cream-100 shadow-[0_18px_40px_-32px_rgba(43,38,33,0.3)] sm:aspect-[16/10] lg:max-w-6xl">
       <svg
         viewBox="0 0 900 620"
         preserveAspectRatio="xMidYMid slice"

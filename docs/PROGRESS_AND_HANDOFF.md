@@ -25,6 +25,7 @@
 | M5 行动与日记 | ✅ | 现实行动、日记、阶段总结、存档 v4 | `src/pages/{Actions,Journal}Page.tsx`、store actions、saveSchema v4 |
 | PWA 移动端 | ✅ | 可安装、离线缓存、更新提示；manifest 单一来源、SW 仅生产注册、存储禁用安全降级、安装卡桌面置右下、同一时间只显示一个提示 | `vite.config.ts`、`src/hooks/usePWA.ts`、`src/services/preferences.ts`、`PWANotifications.tsx` |
 | PC 端适配 | ✅ | 桌面浏览器大屏布局：开始页双栏、档案双栏、行动两列、各页容器加宽；移动端不变 | `src/pages/*`、`src/components/layout/StatusBar.tsx`、`src/components/city/CityMap.tsx` |
+| UI 视觉重构 | ✅ | 去 AI 模板感：统一线性图标、纸本手账/编辑式排版、去卡片与渐变、方角按钮、克制动效 | `src/components/ui/Icon.tsx`、`src/index.css`、`src/pages/*` |
 
 ## 常用命令
 

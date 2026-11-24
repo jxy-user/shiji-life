@@ -67,7 +67,7 @@ export function DialoguePanel({ script, startId, onFinish }: DialoguePanelProps)
             advance()
           }
         }}
-        className="mx-auto max-w-2xl rounded-3xl border border-sand-300 bg-cream-50/95 p-5 shadow-[0_24px_60px_-30px_rgba(43,38,33,0.55)] backdrop-blur-md outline-none sm:p-6"
+        className="mx-auto max-w-2xl rounded-2xl border border-sand-300 bg-cream-50/95 p-5 shadow-[0_16px_36px_-28px_rgba(43,38,33,0.32)] backdrop-blur-md outline-none sm:p-6"
       >
         <div className="flex items-start gap-3">
           <LumiSprite size={44} talking />

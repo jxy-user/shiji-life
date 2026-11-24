@@ -18,68 +18,68 @@ export default function StartPage() {
 
   return (
     <main className="relative isolate flex min-h-dvh flex-col overflow-hidden bg-cream-50">
-      {/* 背景：暖光、城市边缘的一点绿、纸张颗粒 */}
+      {/* 纸面：极淡方格 + 暖光 + 颗粒，避免大面积平滑渐变 */}
+      <div aria-hidden className="paper-grid absolute inset-0 opacity-25" />
       <div
         aria-hidden
-        className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_-15%,var(--color-gold-200)_0%,transparent_62%)] opacity-80"
+        className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_-20%,var(--color-gold-200)_0%,transparent_58%)] opacity-70"
       />
-      <div
-        aria-hidden
-        className="absolute inset-0 bg-[radial-gradient(ellipse_at_8%_112%,var(--color-sage-300)_0%,transparent_52%)] opacity-35"
-      />
-      <div aria-hidden className="paper-grain absolute inset-0 opacity-80" />
+      <div aria-hidden className="paper-grain absolute inset-0 opacity-70" />
 
-      <div className="relative z-10 mx-auto flex w-full max-w-md flex-1 flex-col items-center justify-center px-6 py-16 lg:max-w-4xl lg:flex-row lg:items-center lg:gap-24 lg:px-12">
-        {/* 大屏左列：品牌与标语；移动端仍是一列竖排 */}
+      <div className="relative z-10 mx-auto flex w-full max-w-md flex-1 flex-col items-center justify-center px-6 py-16 lg:max-w-4xl lg:flex-row lg:items-center lg:gap-28 lg:px-12">
+        {/* 左：刊头 */}
         <div className="flex flex-col items-center">
-          {/* 微光：还没遇到 Lumi，只留一点光 */}
-          <div aria-hidden className="relative mb-11 h-20 w-20">
+          <div aria-hidden className="relative mb-10 h-14 w-14">
             <div className="lumi-glow absolute inset-0 animate-soft-pulse rounded-full" />
           </div>
 
-          <p className="animate-rise-in text-[11px] tracking-[0.55em] text-ink-500">
+          <p className="animate-rise-in text-[10px] tracking-[0.6em] text-ink-500">
             未完成之城
           </p>
 
           <h1
-            className="mt-6 animate-rise-in font-display text-hero leading-none tracking-[0.14em] text-ink-900 [text-indent:0.14em] sm:text-7xl lg:text-[96px]"
-            style={{ animationDelay: '80ms' }}
+            className="mt-7 animate-rise-in font-display text-[76px] leading-none tracking-[0.18em] text-ink-900 [text-indent:0.18em] sm:text-[88px] lg:text-[104px]"
+            style={{ animationDelay: '70ms' }}
           >
             拾己
           </h1>
 
-          <p
-            className="mt-5 animate-rise-in text-[11px] tracking-[0.62em] text-ink-500"
-            style={{ animationDelay: '140ms' }}
-          >
-            LIFE
-          </p>
-
           <div
-            className="my-9 h-px w-16 animate-rise-in bg-gradient-to-r from-transparent via-gold-400 to-transparent"
-            style={{ animationDelay: '200ms' }}
-          />
+            className="mt-6 flex animate-rise-in items-center gap-3"
+            style={{ animationDelay: '130ms' }}
+          >
+            <span className="h-px w-8 bg-sand-300" />
+            <span className="text-[10px] tracking-[0.5em] text-ink-400">
+              LIFE
+            </span>
+            <span className="h-px w-8 bg-sand-300" />
+          </div>
 
           <p
-            className="animate-rise-in font-display text-lg text-ink-700"
-            style={{ animationDelay: '260ms' }}
+            className="mt-8 animate-rise-in font-display text-lg tracking-[0.06em] text-ink-700"
+            style={{ animationDelay: '190ms' }}
           >
             先生活，再认识自己。
           </p>
         </div>
 
-        {/* 大屏右列：说明与入口 */}
-        <div className="mt-10 flex w-full max-w-[320px] flex-col lg:mt-0 lg:max-w-[360px]">
-          <p
-            className="animate-rise-in text-center text-[13px] leading-6 text-ink-500 lg:text-left lg:text-[14px] lg:leading-7"
-            style={{ animationDelay: '320ms' }}
+        {/* 右：引言与入口 */}
+        <div className="mt-12 flex w-full max-w-[340px] flex-col lg:mt-0 lg:max-w-[360px]">
+          <div
+            className="animate-rise-in border-l border-sand-300 pl-5"
+            style={{ animationDelay: '250ms' }}
           >
-            在这座还没建完的城市里，选择没有标准答案。你经历的每件小事，都会在某个时刻被温柔地回望。
-          </p>
+            <p className="font-display text-[15px] leading-8 text-ink-700 lg:text-base">
+              在这座还没建完的城市里，选择没有标准答案。
+            </p>
+            <p className="mt-3 text-[13px] leading-7 text-ink-500">
+              你经历的每件小事，都会在某个时刻被温柔地回望。
+            </p>
+          </div>
 
           <div
-            className="mt-9 flex w-full animate-rise-in flex-col gap-3 lg:mt-7"
-            style={{ animationDelay: '380ms' }}
+            className="mt-10 flex w-full animate-rise-in flex-col gap-3"
+            style={{ animationDelay: '310ms' }}
           >
             <Link to="/prologue" className={`${buttonStyles('primary', 'lg')} w-full`}>
               开始新的旅程
@@ -111,10 +111,11 @@ export default function StartPage() {
         </div>
       </div>
 
-      <footer className="relative z-10 px-6 pb-8 text-center text-[11px] leading-5 text-ink-500">
-        这不是心理测评，也不会给你贴标签。
-        <br />
-        你随时可以拒绝回顾、删除经历，或关闭分析。
+      {/* 版权页式页脚 */}
+      <footer className="relative z-10 flex flex-col items-center gap-1.5 border-t border-sand-300/60 px-6 py-5 text-[10px] tracking-[0.18em] text-ink-400 sm:flex-row sm:justify-between lg:px-12">
+        <span>拾己 · LIFE</span>
+        <span>第一章 · 未完成之城</span>
+        <span>不是心理测评，也不会给你贴标签</span>
       </footer>
     </main>
   )

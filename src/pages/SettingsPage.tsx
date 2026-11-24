@@ -50,7 +50,7 @@ export default function SettingsPage() {
         <section className="mt-10">
           <h2 className="font-display text-lg text-ink-900">回顾与授权</h2>
 
-          <div className="mt-4 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-sand-300 bg-cream-50 p-4">
+          <div className="mt-4 flex flex-wrap items-center justify-between gap-4 border-t border-sand-300/60 py-4">
             <div className="max-w-sm">
               <p className="text-[14px] text-ink-900">新经历默认允许用于回顾</p>
               <p className="mt-1 text-[12px] leading-5 text-ink-500">
@@ -80,7 +80,7 @@ export default function SettingsPage() {
             </button>
           </div>
 
-          <div className="mt-3 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-sand-300 bg-cream-50 p-4">
+          <div className="flex flex-wrap items-center justify-between gap-4 border-b border-sand-300/60 py-4">
             <div className="max-w-sm">
               <p className="text-[14px] text-ink-900">允许微光主动邀请回顾</p>
               <p className="mt-1 text-[12px] leading-5 text-ink-500">
@@ -119,7 +119,7 @@ export default function SettingsPage() {
         <section className="mt-12">
           <h2 className="font-display text-lg text-ink-900">数据</h2>
 
-          <div className="mt-4 rounded-2xl border border-sand-300 bg-cream-50 p-4">
+          <div className="mt-4 border-l-2 border-sand-300 pl-4">
             <p className="text-[13px] leading-6 text-ink-700">
               你的进度、经历与认知全部保存在这台设备的浏览器里，没有上传到任何服务器。
               清除浏览器的网站数据会一并删除它们。
@@ -130,7 +130,7 @@ export default function SettingsPage() {
                 type="button"
                 onClick={handleDelete}
                 className={[
-                  'rounded-full px-4 py-2 text-[12px] transition-colors',
+                  'rounded-lg px-4 py-2 text-[12px] transition-colors',
                   confirmingDelete
                     ? 'bg-ink-900 text-cream-50'
                     : 'border border-sand-300 text-ink-700 hover:border-gold-400',
