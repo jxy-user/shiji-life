@@ -43,7 +43,7 @@ export function StatusBar({ save, showBackHome = true, title }: StatusBarProps) 
                 <span
                   key={index}
                   className={[
-                    'h-1.5 w-1.5 rounded-full',
+                    'h-1.5 w-1.5 rounded-full transition-colors duration-300',
                     index < save.actionPoints ? 'bg-sage-500' : 'bg-sand-300',
                   ].join(' ')}
                 />

@@ -1,5 +1,5 @@
 import { Suspense, lazy } from 'react'
-import { Navigate, Route, Routes } from 'react-router-dom'
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
 
 import { PersistenceNotice } from '@/components/layout/PersistenceNotice'
 import { PWANotifications } from '@/components/pwa/PWANotifications'
@@ -38,6 +38,26 @@ function RouteFallback() {
 }
 
 /**
+ * 从门厅白幕进入游戏时，让白幕先盖住新页面再淡出，
+ * 避免白底直接切成深色页面。动画结束后的图层不拦截点击。
+ */
+function CurtainArrival() {
+  const location = useLocation()
+  const fromCurtain = Boolean(
+    (location.state as { fromCurtain?: boolean } | null)?.fromCurtain,
+  )
+  if (!fromCurtain) return null
+  return (
+    <div
+      key={location.key}
+      aria-hidden
+      data-arrival-curtain
+      className="curtain-arrival pointer-events-none fixed inset-0 z-[100] bg-white"
+    />
+  )
+}
+
+/**
  * 路由表
  *
  * 已实现：开始页、开场、角色创建、城市、区域场景、事件、人生档案、设置、现实行动、日记。
@@ -67,6 +87,8 @@ export default function App() {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Suspense>
+
+      <CurtainArrival />
 
       {/* 写盘失败时在所有页面统一提示，避免玩家在不知情的情况下丢进度 */}
       <PersistenceNotice />

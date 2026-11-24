@@ -1,6 +1,24 @@
 @import 'tailwindcss';
 
 /*
+ * 自托管字体（OFL）：思源宋体子集负责标题，Cinzel 负责西文字标。
+ * 子集只包含当前界面用到的字形，离线可用；新增文案出现缺字时会回退系统宋体。
+ */
+@font-face {
+  font-family: 'Shiji Serif';
+  src: url('/fonts/noto-serif-sc-subset.woff2') format('woff2');
+  font-weight: 200 900;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Shiji Roman';
+  src: url('/fonts/cinzel-subset.woff2') format('woff2');
+  font-weight: 400 700;
+  font-display: swap;
+}
+
+/*
  * 拾己 · LIFE 设计令牌
  * 基调：墨色与暖光。深色底、暖白字、金铜色点缀。
  * 命名沿用旧语义键，便于整体换肤；值全部映射到新配色。
@@ -69,11 +87,14 @@
   --color-forest-700: #b8cbb9;
   --color-forest-800: #cfe0d0;
 
-  /* 字体：标题用宋体，正文用系统无衬线 */
+  /* 字体：标题用自托管思源宋体，正文用系统无衬线 */
   --font-display:
-    'Songti SC', 'STSong', 'Noto Serif SC', 'Source Han Serif SC', 'SimSun',
-    serif;
+    'Shiji Serif', 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC',
+    'STSong', 'SimSun', serif;
   --font-body: var(--site-font);
+  /* 西文字标：罗马衬线；中文回退到同一套思源宋体 */
+  --font-roman:
+    'Shiji Roman', 'Shiji Serif', 'Noto Serif SC', 'Songti SC', serif;
 
   /* 间距与圆角：随工作台参数整体缩放，默认 1 保持原尺寸 */
   --spacing: calc(0.25rem * var(--site-space, 1));
@@ -183,23 +204,56 @@
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
   }
 
+  /* 人生节点图标：线条逐笔画出 */
+  .life-glyph [data-draw] {
+    stroke-dasharray: 180;
+    stroke-dashoffset: 180;
+    animation: glyph-draw 1.15s cubic-bezier(0.3, 0.7, 0.2, 1) forwards;
+  }
+
+  .life-glyph [data-draw]:nth-child(1) {
+    animation-delay: 0.05s;
+  }
+
+  .life-glyph [data-draw]:nth-child(2) {
+    animation-delay: 0.2s;
+  }
+
+  .life-glyph [data-draw]:nth-child(3) {
+    animation-delay: 0.35s;
+  }
+
+  .life-glyph [data-draw]:nth-child(4) {
+    animation-delay: 0.5s;
+  }
+
   /* 门厅：由远及近的镜头 */
   .door-approach {
     animation: door-approach 2.6s cubic-bezier(0.22, 0.8, 0.3, 1) both;
   }
 
-  /* 推门：镜头继续向前压近 */
+  /* 推门：镜头慢慢走进门里，同时门缝的光漫上来 */
   .door-opening {
-    transform: scale(1.55);
-    filter: blur(6px) brightness(1.28);
-    transition:
-      transform 0.9s cubic-bezier(0.4, 0, 0.7, 1),
-      filter 0.9s ease;
+    animation: door-walk-in 1.8s cubic-bezier(0.37, 0.02, 0.63, 1) forwards;
+  }
+
+  /* 门缝暖光扩散 */
+  .door-bloom {
+    animation: door-bloom 1.8s ease-in forwards;
   }
 
   /* 门扉提示的呼吸 */
   .door-invite {
     animation: door-invite 3.4s ease-in-out infinite;
+  }
+
+  /* 白幕字幕：淡入、停留、淡出，与页面里的 2.6s 切换节奏一致 */
+  .curtain-line {
+    animation: curtain-line 2.6s ease-in-out both;
+  }
+
+  .curtain-arrival {
+    animation: curtain-arrival 0.75s ease-in forwards;
   }
 
   /* 门前浮尘 */
@@ -224,6 +278,39 @@
   }
 }
 
+@keyframes door-walk-in {
+  0% {
+    transform: scale(1) translateY(0);
+    filter: blur(0) brightness(1);
+  }
+  45% {
+    transform: scale(1.55) translateY(-1%);
+    filter: blur(1px) brightness(1.12);
+  }
+  100% {
+    transform: scale(2.7) translateY(-2%);
+    filter: blur(5px) brightness(1.5);
+  }
+}
+
+@keyframes door-bloom {
+  0% {
+    opacity: 0;
+    transform: scale(0.65);
+  }
+  35% {
+    opacity: 0.35;
+  }
+  75% {
+    opacity: 0.85;
+    transform: scale(1.2);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1.45);
+  }
+}
+
 @keyframes door-invite {
   0%,
   100% {
@@ -231,6 +318,30 @@
   }
   50% {
     opacity: 1;
+  }
+}
+
+@keyframes curtain-line {
+  0% {
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  72% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes curtain-arrival {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
   }
 }
 
@@ -248,5 +359,152 @@
   100% {
     transform: translateY(-120px);
     opacity: 0;
+  }
+}
+
+@keyframes glyph-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* —— 电影感动效 —— */
+@keyframes title-card {
+  0% {
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes cine-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.995);
+    filter: blur(3px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
+  }
+}
+
+@keyframes kenburns {
+  from {
+    transform: scale(1) translateY(0);
+  }
+  to {
+    transform: scale(1.1) translateY(-2.5%);
+  }
+}
+
+
+@keyframes title-zoom {
+  from {
+    transform: scale(1.08);
+    opacity: 0;
+  }
+  22% {
+    opacity: 1;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes title-line {
+  from {
+    transform: scaleX(0);
+    opacity: 0;
+  }
+  30% {
+    opacity: 1;
+  }
+  to {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+}
+
+/* —— 胶片颗粒流动与划痕 —— */
+@keyframes grain-shift {
+  0%,
+  100% {
+    background-position: 0 0;
+  }
+  20% {
+    background-position: -12px 8px;
+  }
+  40% {
+    background-position: 9px -6px;
+  }
+  60% {
+    background-position: -6px -10px;
+  }
+  80% {
+    background-position: 11px 7px;
+  }
+}
+
+@keyframes scratch {
+  0%,
+  100% {
+    opacity: 0;
+    transform: translateX(0);
+  }
+  4% {
+    opacity: 0.35;
+  }
+  6% {
+    opacity: 0;
+  }
+  70% {
+    opacity: 0;
+  }
+  72% {
+    opacity: 0.2;
+    transform: translateX(6px);
+  }
+  74% {
+    opacity: 0;
+  }
+}
+
+@keyframes blackout {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+/* —— 选择爆发与徽章弹入 —— */
+@keyframes flash {
+  from {
+    opacity: 0.26;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes badge-pop {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: none;
   }
 }

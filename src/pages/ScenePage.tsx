@@ -27,6 +27,7 @@ export default function ScenePage() {
 
   const [result, setResult] = useState<string | null>(null)
   const [lastActionId, setLastActionId] = useState<string | null>(null)
+  const [lastAction, setLastAction] = useState<SceneAction | null>(null)
   const [runningActionId, setRunningActionId] = useState<string | null>(null)
   // 同步锁：React 状态更新是异步的，双击时两次事件可能读到同一份旧状态
   const busyRef = useRef(false)
@@ -56,6 +57,7 @@ export default function ScenePage() {
     if (sceneId !== 'plaza') setFlag('exploredBeyondPlaza')
     setResult(action.result)
     setLastActionId(action.id)
+    setLastAction(action)
 
     // 短暂锁住，防止同一次点击被双击重复结算
     setTimeout(() => {
@@ -83,12 +85,14 @@ export default function ScenePage() {
     const character = sceneCharacters.find((item) => item.id === characterId)
     setResult(character?.greeting ?? '你打了招呼。')
     setLastActionId(null)
+    setLastAction(null)
   }
 
   function handleRest() {
     restUntilMorning()
     setResult('你回到房间，睡了一觉。第二天早上，行动力恢复了。')
     setLastActionId(null)
+    setLastAction(null)
   }
 
   return (
@@ -233,6 +237,24 @@ export default function ScenePage() {
             {result ? (
               <div className="mt-5 animate-rise-in rounded-2xl border border-sand-300/70 bg-cream-100/70 px-4 py-3">
                 <p className="font-display text-[14px] leading-7 text-ink-700">{result}</p>
+                {lastAction ? (
+                  <div className="mt-2 flex flex-wrap gap-3 text-[11px]">
+                    <span className="text-gold-500">行动力 −1</span>
+                    {lastAction.energy !== 0 ? (
+                      <span
+                        className={
+                          lastAction.energy > 0 ? 'text-sage-700' : 'text-ink-500'
+                        }
+                      >
+                        精力 {lastAction.energy > 0 ? '+' : ''}
+                        {lastAction.energy}
+                      </span>
+                    ) : null}
+                    {lastAction.advancesTime ? (
+                      <span className="text-ink-500">时间往前一段</span>
+                    ) : null}
+                  </div>
+                ) : null}
               </div>
             ) : null}
           </div>
