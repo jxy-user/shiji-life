@@ -1,0 +1,110 @@
+schema_version: 1
+project_id: "shiji-gta-h"
+status: draft
+platform:
+  target: mobile
+  orientation: portrait
+  aspect_ratio: "9:16"
+  reference_size: [1080, 1920]
+  safe_area:
+    top: 48
+    right: 32
+    bottom: 120
+    left: 32
+visual:
+  theme: "罪城霓虹 · 夜生活档案"
+  keywords:
+    - neon sunset
+    - vice city
+    - art deco
+    - chrome
+    - palm silhouette
+    - night city
+    - life feed
+    - cinematic
+  mood: "霓虹、湿润、电影感、夜色里的生活；不是犯罪/炫富"
+  complexity: medium-high
+  materials:
+    - black glass
+    - chrome
+    - neon tube
+    - wet asphalt
+    - gradient sky
+    - reflective water
+  lighting:
+    direction: back/rim
+    softness: medium
+colors:
+  primary: "#120E1A"      # 夜底
+  secondary: "#241536"    # 深紫
+  accent: "#FF3D9A"       # 洋红霓虹
+  accent-2: "#33E0E6"     # 青色霓虹
+  accent-3: "#FF8A3D"     # 日落橙
+  background: "#0E0A14"
+  chrome: "#C9D2D8"
+  cream: "#F5E9D7"
+  warning: "#C58F47"      # 产品警告为琥珀，不用红
+  reward: "#7C9A8A"
+  disabled: "#6B6175"
+typography:
+  language: zh-CN
+  title:
+    size: 44
+    weight: 900
+    family: "原创 Art Deco display / 思源宋体 Heavy；不使用 Rockstar 字体"
+  section:
+    size: 28
+    weight: 700
+  body:
+    size: 26
+    weight: 500
+  number:
+    size: 30
+    weight: 700
+    family: "mono"
+  button:
+    size: 30
+    weight: 700
+geometry:
+  radius:
+    small: 8
+    card: 14
+    modal: 18
+  stroke:
+    thin: 2
+    regular: 3
+    strong: 5
+  button_height:
+    small: 52
+    primary: 72
+  icon_size:
+    utility: 48
+    navigation: 44
+effects:
+  shadow: "霓虹 glow + 深色柔影；不使用大面积玻璃拟态"
+  highlight: "铬字 + 青色边缘光 + 洋红背光"
+  selected: "青色描边 + 洋红 glow"
+  disabled: "去饱和 + 40% opacity"
+tokens:
+  color:
+    action-primary: "#FF3D9A"
+    action-primary-text: "#140E1A"
+    action-danger: "#F5E9D7"   # 删除用纸色/墨，不用红
+    surface-panel: "#1C1428"
+    text-primary: "#F5E9D7"
+    text-muted: "#B9AEC4"
+  spacing:
+    xs: 4
+    sm: 8
+    md: 16
+    lg: 24
+  motion:
+    fast-ms: 140
+    normal-ms: 260
+consistency_rules:
+  - 所有页面共享粉紫日落、棕榈剪影、铬字、青色/洋红霓虹三件套。
+  - 霓虹只做边缘光和强调，不做满屏发光；大面积保持深紫/夜黑。
+  - 字体为原创 Deco 气质，不使用 GTA Art Deco 字体文件。
+  - 人物为原创、生活化、非物化；不出现武器/警灯/犯罪元素。
+  - 不做点赞、粉丝、排名、金钱；档案是私人生活记录。
+  - 状态只用游戏资源（精力/时间/关系/探索），不做心理评分。

@@ -1,12 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="拾己 LIFE">
-  <defs>
-    <radialGradient id="glow" cx="50%" cy="45%" r="55%">
-      <stop offset="0%" stop-color="#F4E2BD" />
-      <stop offset="55%" stop-color="#E9C98C" />
-      <stop offset="100%" stop-color="#D9AE6D" stop-opacity="0.12" />
-    </radialGradient>
-  </defs>
-  <rect width="64" height="64" rx="16" fill="#F8F2E7" />
-  <circle cx="32" cy="31" r="15" fill="url(#glow)" />
-  <circle cx="32" cy="31" r="4.5" fill="#C08F45" opacity="0.75" />
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" rx="8" fill="#141414"/>
+  <path d="M12 14h40v8H12zm0 28h40v8H12z" fill="#F2B705"/>
+  <circle cx="32" cy="32" r="11" fill="#F4EBD8" stroke="#F2B705" stroke-width="4"/>
+  <circle cx="32" cy="32" r="3" fill="#141414"/>
 </svg>

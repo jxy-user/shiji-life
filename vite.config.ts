@@ -1,80 +1,62 @@
-import tailwindcss from '@tailwindcss/vite'
+import fs from 'node:fs'
+import path from 'node:path'
+import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'
-import { VitePWA } from 'vite-plugin-pwa'
-import { fileURLToPath, URL } from 'node:url'
-import { defineConfig } from 'vite'
 
-// https://vite.dev/config/
+const base = process.env.VITE_BASE_URL || '/'
+
 export default defineConfig({
   plugins: [
     react(),
-    tailwindcss(),
-    VitePWA({
-      registerType: 'autoUpdate',
-      injectRegister: false, // 完全由 hook 手动控制注册（仅生产环境）
-      includeAssets: ['favicon.svg', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/icon.svg'],
-      manifest: {
-        name: '拾己 · LIFE',
-        short_name: '拾己',
-        description: '从 18 岁走到 60 岁，做出 11 个重大抉择，最后回看这一生。',
-        start_url: '/#/',
-        scope: '/',
-        display: 'standalone',
-        background_color: '#fdfbf6',
-        theme_color: '#c08f45',
-        icons: [
-          { src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any maskable' },
-          { src: '/icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any maskable' },
-        ],
-        categories: ['games', 'lifestyle', 'education'],
-        lang: 'zh-CN',
-        dir: 'ltr',
-        prefer_related_applications: false,
+    {
+      name: 'preview-missing-asset-404',
+      configurePreviewServer(server) {
+        const basePath = server.config.base.replace(/\/+$/, '')
+        const distAssets = path.resolve(server.config.root, server.config.build.outDir, 'assets')
+        server.middlewares.use((request, response, next) => {
+          const pathname = new URL(request.url ?? '/', 'http://localhost').pathname
+          const assetPrefix = `${basePath}/assets/`
+          if (!pathname.startsWith(assetPrefix)) return next()
+
+          const relativePath = decodeURIComponent(pathname.slice(assetPrefix.length))
+          const assetPath = path.resolve(distAssets, relativePath)
+          if (!assetPath.startsWith(`${distAssets}${path.sep}`) || !fs.existsSync(assetPath)) {
+            response.statusCode = 404
+            response.setHeader('Content-Type', 'text/plain; charset=utf-8')
+            response.end('Not found')
+            return
+          }
+          next()
+        })
       },
-      workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2,woff,ttf}'],
-        cleanupOutdatedCaches: true,
-        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB
-        runtimeCaching: [
-          {
-            // 仅同源请求，排除认证、API、Functions 路径
-            urlPattern: ({ url, sameOrigin }) => sameOrigin &&
-              !url.pathname.startsWith('/__qoder_auth') &&
-              !url.pathname.startsWith('/api/') &&
-              !url.pathname.startsWith('/functions/'),
-            handler: 'StaleWhileRevalidate',
-            options: {
-              cacheName: 'shiji-dynamic',
-              expiration: { maxEntries: 100, maxAgeSeconds: 60 * 60 * 24 * 30 },
-            },
-          },
-        ],
-      },
-      devOptions: {
-        enabled: false, // 开发环境不注册 SW，避免干扰 HMR
-      },
-    }),
-  ],
-  resolve: {
-    alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
-  },
+  ],
+  base,
   server: {
-    port: 5173,
-    host: true,
+    host: '127.0.0.1',
+  },
+  preview: {
+    host: '127.0.0.1',
   },
   build: {
+    target: 'es2022',
+    sourcemap: false,
+    assetsInlineLimit: 4096,
     rollupOptions: {
       output: {
-        // 运行时、路由与校验库各自成块：内容更新时玩家不必重新下载它们
-        manualChunks(id) {
-          if (!id.includes('node_modules')) return undefined
-          if (id.includes('react-dom') || id.includes('/react/')) return 'vendor-react'
-          if (id.includes('react-router')) return 'vendor-router'
-          return 'vendor'
+        manualChunks: {
+          react: ['react', 'react-dom', 'react-dom/client'],
+          router: ['react-router-dom'],
+          state: ['zustand', 'zod'],
+          motion: ['gsap', '@gsap/react'],
         },
       },
     },
+  },
+  test: {
+    environment: 'jsdom',
+    setupFiles: ['./tests/setup.ts'],
+    css: true,
+    include: ['tests/unit/**/*.test.{ts,tsx}', 'tests/components/**/*.test.{ts,tsx}'],
   },
 })

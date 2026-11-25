@@ -1,0 +1,222 @@
+.field {
+  display: grid;
+  gap: var(--g-space-2);
+}
+
+.label,
+.legend {
+  font-weight: 900;
+}
+
+.optional {
+  color: var(--g-ink-soft);
+  font-size: var(--g-fs-13);
+  font-weight: 500;
+}
+
+.hint,
+.error {
+  font-size: var(--g-fs-13);
+}
+
+.hint {
+  color: var(--g-ink-soft);
+}
+
+.error {
+  padding-left: 10px;
+  border-left: 3px solid var(--g-warn);
+  color: var(--g-ink);
+  font-weight: 800;
+}
+
+.choiceGroup {
+  display: grid;
+  gap: var(--g-space-3);
+}
+
+.choices {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--g-space-10);
+}
+
+.choice {
+  display: flex;
+  min-height: 62px;
+  align-items: center;
+  gap: var(--g-space-3);
+  padding: 12px;
+  border: 2px solid var(--g-line-strong);
+  border-radius: var(--g-radius-small);
+  background: var(--g-paper-light);
+  cursor: pointer;
+  transition: background-color var(--g-motion-fast) var(--g-ease-paper), transform var(--g-motion-fast) var(--g-ease-paper);
+}
+
+.choice:hover {
+  transform: translateY(-1px);
+}
+
+.choice:has(input:focus-visible) {
+  outline: 3px solid var(--g-sun);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 2px var(--g-ink);
+}
+
+.checked {
+  background: var(--g-sun);
+  animation: choice-pin 220ms var(--g-ease-land) both;
+}
+
+/* 选中即「钉住」：一次轻微回弹，不改变布局 */
+@keyframes choice-pin {
+  0% {
+    transform: scale(0.97);
+  }
+  60% {
+    transform: scale(1.015);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.choiceMark {
+  display: grid;
+  width: 24px;
+  height: 24px;
+  flex: 0 0 24px;
+  place-items: center;
+  border: 2px solid var(--g-ink);
+  background: var(--g-paper);
+}
+
+.choiceMark > span {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.checked .choiceMark > span {
+  background: var(--g-ink);
+}
+
+.choiceCopy {
+  display: grid;
+  gap: 2px;
+  font-weight: 800;
+}
+
+.choiceCopy small {
+  color: var(--g-ink-soft);
+  font-size: var(--g-fs-12);
+  font-weight: 500;
+}
+
+.checked .choiceCopy small {
+  color: var(--g-ink);
+}
+
+.switchRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--g-space-5);
+  padding: 18px 0;
+  border-bottom: 1px solid var(--g-line);
+  cursor: pointer;
+}
+
+.switchCopy {
+  display: grid;
+  gap: var(--g-space-1);
+}
+
+.switchLabel {
+  font-weight: 900;
+}
+
+.switchDescription {
+  max-width: 52ch;
+  color: var(--g-ink-soft);
+  font-size: var(--g-fs-14);
+}
+
+.switchControl {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: var(--g-space-3);
+}
+
+.switchState {
+  min-width: 32px;
+  color: var(--g-ink-soft);
+  font-size: var(--g-fs-13);
+  font-weight: 800;
+}
+
+.switchInput {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.switchTrack {
+  display: flex;
+  width: 52px;
+  height: 30px;
+  align-items: center;
+  padding: 3px;
+  border: 2px solid var(--g-ink);
+  border-radius: 18px;
+  background: var(--g-paper-deep);
+  transition: background-color var(--g-motion-fast) var(--g-ease-paper);
+}
+
+.switchTrack > span {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--g-ink);
+  border-radius: 50%;
+  background: var(--g-paper-light);
+  transition: transform var(--g-motion-fast) var(--g-ease-paper);
+}
+
+.switchInput:checked + .switchTrack {
+  background: var(--g-sun);
+}
+
+.switchInput:checked + .switchTrack > span {
+  transform: translateX(22px);
+}
+
+.switchRow:has(.switchInput:focus-visible) .switchTrack {
+  outline: 3px solid var(--g-sun);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 2px var(--g-ink);
+}
+
+@media (max-width: 620px) {
+  .choices {
+    grid-template-columns: 1fr;
+  }
+
+  .switchRow {
+    align-items: flex-start;
+  }
+
+  .switchState {
+    display: none;
+  }
+}

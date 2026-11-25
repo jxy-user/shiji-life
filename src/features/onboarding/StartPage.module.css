@@ -1,0 +1,422 @@
+.cover {
+  position: relative;
+  display: grid;
+  width: min(1320px, 100%);
+  min-height: calc(100dvh - 124px);
+  grid-template-columns: minmax(0, 0.88fr) minmax(480px, 1.12fr);
+  align-items: center;
+  gap: clamp(32px, 5vw, 72px);
+  margin: 0 auto;
+  padding: clamp(32px, 5vh, 64px) 0;
+  overflow: hidden;
+}
+
+.heroCopy {
+  position: relative;
+  z-index: 2;
+  padding-bottom: 16px;
+}
+
+.issueLine {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 20px;
+  color: var(--g-ink-soft);
+  font-size: var(--g-fs-13);
+  font-weight: 800;
+}
+
+/* 复访短签名：刊头那枚印章落定一下，代替重复整场开屏 */
+.revisitStamp {
+  animation: stamp-sign 520ms var(--g-ease-land) both;
+}
+
+@keyframes stamp-sign {
+  from {
+    opacity: 0;
+    transform: scale(1.35) rotate(-10deg);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) rotate(0);
+  }
+}
+
+.heroCopy h1 {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 14px;
+  font-size: clamp(72px, 8vw, 120px);
+  font-weight: 900;
+  letter-spacing: -0.09em;
+  line-height: 0.88;
+}
+
+.heroCopy h1 strong {
+  color: var(--g-sun);
+  -webkit-text-stroke: 3px var(--g-ink);
+  paint-order: stroke fill;
+  transform: rotate(-2deg);
+}
+
+.tagline {
+  margin-top: 22px;
+  font-size: clamp(24px, 2.4vw, 34px);
+  font-weight: 900;
+  letter-spacing: -0.04em;
+}
+
+.intro {
+  max-width: 42ch;
+  margin-top: 14px;
+  color: var(--g-ink-soft);
+  font-size: var(--g-fs-16);
+  line-height: var(--g-lh-body);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-top: 30px;
+}
+
+.settingsLink {
+  display: inline-flex;
+  min-height: 48px;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px;
+  border-radius: var(--g-radius-small);
+  color: var(--g-ink-soft);
+  font-weight: 800;
+  transition: background-color var(--g-motion-fast) var(--g-ease-paper), color var(--g-motion-fast) var(--g-ease-paper);
+}
+
+.settingsLink:hover {
+  color: var(--g-ink);
+  background: rgba(20, 20, 20, 0.06);
+}
+
+.settingsLink:active {
+  transform: translateY(1px);
+}
+
+.saveNote {
+  display: flex;
+  max-width: 460px;
+  align-items: flex-start;
+  gap: 12px;
+  margin-top: 28px;
+  padding-top: 18px;
+  border-top: 2px solid var(--g-line-strong);
+}
+
+.saveNote svg {
+  flex: 0 0 auto;
+}
+
+.saveNote > div {
+  display: grid;
+  gap: 2px;
+}
+
+.saveNote strong {
+  font-size: var(--g-fs-14);
+}
+
+.saveNote span {
+  color: var(--g-ink-soft);
+  font-size: var(--g-fs-13);
+}
+
+.collage {
+  position: relative;
+  min-height: 610px;
+  isolation: isolate;
+}
+
+.collage::before {
+  position: absolute;
+  inset: 4% -8% 2% 2%;
+  z-index: -1;
+  background-color: var(--g-sky);
+  background-image: var(--g-halftone);
+  background-size: var(--g-halftone-size);
+  content: "";
+  clip-path: polygon(2% 4%, 98% 0, 100% 96%, 4% 100%);
+}
+
+.sun {
+  position: absolute;
+  top: -12px;
+  right: 10%;
+  z-index: -1;
+  width: 150px;
+  height: 150px;
+  border: 3px solid var(--g-ink);
+  border-radius: 50%;
+  background: var(--g-sun);
+  box-shadow: var(--g-shadow-lift);
+  animation: g-breathe 6s ease-in-out infinite;
+}
+
+.cityCard {
+  position: absolute;
+  top: 16px;
+  left: 0;
+  z-index: 1;
+  width: min(80%, 460px);
+  padding: 18px 18px 14px;
+  border: 3px solid var(--g-ink);
+  background: var(--g-paper-light);
+  box-shadow: var(--g-shadow);
+  transform: rotate(-3deg);
+}
+
+.cityCard > strong {
+  display: block;
+  margin: 2px 0 8px;
+  font-size: var(--g-fs-28);
+  font-weight: 900;
+  letter-spacing: -0.05em;
+}
+
+.cardCode,
+.mapLegend {
+  font-family: var(--g-font-mono);
+  font-size: var(--g-fs-11);
+  letter-spacing: 0.05em;
+}
+
+.mapLegend {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 6px;
+}
+
+.mapLegend i {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--g-signal);
+}
+
+.avatarCard {
+  position: absolute;
+  top: 100px;
+  right: 18px;
+  z-index: 3;
+  width: min(43%, 300px);
+  padding: 12px 12px 14px;
+  border: 3px solid var(--g-ink);
+  background: var(--g-paper);
+  box-shadow: var(--g-shadow-lift);
+  transform: rotate(5deg);
+}
+
+.avatarCard img {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  border: 2px solid var(--g-ink);
+  background: var(--g-paper-deep);
+  object-fit: cover;
+  object-position: 50% 25%;
+  filter: saturate(0.7) contrast(1.13);
+}
+
+.avatarCard figcaption {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  padding-top: 10px;
+}
+
+.avatarCard figcaption span {
+  font-family: var(--g-font-mono);
+  font-size: var(--g-fs-11);
+}
+
+.avatarCard figcaption strong {
+  font-size: var(--g-fs-20);
+  font-weight: 900;
+}
+
+.plazaCard {
+  position: absolute;
+  bottom: 24px;
+  left: 8px;
+  z-index: 2;
+  width: min(64%, 410px);
+  padding: 10px;
+  border: 3px solid var(--g-ink);
+  background: var(--g-paper);
+  box-shadow: var(--g-shadow-lift);
+  transform: rotate(2deg);
+}
+
+.plazaCard img {
+  width: 100%;
+  aspect-ratio: 1.8;
+  border: 2px solid var(--g-ink);
+  object-fit: cover;
+  filter: saturate(0.62) contrast(1.15);
+}
+
+.plazaCard figcaption {
+  padding: 7px 2px 0;
+  font-family: var(--g-font-mono);
+  font-size: var(--g-fs-11);
+  font-weight: 700;
+}
+
+.tape {
+  position: absolute;
+  top: -17px;
+  left: 38%;
+  width: 86px;
+  height: 28px;
+  background: rgba(242, 183, 5, 0.72);
+  clip-path: polygon(3% 0, 100% 4%, 96% 100%, 0 92%);
+  transform: rotate(-8deg);
+}
+
+.palms {
+  position: absolute;
+  right: -16px;
+  bottom: -4px;
+  z-index: 1;
+  width: 180px;
+  height: 260px;
+  fill: var(--g-grass);
+}
+
+.palms path {
+  fill: none;
+  stroke: var(--g-ink);
+}
+
+.verticalType {
+  position: absolute;
+  top: 250px;
+  left: -28px;
+  font-family: var(--g-font-mono);
+  font-size: var(--g-fs-11);
+  letter-spacing: 0.12em;
+  writing-mode: vertical-rl;
+}
+
+@media (max-width: 1199px) {
+  .cover {
+    grid-template-columns: minmax(0, 1fr) minmax(420px, 1fr);
+    gap: 32px;
+  }
+
+  .collage {
+    min-height: 560px;
+  }
+
+  .heroCopy h1 {
+    font-size: clamp(68px, 8vw, 96px);
+  }
+}
+
+@media (max-width: 959px) {
+  .cover {
+    min-height: auto;
+    grid-template-columns: 1fr;
+    gap: 30px;
+    padding-top: 42px;
+  }
+
+  .heroCopy {
+    max-width: 640px;
+  }
+
+  .collage {
+    width: min(680px, 100%);
+    min-height: 610px;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 600px) {
+  .cover {
+    gap: 20px;
+    padding: 30px 0;
+  }
+
+  .heroCopy h1 {
+    gap: 8px;
+    font-size: clamp(62px, 20vw, 88px);
+  }
+
+  .heroCopy h1 strong {
+    -webkit-text-stroke-width: 2px;
+  }
+
+  .actions {
+    display: grid;
+  }
+
+  .actions > * {
+    width: 100%;
+  }
+
+  .settingsLink {
+    justify-content: center;
+  }
+
+  .collage {
+    min-height: 470px;
+  }
+
+  .cityCard {
+    width: 82%;
+    padding: 12px;
+  }
+
+  .cityCard > strong {
+    font-size: var(--g-fs-20);
+  }
+
+  .avatarCard {
+    top: 80px;
+    right: 0;
+    width: 43%;
+    padding: 7px;
+  }
+
+  .avatarCard figcaption {
+    display: grid;
+    gap: 0;
+  }
+
+  .avatarCard figcaption strong {
+    font-size: var(--g-fs-16);
+  }
+
+  .plazaCard {
+    bottom: 0;
+    width: 68%;
+  }
+
+  .sun {
+    width: 100px;
+    height: 100px;
+  }
+
+  .palms {
+    width: 130px;
+    height: 190px;
+  }
+
+  .verticalType {
+    left: -12px;
+  }
+}

@@ -1,0 +1,260 @@
+.eventGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.88fr) minmax(0, 1.12fr);
+  align-items: stretch;
+  gap: clamp(28px, 4vw, 52px);
+}
+
+.eventArt {
+  position: relative;
+  min-height: 620px;
+  border: 3px solid var(--g-ink);
+  background: var(--g-paper-deep);
+  box-shadow: var(--g-shadow-lift);
+  overflow: hidden;
+  transform: rotate(0.6deg);
+}
+
+.eventArt img {
+  width: 100%;
+  height: 100%;
+  min-height: 620px;
+  object-fit: cover;
+  object-position: 50% 45%;
+  filter: saturate(0.58) contrast(1.18);
+  animation: ken-burns 12s ease-out both;
+}
+
+@keyframes ken-burns {
+  from {
+    transform: scale(1.05);
+  }
+  to {
+    transform: scale(1.12);
+  }
+}
+
+.artHalftone {
+  position: absolute;
+  inset: 0;
+  background-image: var(--g-halftone);
+  background-size: var(--g-halftone-size);
+  mix-blend-mode: multiply;
+  opacity: 0.5;
+}
+
+.eventArt::after {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 65%, rgba(20, 20, 20, 0.74));
+  content: "";
+}
+
+.eventArt figcaption {
+  position: absolute;
+  right: 20px;
+  bottom: 18px;
+  left: 20px;
+  z-index: 2;
+  display: flex;
+  justify-content: space-between;
+  color: var(--g-paper-light);
+  font-family: var(--g-font-mono);
+  font-size: var(--g-fs-11);
+}
+
+.eventNumber {
+  position: absolute;
+  top: 14px;
+  right: 18px;
+  z-index: 2;
+  color: var(--g-signal);
+  font-family: var(--g-font-mono);
+  font-size: 52px;
+  font-weight: 900;
+  line-height: 1;
+  -webkit-text-stroke: 1px var(--g-ink);
+}
+
+.eventForm,
+.result {
+  align-self: start;
+  padding: clamp(24px, 3vw, 38px);
+}
+
+.kicker,
+.resultTop > span {
+  color: var(--g-ink-soft);
+  font-family: var(--g-font-mono);
+  font-size: var(--g-fs-11);
+  letter-spacing: 0.08em;
+}
+
+.eventForm > h2 {
+  margin: 14px 0 24px;
+  font-size: clamp(24px, 2.6vw, 32px);
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  line-height: 1.55;
+}
+
+.eventForm textarea {
+  width: 100%;
+  min-height: 96px;
+  resize: vertical;
+  padding: 12px;
+  border: 2px solid var(--g-ink);
+  border-radius: 0;
+  background: var(--g-paper-light);
+  color: var(--g-ink);
+}
+
+.eventForm .switchRow {
+  margin-top: 24px;
+}
+
+.formActions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 2px solid var(--g-ink);
+}
+
+.formActions > span {
+  color: var(--g-ink-soft);
+  font-size: var(--g-fs-13);
+}
+
+.resultTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.result h2 {
+  margin: 24px 0 8px;
+  font-size: clamp(30px, 3vw, 40px);
+  font-weight: 900;
+  letter-spacing: -0.05em;
+  line-height: 1.25;
+}
+
+.choiceEcho {
+  color: var(--g-ink-soft);
+  font-size: var(--g-fs-14);
+  font-weight: 800;
+}
+
+.result blockquote {
+  margin: 24px 0;
+  padding: 22px;
+  border: 2px solid var(--g-ink);
+  background: var(--g-paper-light);
+  font-size: var(--g-fs-18);
+  font-weight: 700;
+  line-height: var(--g-lh-body);
+}
+
+.reasonEcho {
+  margin-bottom: 22px;
+  padding: 14px 16px;
+  border-left: 5px solid var(--g-sky);
+  background: var(--g-paper-deep);
+}
+
+.reasonEcho p {
+  margin-top: 4px;
+  white-space: pre-wrap;
+}
+
+.consentEcho {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  border: 2px solid var(--g-line-strong);
+}
+
+.consentEcho svg {
+  flex: 0 0 auto;
+}
+
+.consentEcho > div {
+  display: grid;
+  gap: 3px;
+}
+
+.consentEcho span {
+  color: var(--g-ink-soft);
+  font-size: var(--g-fs-13);
+}
+
+.resultActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 26px;
+  padding-top: 22px;
+  border-top: 2px solid var(--g-ink);
+}
+
+.idempotent {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 18px;
+  color: var(--g-ink-soft);
+  font-size: var(--g-fs-12);
+}
+
+.bottomNote {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  margin-top: 30px;
+  color: var(--g-ink-soft);
+  font-size: var(--g-fs-12);
+  text-align: center;
+}
+
+@media (max-width: 959px) {
+  .eventGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .eventArt,
+  .eventArt img {
+    min-height: 380px;
+    max-height: 480px;
+  }
+}
+
+@media (max-width: 620px) {
+  .eventArt,
+  .eventArt img {
+    min-height: 300px;
+  }
+
+  .eventForm,
+  .result {
+    padding: 22px 18px;
+  }
+
+  .result blockquote {
+    padding: 16px;
+    font-size: var(--g-fs-16);
+  }
+
+  .formActions,
+  .resultActions {
+    display: grid;
+  }
+
+  .bottomNote {
+    align-items: flex-start;
+  }
+}

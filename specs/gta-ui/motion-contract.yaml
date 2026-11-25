@@ -1,0 +1,187 @@
+# 拾己 · LIFE｜动效合同（机器可读）
+# 与 specs/gta-ui/style-contract-g.yaml 的 effects.motion 同源：这里细化动画的动词、
+# 层次、预算与章节主题，不重复视觉令牌本身。新增动画必须能追溯到某个 verb 与 layer。
+schema_version: 1
+project_id: "shiji-life-g-pc"
+extends: "specs/gta-ui/style-contract-g.yaml#effects.motion"
+status: active
+
+# ---- 基础时间与曲线（与 src/motion/tokens.ts 一一对应） ----
+tokens:
+  duration_ms:
+    fast: 120
+    normal: 220
+    cover: 360
+    slow: 800
+    beat: 520          # 一拍：单次交互动画上限
+    chapter: 2400      # 章节幕布总时长上限
+    film: 12000        # 开屏 sting 上限（实际约 10600）
+  ease:
+    paper: "power2.out"
+    land: "back.out(1.4)"
+    exit: "power2.in"   # 退场比入场快
+    stamp: "power4.in"  # 盖章：先快后砸
+    steps: "steps(12)"
+    none: "none"
+  stagger_s:
+    tight: 0.06
+    paper: 0.06
+    choice: 0.08
+    char: 0.05
+  properties_allowed: [opacity, transform, clipPath, filter]
+
+# ---- 9 个动词：每个回答一个叙事问题 ----
+verbs:
+  drop:
+    meaning: "一张纸/一个区块被放到桌上"
+    technique: "fromTo opacity 0->1, y 22->0"
+    duration_ms: 360
+    ease: paper
+    sound: paper-drop
+    reduced: "class 直显终态（clearProps）"
+  type:
+    meaning: "文字被排上去"
+    technique: "clip-path inset 从左到右揭示；标点加权停顿"
+    speed_ms_per_char: { narrator: 40, lumi: 32, heading: 24 }
+    punctuation_pause_ms: { "，": 120, "。": 280, "…": 500, "！": 280, "？": 280 }
+    sound: type
+    reduced: "全文直显"
+  stamp:
+    meaning: "状态被确认"
+    technique: "scale 1.6->1, rotate -6deg, power4.in"
+    duration_ms: 260
+    ease: stamp
+    sound: stamp
+    reduced: "直显终态（保留静态 rotate）"
+  pin:
+    meaning: "选中/提交锁定一项"
+    technique: "被选项 scale .96->1，其余项 opacity .42"
+    duration_ms: 220
+    ease: land
+    sound: option-hover
+    reduced: "直显"
+  reveal:
+    meaning: "结果/内容被揭开"
+    technique: "clip-path inset(0 100% 0 0)->inset(0)，或自上而下"
+    duration_ms: 360
+    range_ms: [300, 420]
+    ease: paper
+    sound: paper-drop
+    reduced: "clipPath none"
+  flood:
+    meaning: "章节级换场，颜色漫过全屏"
+    technique: "色场 scaleY 0->1 涨满，翻场后 scaleY 1->0 退场"
+    duration_ms: 2200
+    ease: "power3.in"
+    sound: [curtain, motif]
+    reduced: "不渲染幕布，直接触发 onDone"
+  strike:
+    meaning: "删除/否认/退出索引"
+    technique: "伪元素 scaleX 0->1 划线 + 降饱和"
+    duration_ms: 220
+    ease: paper
+    sound: tick
+    reduced: "直显"
+  drift:
+    meaning: "环境有生命（呼吸/微漂）"
+    technique: "Ken Burns scale 1.03->1.06 / 14s linear；g-breathe"
+    duration_ms: 14000
+    ease: none
+    sound: null
+    reduced: "停止循环"
+  align:
+    meaning: "列表按新序重排"
+    technique: "FLIP：读 rect -> 写 transform -> clearProps"
+    duration_ms: 260
+    ease: paper
+    sound: tick
+    reduced: "直排"
+
+# ---- 6 个层次 ----
+layers:
+  L0_micro:
+    scope: "hover / focus / press / toast"
+    duration_ms: 120
+    interruptible: false
+    blocks_pointer: false
+    reduced: "直显"
+  L1_component:
+    scope: "开关 / tab / 状态章 / 选项 pin"
+    duration_ms: 220
+    interruptible: true
+    blocks_pointer: false
+    reduced: "直显"
+  L2_page_enter:
+    scope: "每页 [data-motion] 入场"
+    duration_ms: 360
+    interruptible: true
+    blocks_pointer: false
+    reduced: "clearProps 直显"
+  L3_node_transition:
+    scope: "事件揭晓 / 对话开合 / 列表 FLIP"
+    duration_ms: 360
+    range_ms: [220, 420]
+    interruptible: true
+    interrupt_keys: [Escape, Space]
+    blocks_pointer: false
+    reduced: "直显"
+  L4_chapter_curtain:
+    scope: "ChapterCurtain 章节过场"
+    duration_ms: 2200
+    max_ms: 2400
+    interruptible: true
+    interrupt_keys: [Escape]
+    has_skip_button: true
+    blocks_pointer: false   # 根节点 pointer-events:none，仅跳过按钮可点
+    reduced: "不渲染，直接 onDone"
+  L5_intro_film:
+    scope: "IntroGate 开屏"
+    duration_ms: 10600
+    max_ms: 12000
+    interruptible: true
+    has_skip_button: true
+    blocks_pointer: true    # 有意阻塞：boot 期间禁焦点
+    reduced: "不渲染"
+
+# ---- 章节主题（同一组件，仅参数化） ----
+chapters:
+  "01":
+    theme: rain
+    field_color: "#141414"
+    copy_color: "#f4ebd8"
+    bpm: 100
+    sound_bed: curtain
+    type_speed_ms: 32
+  "02":
+    theme: sun
+    field_color: "#f2b705"
+    copy_color: "#141414"
+    bpm: 125
+    sound_bed: motif
+    type_speed_ms: 28
+
+# ---- 预算与红线 ----
+budgets:
+  timelines_per_page_max: 3
+  long_task_ms_max: 50
+  long_tasks_per_page_max: 2
+  dead_time_rule: "连续两次交互无视觉反馈即违规"
+  sound_hits_per_30s: [8, 15]
+  impact_once_per_scene: true
+  chime_once_per_scene: true
+  type_cue_throttle_ms: 30
+
+reduced_motion:
+  mechanism: "base.css 全局把 animation/transition 压到 0.01ms；JS 侧 useReducedMotion 直显终态"
+  forbidden:
+    - "内联 style.animationDuration"
+    - "GSAP 结束后残留 transitionDuration/transform（必须 clearProps）"
+  asserted_by: "tests/e2e/accessibility.spec.ts（遍历 body * 断言 <=0.001s）"
+
+# ---- 每个动词/层次的语义边界（禁止越界使用） ----
+constraints:
+  - "stamp 只用于「状态被确认」：事件完成、认知判断、行动完成；不用于装饰"
+  - "flood 只出现在章节级，日常点击不放幕布"
+  - "signal-red 不用于动画强调，仅图钉/编号/小印章"
+  - ">400ms 的动画必须可被输入打断直接到终态"
+  - "clip-path 用整数百分比，附 -webkit- 兼容 Firefox/Safari"

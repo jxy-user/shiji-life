@@ -1,0 +1,442 @@
+@keyframes paper-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 插画在解码完成后落定，避免先见半张图再跳变 */
+@keyframes art-in {
+  from {
+    opacity: 0;
+    transform: scale(1.01);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.g-art-loaded {
+  animation: art-in var(--g-motion-normal) var(--g-ease-paper) both;
+}
+
+@keyframes cover-in {
+  from {
+    opacity: 0;
+    transform: translate(-14px, 12px) rotate(-1.5deg);
+  }
+  to {
+    opacity: 1;
+    transform: translate(0, 0) rotate(0);
+  }
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 无限循环装饰动画：只走合成器属性，reduced-motion 由 base.css 统一降级 */
+@keyframes g-breathe {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
+@keyframes g-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  60% {
+    transform: scale(2.1);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(2.1);
+    opacity: 0;
+  }
+}
+
+@keyframes g-rain {
+  from {
+    transform: translate3d(-3%, -6%, 0);
+  }
+  to {
+    transform: translate3d(3%, 6%, 0);
+  }
+}
+
+@keyframes g-glow {
+  0%, 100% {
+    opacity: 0.12;
+  }
+  50% {
+    opacity: 0.22;
+  }
+}
+
+@keyframes g-nudge {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 0.4;
+    transform: translateY(3px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.page-enter {
+  animation: paper-in var(--g-motion-normal) var(--g-ease-paper) both;
+}
+
+.cover-enter {
+  animation: cover-in var(--g-motion-cover) var(--g-ease-paper) both;
+}
+
+/* ---- 开屏影片 IntroGate（全局类名，供 GSAP 选择器稳定使用）---- */
+
+.g-film-root {
+  position: fixed;
+  inset: 0;
+  z-index: var(--g-z-film);
+  background: var(--g-ink);
+}
+
+.g-film-frame {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.g-film-pin {
+  position: absolute;
+  top: 12%;
+  left: 50%;
+  width: 26px;
+  height: 26px;
+  margin-left: -13px;
+}
+
+.g-film-pin .pin-head {
+  display: block;
+  width: 26px;
+  height: 26px;
+  border: 3px solid var(--g-paper);
+  border-radius: 50%;
+  background: var(--g-sun);
+  box-shadow: 0 6px 0 rgba(244, 235, 216, 0.3);
+}
+
+.g-film-map {
+  position: absolute;
+  top: 16%;
+  left: 50%;
+  width: min(64vw, 640px);
+  margin-left: calc(min(64vw, 640px) / -2);
+  padding: 16px;
+  border: 3px solid var(--g-paper);
+  background: var(--g-ink);
+}
+
+.g-film-map svg {
+  display: block;
+  width: 100%;
+}
+
+.g-film-cards {
+  position: absolute;
+  bottom: 14%;
+  left: 50%;
+  display: grid;
+  grid-template-columns: 0.9fr 1.25fr 0.8fr;
+  gap: 26px;
+  align-items: end;
+  width: min(76vw, 880px);
+  margin-left: calc(min(76vw, 880px) / -2);
+}
+
+.g-film-card {
+  position: relative;
+  padding: 8px 8px 10px;
+  border: 3px solid var(--g-paper);
+  background: var(--g-paper);
+  box-shadow: 8px 8px 0 rgba(244, 235, 216, 0.18);
+  overflow: hidden;
+}
+
+.g-film-card .art {
+  display: block;
+  width: 100%;
+  object-fit: cover;
+  filter: saturate(0.7) contrast(1.12);
+}
+
+.g-film-card figcaption {
+  padding-top: 8px;
+  color: var(--g-ink);
+  font-family: var(--g-font-mono);
+  font-size: var(--g-fs-11);
+  letter-spacing: 0.06em;
+}
+
+.g-film-title {
+  position: absolute;
+  top: 30%;
+  left: 50%;
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  transform: translateX(-50%);
+  margin: 0;
+  color: var(--g-paper);
+  font-weight: 900;
+  line-height: 0.9;
+  pointer-events: none;
+}
+
+.g-film-title .char-row {
+  display: flex;
+  overflow: hidden;
+  padding-bottom: 0.26em;
+}
+
+.g-film-title .char {
+  display: block;
+  font-size: clamp(72px, 13vw, 150px);
+  letter-spacing: -0.06em;
+}
+
+.g-film-title .char-life {
+  color: var(--g-sun);
+  font-size: clamp(46px, 8vw, 92px);
+  letter-spacing: 0.08em;
+}
+
+.g-film-title .underline {
+  width: 72%;
+  height: 10px;
+  margin-top: 6px;
+  background: var(--g-sun);
+  transform-origin: left center;
+}
+
+.g-film-stamp {
+  position: absolute;
+  top: 24%;
+  right: 14%;
+  padding: 8px 14px;
+  border: 3px solid var(--g-sun);
+  color: var(--g-sun);
+  font-family: var(--g-font-mono);
+  font-size: var(--g-fs-13);
+  font-weight: 800;
+  letter-spacing: 0.14em;
+}
+
+.g-film-claim {
+  position: absolute;
+  bottom: 7%;
+  left: 50%;
+  margin: 0;
+  transform: translateX(-50%);
+  color: var(--g-paper);
+  font-size: clamp(16px, 2vw, 20px);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.g-film-out {
+  position: absolute;
+  top: 6%;
+  left: 50%;
+  transform: translateX(-50%);
+  color: rgba(244, 235, 216, 0.55);
+  font-family: var(--g-font-mono);
+  font-size: var(--g-fs-11);
+  letter-spacing: 0.22em;
+  white-space: nowrap;
+}
+
+.g-film-skip {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 16px;
+  border: 2px solid var(--g-paper);
+  border-radius: var(--g-radius-small);
+  background: transparent;
+  color: var(--g-paper);
+  font-family: var(--g-font-body);
+  font-size: var(--g-fs-13);
+  font-weight: 800;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--g-motion-normal) var(--g-ease-paper), background-color var(--g-motion-fast) var(--g-ease-paper), color var(--g-motion-fast) var(--g-ease-paper);
+}
+.g-film-skip.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.g-film-skip.is-visible:hover {
+  background: var(--g-paper);
+  color: var(--g-ink);
+}
+
+.g-film-skip:focus-visible {
+  opacity: 1;
+  outline: 3px solid var(--g-sun);
+  outline-offset: 2px;
+}
+
+@media (max-width: 720px) {
+  .g-film-cards {
+    grid-template-columns: 1fr;
+    width: min(80vw, 360px);
+    gap: 10px;
+  }
+
+  .g-film-card:nth-child(2),
+  .g-film-card:nth-child(3) {
+    display: none;
+  }
+
+  .g-film-map {
+    width: 86vw;
+    margin-left: -43vw;
+  }
+}
+
+/* ---- 章节过场幕布 ChapterCurtain ---- */
+
+.g-curtain-root {
+  position: fixed;
+  inset: 0;
+  z-index: var(--g-z-film);
+  overflow: hidden;
+  background: transparent;
+  /* 纯视觉层：不吞目标页交互，只有「跳过」按钮可点 */
+  pointer-events: none;
+}
+
+.g-curtain-field {
+  position: absolute;
+  inset: 0;
+  background: var(--g-ink);
+}
+
+/* 雨章的撕纸边：同色墨条，上缘用锯齿 clip-path 做出被撕开的边 */
+.g-curtain-torn {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 18px;
+  background: var(--g-ink);
+  clip-path: polygon(
+    0 100%, 0 62%, 4% 28%, 8% 74%, 12% 22%, 16% 66%, 21% 18%, 26% 72%, 30% 30%,
+    35% 64%, 40% 16%, 44% 70%, 49% 26%, 54% 68%, 58% 20%, 63% 74%, 67% 32%,
+    72% 60%, 77% 18%, 81% 70%, 86% 26%, 90% 66%, 95% 22%, 100% 58%, 100% 100%
+  );
+  will-change: transform;
+}
+
+.g-curtain-copy {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 14px;
+  color: var(--g-paper);
+  text-align: center;
+}
+
+.g-curtain-code {
+  font-family: var(--g-font-mono);
+  font-size: var(--g-fs-13);
+  font-weight: 800;
+  letter-spacing: 0.3em;
+  color: var(--g-sun);
+}
+
+.g-curtain-title {
+  margin: 0;
+  color: var(--g-paper);
+  font-size: clamp(44px, 7vw, 92px);
+  font-weight: 900;
+  letter-spacing: -0.05em;
+  line-height: 1;
+}
+
+/* 日光章：黄场墨字，与雨章的墨场纸字形成 flip */
+.g-curtain-root[data-curtain-theme='sun'] .g-curtain-copy,
+.g-curtain-root[data-curtain-theme='sun'] .g-curtain-title {
+  color: var(--g-ink);
+}
+
+.g-curtain-root[data-curtain-theme='sun'] .g-curtain-code {
+  color: var(--g-signal-deep);
+}
+
+.g-curtain-root[data-curtain-theme='sun'] .g-curtain-subtitle {
+  color: rgba(20, 20, 20, 0.7);
+}
+
+.g-curtain-root[data-curtain-theme='sun'] .g-film-skip {
+  border-color: var(--g-ink);
+  color: var(--g-ink);
+}
+
+.g-curtain-root[data-curtain-theme='sun'] .g-film-skip.is-visible:hover {
+  background: var(--g-ink);
+  color: var(--g-paper);
+}
+
+.g-curtain-title .char-row {
+  display: flex;
+  overflow: hidden;
+  padding-bottom: 0.2em;
+}
+
+.g-curtain-title .char {
+  display: block;
+}
+
+.g-curtain-rule {
+  width: min(46vw, 360px);
+  height: 6px;
+  background: var(--g-sun);
+  transform-origin: center;
+}
+
+.g-curtain-subtitle {
+  margin: 0;
+  color: rgba(244, 235, 216, 0.75);
+  font-size: var(--g-fs-18);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}

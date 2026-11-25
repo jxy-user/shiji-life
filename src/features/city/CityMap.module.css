@@ -1,0 +1,252 @@
+.mapFrame {
+  min-width: 0;
+  border: 3px solid var(--g-ink);
+  background: var(--g-paper);
+  box-shadow: var(--g-shadow-lift);
+}
+
+.mapHeader {
+  display: flex;
+  min-height: 82px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 14px 20px;
+  border-bottom: 3px solid var(--g-ink);
+}
+
+.mapHeader span,
+.mapWeather small {
+  font-family: var(--g-font-mono);
+  font-size: var(--g-fs-11);
+  letter-spacing: 0.08em;
+}
+
+.mapHeader h2 {
+  font-size: var(--g-fs-28);
+  font-weight: 900;
+  letter-spacing: -0.05em;
+  line-height: 1.2;
+}
+
+.mapWeather {
+  display: grid;
+  grid-template-columns: auto auto;
+  align-items: baseline;
+  gap: 0 8px;
+  text-align: right;
+}
+
+.mapWeather strong {
+  font-family: var(--g-font-mono);
+  font-size: var(--g-fs-18);
+}
+
+.mapWeather small {
+  grid-column: 1 / -1;
+  color: var(--g-ink-soft);
+}
+
+.canvas {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  aspect-ratio: 1.45;
+  min-height: 420px;
+  overflow: hidden;
+  background: var(--g-paper-deep);
+  transition: transform var(--g-motion-cover) var(--g-ease-paper), opacity var(--g-motion-cover) var(--g-ease-paper);
+}
+
+/* 点地点 = 把地图推向那个点，再进入场景 */
+.canvasZooming {
+  transform-origin: var(--zoom-x, 50%) var(--zoom-y, 50%);
+  transform: scale(1.5) rotate(0.6deg);
+  opacity: 0.55;
+}
+
+.mapArt {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.canvas::after {
+  position: absolute;
+  inset: 0;
+  background-image: var(--g-halftone);
+  background-size: var(--g-halftone-size);
+  content: "";
+  pointer-events: none;
+  opacity: 0.3;
+}
+
+.hotspot {
+  position: absolute;
+  z-index: 2;
+  display: flex;
+  min-width: 128px;
+  min-height: 54px;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 9px 5px 5px;
+  border: 2px solid var(--g-ink);
+  background: var(--g-paper);
+  box-shadow: var(--g-shadow-hover);
+  transform: translate(-50%, -50%) rotate(-1deg);
+  transition: transform var(--g-motion-fast) var(--g-ease-paper), background-color var(--g-motion-fast) var(--g-ease-paper);
+  animation: hotspot-in var(--g-motion-cover) var(--g-ease-paper) both;
+  animation-delay: calc(var(--hotspot-index, 0) * 40ms);
+}
+
+/* 图钉落图：用独立 translate 属性叠加，避免覆盖 -50% 居中与斜贴角度 */
+@keyframes hotspot-in {
+  from {
+    opacity: 0;
+    translate: 0 12px;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+.hotspot:nth-of-type(even) {
+  transform: translate(-50%, -50%) rotate(1.5deg);
+}
+
+.hotspot:hover {
+  z-index: 3;
+  background: var(--g-sun);
+  transform: translate(-50%, -55%) rotate(0);
+}
+
+.hotspot:focus-visible {
+  z-index: 4;
+  background: var(--g-sun);
+  outline: 3px solid var(--g-ink);
+  outline-offset: 3px;
+  transform: translate(-50%, -55%) rotate(0);
+}
+
+.hotspotPlaza {
+  background: var(--g-sun);
+}
+
+.hotspotPlaza::after {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border: 2px solid var(--g-sun);
+  border-radius: inherit;
+  animation: g-pulse 2.6s ease-out infinite;
+  pointer-events: none;
+}
+
+.hotspotPin {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  flex: 0 0 36px;
+  place-items: center;
+  border: 2px solid var(--g-ink);
+  border-radius: 50%;
+  background: var(--g-paper-deep);
+}
+
+.hotspotPlaza .hotspotPin {
+  background: var(--g-signal);
+  color: var(--g-paper-light);
+}
+
+.hotspotLabel {
+  display: grid;
+  line-height: 1.25;
+}
+
+.hotspotLabel small {
+  font-family: var(--g-font-mono);
+  font-size: var(--g-fs-11);
+  letter-spacing: 0.04em;
+}
+
+.hotspotLabel strong {
+  font-size: var(--g-fs-14);
+  font-weight: 900;
+}
+
+.mapFooter {
+  display: flex;
+  min-height: 50px;
+  align-items: center;
+  gap: 22px;
+  padding: 8px 18px;
+  border-top: 3px solid var(--g-ink);
+  font-size: var(--g-fs-12);
+  font-weight: 700;
+}
+
+.mapFooter > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.mapFooter i {
+  width: 10px;
+  height: 10px;
+  border: 2px solid var(--g-ink);
+  border-radius: 50%;
+}
+
+.legendCurrent {
+  background: var(--g-signal);
+}
+
+.legendPlace {
+  background: var(--g-paper-deep);
+}
+
+.scale {
+  margin-left: auto;
+  font-family: var(--g-font-mono);
+}
+
+@media (max-width: 720px) {
+  .canvas {
+    min-height: 360px;
+    aspect-ratio: auto;
+    height: 360px;
+  }
+
+  .hotspot {
+    min-width: 50px;
+    min-height: 50px;
+    padding: 5px;
+    border-radius: 50%;
+  }
+
+  .hotspotPin {
+    width: 36px;
+    height: 36px;
+  }
+
+  .hotspotLabel {
+    display: none;
+  }
+
+  .mapHeader {
+    padding-inline: 14px;
+  }
+
+  .mapFooter {
+    gap: 12px;
+    padding-inline: 12px;
+  }
+
+  .scale {
+    display: none !important;
+  }
+}

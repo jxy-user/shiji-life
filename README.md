@@ -1,101 +1,145 @@
-# 拾己 · LIFE
+# 拾己 · LIFE｜未完成之城
 
-> 一款以「人生抉择」为核心的网页互动叙事游戏：从 18 岁走到 60 岁，做出 11 个重大抉择，最后回看这一生。
+一个以「洛圣都日光 · 城市拼贴」为视觉语言的 PC 桌面生活叙事应用。当前版本使用 React、Vite 与 TypeScript 完整重建，数据只保存在本机浏览器，不上传个人经历。
 
-## 当前状态
+## 运行
 
-主线已完成，结构为：
-
-```
-门厅（推门）→ 人生线 18→60（11 个抉择）→ 回放（逐条播报 + 关键词）
-```
-
-- **门厅**：SVG（可缩放矢量图）绘制的旧城门，镜头由远及近，推门后进入人生线
-- **人生线**：11 个年龄节点，每选一项推进一段剧情；分段动画 + 打字机 + 音效
-- **回放**：逐条播放所有选择，结尾给出倾向关键词
-
-**这不是心理测评、诊断或治疗工具，也不会给玩家贴标签，不给选择打分。**
-
-## 技术栈
-
-| 层 | 选型 |
-|---|---|
-| 构建 | Vite 8 + TypeScript 7 |
-| 界面 | React 19 + Tailwind CSS 4 |
-| 路由 | React Router 7（HashRouter 哈希路由） |
-| 状态 | Zustand 5 |
-| 测试 | Vitest 5 + Testing Library |
-| 静态检查 | oxlint |
-| 离线 | vite-plugin-pwa（渐进式网页应用） |
-
-## 开始开发
+要求 Node.js 20.19+，推荐 Node.js 24 LTS。
 
 ```bash
-npm install        # 安装依赖
-npm run dev        # 启动开发服务器，默认 http://localhost:5173
+npm install
+npm run dev
 ```
 
-## 常用命令
+开发地址默认为 `http://127.0.0.1:5173`。
 
 ```bash
-npm run dev        # 开发服务器
-npm run build      # 类型检查 + 生产构建，产物在 dist/
-npm run preview    # 预览构建产物
-npm run typecheck  # 仅类型检查
-npm run lint       # 静态检查
-npm test           # 单元测试（单次）
-npm run test:watch # 单元测试（监听）
+npm run typecheck
+npm run lint
+npm test
+npm run build
+npm run preview
 ```
 
-交付前应至少跑通：`npm run typecheck && npm run lint && npm test && npm run build`。
+`npm run check` 会依次执行类型检查、Lint、单元/组件测试与生产构建。最终可部署产物在 `dist/`。浏览器验收使用：
 
-## 目录结构
+```bash
+npm run check
+npm run test:e2e
+```
+
+Playwright 会启动生产预览，并分别在 Chromium 与 Firefox 运行旅程、可访问性、桌面视觉、性能与部署测试。
+
+## 页面
+
+| 页面 | 路由 |
+| --- | --- |
+| 开始 | `/` |
+| 序章 | `/prologue` |
+| 新建旅程 | `/create` |
+| 城市 | `/city` |
+| 场景 | `/scene/:sceneId` |
+| 事件 | `/event/:eventId` |
+| 阶段回顾 | `/reflection` |
+| 人生档案 | `/archive` |
+| 私人日记 | `/journal` |
+| 现实行动 | `/actions` |
+| 设置 | `/settings` |
+
+城市包含中央广场、家、校园、街区、公园、工作室、港口与远方八个目的地。微光对话作为全局浮层接入旅程。
+
+## 已实现的功能
+
+- 全新旅程、继续旅程、序章与角色登记。
+- 城市地图、场景探索、事件三选一及幂等落盘。
+- 逐条经历授权、撤回授权、软删除与恢复。
+- 三经历、两场景类别的阶段回顾阈值。
+- 认知猜测、确认、否认与改写，并提示来源观察已变化。
+- 日记新建、编辑、筛选、场景关联、行动复盘关联与删除。
+- 行动完整状态机：待办、进行中、暂停、已完成、再做一次。
+- 完成行动时自动生成至多一条复盘日记。
+- 默认授权、邀请开关、本地数据统计、存储状态与仅清空 v2 的重置。
+- 路由深链接、原生对话框、键盘操作、焦点返回与减少动态效果支持。
+
+## 数据与隐私
+
+- 当前存档键为 `shiji.life.v2`，通过 Zod 校验。
+- 不读取、不迁移旧版 `shiji.life.v1`。
+- 新建旅程只覆盖 v2；设置中的重置也只清除 v2。
+- 每条经历独立保存授权状态，私人日记不进入城市周报或阶段回顾。
+- 存储状态明确区分为可读取、存档损坏与存储不可用。
+
+## 桌面布局
+
+- 内容最大宽度 1320px，上下文栏为 304px。
+- `≥1200px`：224px 墨色侧栏。
+- `960–1199px`：72px 紧凑侧栏。
+- `<960px`：顶部导航。
+- `<720px`：单列回退；更窄视口进一步压缩导航。
+- 顶部档案条 64px，交互目标不小于 44px。
+
+## 视觉与资产
+
+G 方向使用米白新闻纸、墨黑、阳光黄、信号红、天空蓝与苔绿，结合半调网点、撕纸边、胶带、硬阴影和原创代码地图。信号红只用于图钉、编号与小印章；产品警告使用琥珀色。禁止玻璃拟态、紫粉配色、emoji、外部字体 CDN 与官方游戏资产。
+
+15 张头像与场景插画由 Sharp 生成响应式 WebP。源图位于 `assets/img/`，变体位于 `assets/img/webp/`。
+
+```bash
+npm run assets:optimize
+```
+
+页面通过 `ArtImage` 输出 `src`、`srcSet` 与 `sizes`。城市地图、纹理、印章与图形元素均由 CSS/SVG 代码生成。
+
+## 工程结构
 
 ```text
-├── AGENTS.md              # AI 协作总则
-├── docs/                  # 产品、技术、玩法、路线图文档
-├── public/                # 静态资源（图标等）
-├── src/
-│   ├── app/               # 应用入口与路由表
-│   ├── components/
-│   │   ├── effects/       # 电影画框、火花、极光
-│   │   ├── life/          # 人生线图标、年龄轴、打字机、音效开关
-│   │   ├── pwa/           # 更新/离线提示
-│   │   ├── start/         # 门厅城门场景
-│   │   └── ui/            # 线性图标
-│   ├── data/lifeStory.ts  # 11 个节点与选项
-│   ├── pages/             # 门厅、人生线、回放
-│   ├── services/sound.ts  # Web Audio 合成音效
-│   ├── stores/useLifeStore.ts # 人生线存档
-│   └── test/              # 测试初始化
-└── vitest.config.ts
+src/
+├─ app/                 # 路由与受保护页面
+├─ components/          # G 原语、表单、反馈、桌面壳层
+├─ data/                # 地点、事件、对话、认知与资产映射
+├─ domain/              # 类型、Zod schema、状态机与选择器
+├─ features/            # 按业务页面拆分
+├─ store/               # Zustand 游戏状态、临时 UI 状态与持久化
+└─ styles/              # 全局令牌、基础样式与动态效果
+tests/
+├─ unit/                # 领域与状态测试
+├─ components/          # React 交互测试
+└─ e2e/                 # Playwright 浏览器验收
+scripts/
+└─ optimize-assets.mjs  # 响应式 WebP 生成
 ```
 
-## 设计约定
+主要依赖为 React 19、React Router 7、Vite 7、Zustand 5、Zod 4 与 Lucide React。测试使用 Vitest、Testing Library、Playwright 与 axe；不使用外部 UI 组件库或字体服务。
 
-- 视觉基调：墨色 + 暖光；标题用宋体，界面用系统无衬线。
-- 颜色与字体令牌集中在 `src/index.css` 的 `@theme` 中，组件里不写死色值。
-- 正文小字对比度不低于 4.5:1；交互元素保留可见焦点环；尊重 `prefers-reduced-motion`（减少动态效果）。
-- 动画优先，文字尽量以播放方式呈现；不过度堆叠光效。
+## 部署
 
-## 隐私原则（摘要）
+生产构建使用 BrowserRouter，`public/_redirects` 已提供 SPA 回退与缺失资源 404：
 
-- 所有数据只保存在本设备浏览器（`localStorage`），没有后端，也不上传。
-- 玩家可以在门厅页脚「清除本地数据」，一次清空人生进度、旧版存档与音效偏好。
-- 选择前不透露结果或归类；倾向统计只在最终回放出现。
+```text
+/assets/* /404.html 404
+/* /index.html 200
+```
 
-## 已移除
+将 `dist/` 完整上传到静态站点根目录。部署到子路径时，在构建前设置 `VITE_BASE_URL`；Windows PowerShell 使用：
 
-旧版「未完成之城」城市生活（城市/场景/事件/档案/行动/日记/人物/回顾/建角/开场）已于 2026-11-25 删除。相关旧文档保留在 `docs/` 作为历史资料，并已标注「已移除」或「已过时」。
+```powershell
+$env:VITE_BASE_URL = '/shiji/'
+npm run build
+npm run preview -- --port 4174
+```
 
-## 文档索引
+Git Bash 需要避免 MSYS 自动改写路径：
 
-0. `docs/PROGRESS_AND_HANDOFF.md`：**进度与协作交接**——多人协作前先读这一页
-1. `AGENTS.md`：项目总规则与 AI 协作方式
-2. `docs/PRODUCT_PRD.md`：产品定位、旅程、页面与验收
-3. `docs/GAMEPLAY_AND_STORY.md`：11 个节点、选项与结局
-4. `docs/PROJECT_CONTEXT.md`：背景与已确认决策
-5. `docs/ROADMAP_AND_ACCEPTANCE.md`：里程碑与验收标准
-6. `docs/TECHNICAL_PRD.md`：技术架构（部分旧模块已过时）
-7. `docs/AI_REFLECTION_SYSTEM.md`：旧版回顾系统（**已移除**，保留原则作参考）
-8. `docs/DECISIONS_AND_OPEN_QUESTIONS.md`：已确认事项与待决事项
+```bash
+MSYS_NO_PATHCONV=1 VITE_BASE_URL=/shiji/ npm run build
+MSYS_NO_PATHCONV=1 VITE_BASE_URL=/shiji/ npm run preview -- --port 4174
+```
+
+预览地址为 `http://127.0.0.1:4174/shiji/`。构建和预览必须使用相同的 `VITE_BASE_URL`；Router basename、资源地址和深链接回退都依赖该值。其他托管平台需自行配置与 `public/_redirects` 等价的规则。
+
+## 设计文档
+
+- `GTA_UI_DIRECTION.md`：G 视觉方向与保留的 H 档案。
+- `GTA_G_UI_SPEC.md`：桌面信息架构、设计令牌与组件合同。
+- `GTA_G_RESTORE_PLAN.md`：PC 重建范围、迁移记录与交付检查。
+- `specs/gta-ui/style-contract-g.yaml`：机器可读的 G 视觉合同。

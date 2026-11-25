@@ -1,0 +1,216 @@
+.paper {
+  position: relative;
+  border: 2px solid var(--g-ink);
+  border-radius: var(--g-radius-card);
+  background: var(--g-paper);
+  box-shadow: var(--g-shadow);
+}
+
+.torn {
+  clip-path: polygon(0 8px, 4% 3px, 9% 7px, 15% 2px, 22% 6px, 31% 1px, 39% 5px, 48% 2px, 58% 7px, 67% 2px, 76% 6px, 86% 1px, 94% 5px, 100% 0, 100% calc(100% - 7px), 95% calc(100% - 2px), 87% calc(100% - 6px), 78% calc(100% - 2px), 69% calc(100% - 7px), 59% calc(100% - 3px), 49% calc(100% - 8px), 39% calc(100% - 3px), 29% calc(100% - 7px), 19% calc(100% - 2px), 10% calc(100% - 6px), 4% calc(100% - 2px), 0 calc(100% - 7px));
+}
+
+.halftone::after {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  background-image: var(--g-halftone);
+  background-size: var(--g-halftone-size);
+  content: "";
+  pointer-events: none;
+  opacity: 0.32;
+}
+
+.halftone > * {
+  position: relative;
+  z-index: 1;
+}
+
+.button {
+  display: inline-flex;
+  min-height: 48px;
+  align-items: center;
+  justify-content: center;
+  gap: var(--g-space-2);
+  padding: var(--g-space-10) 20px;
+  border: 2px solid var(--g-ink);
+  border-radius: var(--g-radius-small);
+  box-shadow: var(--g-shadow-small);
+  font-weight: 900;
+  line-height: 1.2;
+  transition: transform var(--g-motion-fast) var(--g-ease-paper), box-shadow var(--g-motion-fast) var(--g-ease-paper), background-color var(--g-motion-fast) var(--g-ease-paper);
+}
+
+.button:hover:not(:disabled) {
+  transform: translate(-1px, -1px);
+  box-shadow: var(--g-shadow-hover);
+}
+
+.button:active:not(:disabled) {
+  transform: translate(2px, 2px);
+  box-shadow: none;
+}
+
+.button:disabled {
+  opacity: 0.42;
+}
+
+.spinner {
+  animation: g-spin 800ms linear infinite;
+}
+
+@keyframes g-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.primary {
+  background: var(--g-sun);
+  color: var(--g-ink);
+}
+
+.secondary {
+  background: var(--g-paper);
+  color: var(--g-ink);
+}
+
+.quiet {
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
+  color: var(--g-ink-soft);
+}
+
+.quiet:hover:not(:disabled) {
+  box-shadow: none;
+  background: rgba(20, 20, 20, 0.06);
+  color: var(--g-ink);
+}
+
+.ink {
+  background: var(--g-ink);
+  color: var(--g-paper);
+}
+
+.small {
+  min-height: 44px;
+  padding: 8px 14px;
+  font-size: var(--g-fs-14);
+}
+
+.tag {
+  display: inline-flex;
+  min-height: 30px;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border: 2px solid var(--g-ink);
+  border-radius: var(--g-radius-small);
+  background: var(--g-paper-deep);
+  font-size: var(--g-fs-13);
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.interactive {
+  min-height: 44px;
+  transition: background-color var(--g-motion-fast) var(--g-ease-paper), transform var(--g-motion-fast) var(--g-ease-paper);
+}
+
+.interactive:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.active {
+  background: var(--g-sun);
+  color: var(--g-ink);
+}
+
+.stamp {
+  display: inline-flex;
+  min-height: 28px;
+  align-items: center;
+  padding: 3px 8px;
+  border: 2px solid currentColor;
+  font-family: var(--g-font-mono);
+  font-size: var(--g-fs-11);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  transform: rotate(-3deg);
+}
+
+.inkTone {
+  color: var(--g-ink);
+}
+
+.sun {
+  color: var(--g-ink);
+  background: var(--g-sun);
+}
+
+.stampPaper {
+  color: var(--g-paper);
+}
+
+.signal {
+  color: var(--g-signal-deep);
+}
+
+.pin {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  width: 10px;
+  height: 10px;
+  border: 2px solid var(--g-ink);
+  border-radius: 50%;
+  box-shadow: var(--g-shadow-small);
+}
+
+.halftoneField {
+  position: absolute;
+  inset: 0;
+  background-image: var(--g-halftone);
+  background-size: var(--g-halftone-size);
+  pointer-events: none;
+}
+
+.empty {
+  display: grid;
+  min-height: 280px;
+  place-content: center;
+  justify-items: center;
+  gap: var(--g-space-14);
+  padding: 48px 24px;
+  text-align: center;
+}
+
+.emptyCode {
+  font-family: var(--g-font-mono);
+  font-size: var(--g-fs-12);
+  letter-spacing: 0.12em;
+}
+
+.empty h2 {
+  font-size: var(--g-fs-28);
+  font-weight: 900;
+}
+
+.empty p {
+  max-width: 46ch;
+  color: var(--g-ink-soft);
+}
+
+@media (max-width: 600px) {
+  .button {
+    width: 100%;
+  }
+
+  .empty {
+    min-height: 240px;
+    padding: 36px 20px;
+  }
+}

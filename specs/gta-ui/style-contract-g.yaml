@@ -1,0 +1,265 @@
+schema_version: 2
+project_id: "shiji-life-g-pc"
+status: active
+platform:
+  target: desktop
+  primary_input: pointer-keyboard
+  orientation: landscape
+  minimum_width: 320
+  desktop_baseline: [1440, 900]
+  reference_sizes:
+    - [1440, 900]
+    - [1280, 800]
+    - [1024, 768]
+  fallback_sizes:
+    - [768, 900]
+    - [640, 480]
+    - [390, 844]
+  zoom_percent: 200
+  breakpoints:
+    full_sidebar: 1200
+    compact_sidebar: 960
+    top_navigation: 960
+    single_column: 720
+    compact_navigation: 600
+layout:
+  sidebar_width: 224
+  sidebar_compact_width: 72
+  archive_bar_height: 64
+  content_max_width: 1320
+  context_width: 304
+  content_gutter:
+    desktop: 56
+    compact: 24
+    narrow: 20
+  navigation:
+    desktop: left-sidebar
+    tablet: icon-sidebar
+    narrow: top-navigation
+visual:
+  theme: "洛圣都日光 · 城市拼贴"
+  keywords:
+    - sun-bleached
+    - city-weekly
+    - loading-screen-collage
+    - halftone
+    - torn-paper
+    - masking-tape
+    - hard-shadow
+    - original-city-map
+  mood: "阳光、街头、粗粝、编辑部拼贴；清晰、安静、可操作"
+  reference_policy: "concepts-are-archive-only"
+  materials:
+    - newsprint
+    - torn-poster
+    - masking-tape
+    - halftone-dots
+    - printed-map
+    - black-ink
+  lighting:
+    direction: top-left
+    softness: hard
+colors:
+  paper: "#F4EBD8"
+  paper_deep: "#E8DDC6"
+  paper_light: "#FFF8E9"
+  ink: "#141414"
+  ink_soft: "#5B564C"
+  sun: "#F2B705"
+  signal: "#D6422B"
+  signal_deep: "#A93222"
+  sky: "#A9C9D8"
+  asphalt: "#4A4A45"
+  grass: "#7C8B5A"
+  grass_deep: "#4F5E35"
+  warning: "#C58F47"
+  disabled: "#8C8277"
+  line: "rgba(20,20,20,0.28)"
+  line_strong: "rgba(20,20,20,0.72)"
+  usage:
+    primary_action: sun-on-ink
+    destructive_action: ink
+    warning: warning
+    signal_red: "pins, numbers, small stamps only; signal_deep for text"
+    grass_text: grass_deep
+typography:
+  language: zh-CN
+  external_font_requests: false
+  display:
+    size: "clamp(34px, 4vw, 52px)"
+    weight: 900
+    family: "local sans-serif stack"
+  body:
+    size: 16
+    line_height: 1.75
+    weight: 400
+  note:
+    minimum_size: 11
+  number:
+    family: "local monospace stack"
+    variant: tabular-nums
+  forbidden:
+    - Rockstar official fonts
+    - Pricedown
+    - external font CDN
+geometry:
+  radius:
+    small: 4
+    card: 8
+    modal: 10
+  border:
+    default: 2
+    color: "#141414"
+  shadow:
+    default: "4px 4px 0 rgba(20,20,20,0.35)"
+    small: "2px 2px 0 rgba(20,20,20,0.35)"
+  button_height:
+    small: 44
+    default: 48
+  target_minimum: 44
+  icon_utility: 21
+  torn_edge: css-clip-path
+spacing:
+  xs: 4
+  sm: 8
+  md: 12
+  lg: 16
+  xl: 24
+  xxl: 32
+  xxxl: 48
+  huge: 64
+effects:
+  halftone:
+    type: radial-gradient
+    size: "6px 6px"
+    decoration_opacity: 0.32
+  shadow: hard-offset
+  selected: "sun background + ink text + 2px ink border"
+  disabled: "0.42 opacity + gray ink"
+  motion:
+    fast_ms: 120
+    normal_ms: 220
+    cover_ms: 360
+    properties:
+      - opacity
+      - transform
+    reduced_motion: disable
+components:
+  paper_sheet: "2px ink border, 8px radius, hard shadow"
+  paper_button: "48px default, 44px small"
+  paper_tag: "44px when interactive"
+  stamp: "status only, never pill navigation"
+  pin: "decorative, aria-hidden"
+  art_image: "src + srcSet + sizes required"
+  modal_sheet: "native dialog, Escape, focus containment and return"
+  confirm_dialog: "in-app confirmation, never window.confirm"
+  storage_notice: "ready, broken, unavailable"
+routes:
+  start: "/"
+  prologue: "/prologue"
+  create: "/create"
+  city: "/city"
+  scene: "/scene/:sceneId"
+  event: "/event/:eventId"
+  archive: "/archive"
+  reflection: "/reflection"
+  journal: "/journal"
+  actions: "/actions"
+  settings: "/settings"
+dialogue:
+  type: global-overlay
+  route: null
+city:
+  destinations:
+    - plaza
+    - home
+    - school
+    - blocks
+    - park
+    - studio
+    - harbor
+    - far
+  map: "original CSS/SVG"
+  semantic_location_index: required
+data:
+  save_key: "shiji.life.v2"
+  schema_version: 2
+  validator: zod
+  legacy_key: "shiji.life.v1"
+  legacy_access: forbidden
+  new_journey_scope: v2-only
+  reset_scope: v2-only
+  storage_states:
+    - ready
+    - broken
+    - unavailable
+  invariants:
+    - event completion is idempotent
+    - consent is per experience
+    - private journals never enter reflection or city weekly
+    - action completion creates at most one automatic review
+    - deleting an action preserves and unlinks journals
+assets:
+  source_count: 15
+  output_format: webp
+  variant_count: 37
+  generator: "scripts/optimize-assets.mjs"
+  command: "npm run assets:optimize"
+  source_directory: "assets/img"
+  output_directory: "assets/img/webp"
+  quality: 78
+  effort: 6
+  saturation: 0.9
+  contrast: 1.04
+  runtime:
+    allow_jpg: false
+    allow_concept_slices: false
+    allow_external_images: false
+accessibility:
+  contrast_minimum: 4.5
+  keyboard_core_flows: required
+  visible_focus: required
+  named_icon_controls: required
+  dialog_semantics: native
+  dialog_focus_containment: required
+  status_not_color_only: required
+  reduced_motion: required
+  zoom_percent: 200
+performance:
+  initial_js_gzip_kb_max: 200
+  route_js_gzip_kb_max: 60
+  lcp_ms_max: 2500
+  cls_max: 0.1
+  inp_ms_max: 200
+  route_loading: react-lazy
+  image_loading: responsive-webp
+deployment:
+  router: browser
+  router_basename: VITE_BASE_URL
+  output_directory: dist
+  spa_fallback: "/* /index.html 200"
+  base_url_env: VITE_BASE_URL
+consistency_rules:
+  - 所有页面共用 G 令牌、纸面原语和桌面壳层。
+  - 信号红只做图钉、编号或极小印章，不表示删除或危险。
+  - 标题粗、紧、可读；正文使用本地字体和舒适行宽。
+  - 装饰不承担唯一信息表达，不拦截指针。
+  - 私人经历默认留在本机，不自动公开或纳入分析。
+  - 概念图与参考目录不进入运行时产物。
+forbidden:
+  - glassmorphism
+  - purple
+  - pink
+  - emoji
+  - large-radius SaaS cards
+  - pure-white cards
+  - external font CDN
+  - Rockstar characters, vehicles, logos, screenshots or fonts
+  - weapons
+  - wanted stars
+  - crime missions
+  - money ranking
+  - psychological scores
+  - personality labels
+  - shame design
+  - mobile 1:1 concept scaling as the desktop layout
