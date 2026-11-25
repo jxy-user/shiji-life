@@ -47,11 +47,6 @@ export function DoorScene() {
           <stop offset="100%" stopColor="#241922" />
         </linearGradient>
 
-        <radialGradient id="door-glow-wide" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#ffe4ad" stopOpacity="0.55" />
-          <stop offset="42%" stopColor="#ffbe74" stopOpacity="0.22" />
-          <stop offset="100%" stopColor="#e88a45" stopOpacity="0" />
-        </radialGradient>
         <radialGradient id="door-glow-core" cx="50%" cy="50%" r="50%">
           <stop offset="0%" stopColor="#fffaf0" stopOpacity="0.98" />
           <stop offset="38%" stopColor="#ffe0a0" stopOpacity="0.75" />
@@ -212,35 +207,35 @@ export function DoorScene() {
 
       {/* —— 门厅主体 —— */}
       <g transform="translate(0 34)">
-        {/* 门后的暖光：收在门洞附近，不做成向外扩散的大圆光 */}
-        <ellipse cx="800" cy="520" rx="130" ry="200" fill="url(#door-glow-wide)" opacity="0.45" filter="url(#door-blur-md)" />
-        <ellipse cx="800" cy="520" rx="64" ry="130" fill="url(#door-glow-core)" opacity="0.55" filter="url(#door-blur-sm)" />
-
         {/* 门缝体积光：光从一条竖缝透出，只向门前方投出一束窄光 */}
         <g style={{ mixBlendMode: 'screen' }}>
-          {/* 门缝附近的空气辉光：只在缝的周围，不向四周扩散 */}
+          {/* 辉光严格限制在门缝的竖直范围内，不越过缝顶 */}
           <ellipse
             cx="800"
-            cy="560"
-            rx="68"
-            ry="170"
+            cy="567"
+            rx="22"
+            ry="120"
             fill="url(#door-glow-core)"
-            opacity="0.32"
-            filter="url(#door-blur-md)"
+            opacity="0.3"
+            filter="url(#door-blur-sm)"
           />
 
-          {/* 门前向下投出的一束窄光：底部只比门缝略宽 */}
+          {/* 门缝两侧门板被光擦亮的窄边（竖直，不是圆形） */}
+          <rect x="781" y="446" width="8" height="244" fill="url(#door-gap)" opacity="0.2" filter="url(#door-blur-sm)" />
+          <rect x="811" y="446" width="8" height="244" fill="url(#door-gap)" opacity="0.2" filter="url(#door-blur-sm)" />
+
+          {/* 缝光落在地面的窄光带：只从门底往下，不悬浮在空中 */}
           <path
-            d="M793 470 L807 470 L852 900 L748 900 Z"
+            d="M790 690 L810 690 L866 900 L734 900 Z"
             fill="url(#door-ray-main)"
-            opacity="0.8"
-            filter="url(#door-blur-md)"
+            opacity="0.85"
+            filter="url(#door-blur-sm)"
           />
           {/* 光带亮核 */}
           <path
-            d="M796 480 L804 480 L818 900 L782 900 Z"
+            d="M795 690 L805 690 L822 900 L778 900 Z"
             fill="url(#door-ray-main)"
-            opacity="0.42"
+            opacity="0.4"
             filter="url(#door-blur-sm)"
           />
         </g>
@@ -341,9 +336,6 @@ export function DoorScene() {
           strokeOpacity="0.32"
           strokeWidth="2"
         />
-        {/* 门洞内壁的一点反光，不做成向四周散的光 */}
-        <ellipse cx="800" cy="452" rx="96" ry="64" fill="url(#door-glow-core)" opacity="0.16" filter="url(#door-blur-md)" />
-
         {/* 两扇木门 */}
         <path
           d="M656 690 L656 446 A146 146 0 0 1 791 444 L791 690 Z"
@@ -433,7 +425,8 @@ export function DoorScene() {
         {/* 门缝与主光 */}
         <rect x="791" y="444" width="18" height="246" fill="url(#door-gap)" />
         <rect x="797" y="452" width="6" height="232" fill="#fffdf6" opacity="0.92" filter="url(#door-blur-sm)" />
-        <ellipse cx="800" cy="520" rx="46" ry="160" fill="#ffe4a8" opacity="0.32" filter="url(#door-blur-sm)" />
+        {/* 门缝本身的光晕也限制在缝的高度内 */}
+        <ellipse cx="800" cy="567" rx="34" ry="118" fill="#ffe4a8" opacity="0.26" filter="url(#door-blur-sm)" />
 
         {/* 石面受光的一侧 */}
         <path
