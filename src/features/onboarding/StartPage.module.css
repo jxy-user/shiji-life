@@ -17,6 +17,23 @@
   padding-bottom: 16px;
 }
 
+/* 首页页脚：刊号、声明与时间，像杂志的版权页 */
+.coverFoot {
+  display: flex;
+  grid-column: 1 / -1;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 24px;
+  margin-top: 8px;
+  padding-top: 14px;
+  border-top: 2px solid var(--g-line-strong);
+  color: var(--g-ink-soft);
+  font-family: var(--g-font-mono);
+  font-size: var(--g-fs-11);
+  letter-spacing: 0.08em;
+}
+
 .issueLine {
   display: flex;
   align-items: center;
@@ -52,6 +69,8 @@
   font-weight: 900;
   letter-spacing: -0.09em;
   line-height: 0.88;
+  /* 套印错位：红色油墨在字的右下侧偏了一点 */
+  text-shadow: 3px 3px 0 rgba(214, 66, 43, 0.22);
 }
 
 .heroCopy h1 strong {
@@ -326,97 +345,14 @@
   }
 }
 
-@media (max-width: 959px) {
+/* 大屏 PC：封面铺得更开 */
+@media (min-width: 1600px) {
   .cover {
-    min-height: auto;
-    grid-template-columns: 1fr;
-    gap: 30px;
-    padding-top: 42px;
-  }
-
-  .heroCopy {
-    max-width: 640px;
+    width: min(1480px, 100%);
+    gap: clamp(48px, 6vw, 96px);
   }
 
   .collage {
-    width: min(680px, 100%);
-    min-height: 610px;
-    margin: 0 auto;
-  }
-}
-
-@media (max-width: 600px) {
-  .cover {
-    gap: 20px;
-    padding: 30px 0;
-  }
-
-  .heroCopy h1 {
-    gap: 8px;
-    font-size: clamp(62px, 20vw, 88px);
-  }
-
-  .heroCopy h1 strong {
-    -webkit-text-stroke-width: 2px;
-  }
-
-  .actions {
-    display: grid;
-  }
-
-  .actions > * {
-    width: 100%;
-  }
-
-  .settingsLink {
-    justify-content: center;
-  }
-
-  .collage {
-    min-height: 470px;
-  }
-
-  .cityCard {
-    width: 82%;
-    padding: 12px;
-  }
-
-  .cityCard > strong {
-    font-size: var(--g-fs-20);
-  }
-
-  .avatarCard {
-    top: 80px;
-    right: 0;
-    width: 43%;
-    padding: 7px;
-  }
-
-  .avatarCard figcaption {
-    display: grid;
-    gap: 0;
-  }
-
-  .avatarCard figcaption strong {
-    font-size: var(--g-fs-16);
-  }
-
-  .plazaCard {
-    bottom: 0;
-    width: 68%;
-  }
-
-  .sun {
-    width: 100px;
-    height: 100px;
-  }
-
-  .palms {
-    width: 130px;
-    height: 190px;
-  }
-
-  .verticalType {
-    left: -12px;
+    min-height: 680px;
   }
 }

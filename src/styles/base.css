@@ -15,7 +15,9 @@ body {
   min-width: 320px;
   min-height: 100vh;
   overflow-wrap: break-word;
-  background: var(--g-paper-deep);
+  background-color: var(--g-paper-deep);
+  /* 纸张纤维 + 轻微暗角：印刷质感，不抢内容 */
+  background-image: var(--g-fiber), var(--g-vignette);
   color: var(--g-ink);
   font-family: var(--g-font-body);
   font-size: var(--g-fs-16);

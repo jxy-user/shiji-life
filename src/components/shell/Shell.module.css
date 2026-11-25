@@ -43,7 +43,12 @@
   flex-direction: column;
   justify-content: space-between;
   padding: 24px 16px 16px;
-  background: var(--g-ink);
+  background-color: var(--g-ink);
+  /* 极淡的细网格：像印刷版面上的坐标格 */
+  background-image:
+    linear-gradient(rgba(244, 235, 216, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(244, 235, 216, 0.045) 1px, transparent 1px);
+  background-size: 28px 28px;
   color: var(--g-paper);
   border-right: 3px solid var(--g-ink);
 }
@@ -58,6 +63,7 @@
 }
 
 .navLink {
+  position: relative;
   display: flex;
   min-height: 56px;
   align-items: center;
@@ -66,6 +72,23 @@
   border: 2px solid transparent;
   color: var(--g-paper-deep);
   transition: background-color var(--g-motion-fast) var(--g-ease-paper), color var(--g-motion-fast) var(--g-ease-paper), transform var(--g-motion-fast) var(--g-ease-paper);
+}
+
+/* hover 时左侧亮起一小段黄线 */
+.navLink::before {
+  position: absolute;
+  left: -2px;
+  top: 50%;
+  width: 3px;
+  height: 0;
+  background: var(--g-sun);
+  content: "";
+  transform: translateY(-50%);
+  transition: height var(--g-motion-fast) var(--g-ease-paper);
+}
+
+.navLink:hover::before {
+  height: 56%;
 }
 
 .navLink:hover {
@@ -118,6 +141,16 @@
 
 .warning {
   background: var(--g-warn);
+}
+
+/* 侧栏底部的小版权行 */
+.sidebarFoot {
+  margin-top: 10px;
+  padding: 0 6px;
+  color: rgba(244, 235, 216, 0.42);
+  font-family: var(--g-font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
 }
 
 .journeyMain {
@@ -304,6 +337,8 @@
   font-weight: 900;
   letter-spacing: -0.055em;
   line-height: 1.15;
+  /* 套印轻微错位：像油墨没有完全对齐 */
+  text-shadow: 2px 2px 0 rgba(214, 66, 43, 0.16);
 }
 
 .pageDescription {
@@ -354,140 +389,13 @@
   }
 }
 
-@media (max-width: 959px) {
-  .journey {
-    display: block;
-  }
-
-  .sidebar {
-    position: relative;
-    display: flex;
-    height: auto;
-    flex-direction: row;
-    align-items: center;
-    gap: 20px;
-    padding: 10px 16px;
-    border-right: 0;
-    border-bottom: 3px solid var(--g-ink);
-  }
-
-  .primaryNav {
-    flex: 1;
-    margin-top: 0;
-  }
-
-  .primaryNav ul {
-    display: flex;
-    justify-content: flex-end;
-    gap: var(--g-space-1);
-  }
-
-  .navLink {
-    min-height: 44px;
-    gap: 0;
-    padding: 8px 10px;
-  }
-
-  .navLabel,
-  .storageStatus {
-    display: none;
-  }
-
-  .archiveBar {
-    position: relative;
-    min-height: 60px;
-    grid-template-columns: 1fr auto;
-  }
-
-  .archiveTitle {
-    display: none;
-  }
-
-  .statusStrip {
-    gap: var(--g-space-10);
-    font-size: var(--g-fs-12);
-  }
-
-  .periodLabel {
-    display: none;
-  }
-
+/* 大屏 PC：版心更宽、留白更松 */
+@media (min-width: 1600px) {
   .journeyContent {
-    min-height: calc(100dvh - 120px);
-    padding: 28px 20px 48px;
+    padding-inline: 72px;
   }
 
-  .pageHeading {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 20px;
-  }
-}
-
-@media (max-width: 600px) {
-  .sidebar {
-    display: block;
-    padding: 8px 12px;
-  }
-
-  .sidebar > .brand {
-    margin-bottom: 8px;
-  }
-
-  .brandMark {
-    width: 28px;
-    height: 28px;
-    flex-basis: 28px;
-  }
-
-  .brandCopy {
-    display: flex;
-    align-items: baseline;
-    gap: var(--g-space-2);
-  }
-
-  .brandCopy strong {
-    font-size: var(--g-fs-20);
-  }
-
-  .brandCopy small {
-    margin: 0;
-  }
-
-  .primaryNav ul {
-    justify-content: space-between;
-  }
-
-  .navLink {
-    flex: 1;
-    justify-content: center;
-    padding-inline: 4px;
-  }
-
-  .archiveBar {
-    min-height: 54px;
-    padding-inline: 14px;
-  }
-
-  .archiveTitle strong {
-    font-size: var(--g-fs-14);
-  }
-
-  .onboardingHeader {
-    min-height: 60px;
-    padding-inline: 16px;
-  }
-
-  .onboardingMeta > span {
-    display: none;
-  }
-
-  .onboardingContent {
-    min-height: calc(100dvh - 60px);
-    padding: 0 16px 40px;
-  }
-
-  .pageHeading h1 {
-    font-size: var(--g-fs-32);
+  .contentFrame {
+    max-width: 1480px;
   }
 }

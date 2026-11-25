@@ -34,6 +34,7 @@ export function PrimaryNav() {
         ))}
       </ul>
       <p className={styles.storageStatus}><span className={storageStatus === 'ready' ? styles.ready : styles.warning} aria-hidden="true" />{storageStatus === 'ready' ? '本地存档正常' : '存档需要处理'}</p>
+      <p className={styles.sidebarFoot} aria-hidden="true">VOL. 01 / LOCAL ONLY</p>
     </nav>
   )
 }

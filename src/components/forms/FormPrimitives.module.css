@@ -206,17 +206,3 @@
   outline-offset: 3px;
   box-shadow: 0 0 0 2px var(--g-ink);
 }
-
-@media (max-width: 620px) {
-  .choices {
-    grid-template-columns: 1fr;
-  }
-
-  .switchRow {
-    align-items: flex-start;
-  }
-
-  .switchState {
-    display: none;
-  }
-}

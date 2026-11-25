@@ -59,6 +59,9 @@
   --g-ease-land: cubic-bezier(0.34, 1.56, 0.64, 1);
   --g-halftone: radial-gradient(rgba(20, 20, 20, 0.2) 0.7px, transparent 0.8px);
   --g-halftone-size: 6px 6px;
+  /* 纸张纤维：极淡的噪点，叠在纸色上增加印刷质感 */
+  --g-fiber: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.055'/%3E%3C/svg%3E");
+  --g-vignette: radial-gradient(ellipse at 50% 42%, transparent 56%, rgba(20, 20, 20, 0.075) 100%);
   --g-z-header: 30;
   --g-z-player: 80;
   --g-z-dialog: 100;

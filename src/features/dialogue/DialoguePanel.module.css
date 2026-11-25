@@ -160,10 +160,3 @@ kbd {
   font-family: var(--g-font-mono);
   font-size: var(--g-fs-11);
 }
-
-@media (max-width: 600px) {
-  .dialogue {
-    right: 16px;
-    bottom: 16px;
-  }
-}

@@ -84,6 +84,12 @@ export default function StartPage() {
         <span className={styles.verticalType} aria-hidden="true">LOS SANTOS / AFTERNOON</span>
       </section>
 
+      <footer className={styles.coverFoot} aria-label="刊号信息">
+        <span>VOL. 001 · 城市周刊</span>
+        <span>本地优先 · 无账号 · 不上传</span>
+        <span className="mono">18:40 / SUNSET</span>
+      </footer>
+
       <ConfirmDialog
         open={confirmOpen}
         onClose={() => setConfirmOpen(false)}

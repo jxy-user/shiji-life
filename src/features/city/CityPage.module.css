@@ -378,24 +378,3 @@
     align-items: stretch;
   }
 }
-
-@media (max-width: 800px) {
-  .contextColumn {
-    grid-template-columns: 1fr;
-  }
-
-  .index ul {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 620px) {
-  .index {
-    padding: 16px;
-  }
-
-  .index > header {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-}

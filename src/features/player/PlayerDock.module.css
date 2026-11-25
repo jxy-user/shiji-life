@@ -418,20 +418,4 @@
   }
 }
 
-@media (max-width: 959px) {
-  .dock {
-    left: 16px;
-    bottom: 16px;
-  }
-}
-
 /* 窄屏：微光对话几乎占满底边，对话打开时隐藏徽标（播放不中断） */
-@media (max-width: 600px) {
-  .dock[data-expanded='false'] {
-    bottom: 16px;
-  }
-
-  .dock[data-expanded='false'][data-dialogue='true'] {
-    visibility: hidden;
-  }
-}
