@@ -237,6 +237,16 @@
     animation: city-flicker 4.5s ease-in-out infinite;
   }
 
+  /* 水面波纹缓慢漂移 */
+  .water-ripple {
+    animation: water-ripple-drift 14s linear infinite;
+  }
+
+  /* 水面波光呼吸 */
+  .water-sparkle {
+    animation: water-sparkle 3.6s ease-in-out infinite;
+  }
+
   /* 门厅：由远及近的镜头 */
   .door-approach {
     animation: door-approach 2.6s cubic-bezier(0.22, 0.8, 0.3, 1) both;
@@ -537,5 +547,25 @@
   }
   50% {
     opacity: 0.9;
+  }
+}
+
+/* —— 水面 —— */
+@keyframes water-ripple-drift {
+  from {
+    transform: translateX(-40px);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes water-sparkle {
+  0%,
+  100% {
+    opacity: 0.25;
+  }
+  50% {
+    opacity: 0.75;
   }
 }

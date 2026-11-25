@@ -66,6 +66,24 @@ export default function LifeReplayPage() {
     navigate('/life')
   }
 
+  function handleClearData() {
+    if (
+      !window.confirm(
+        '清除本设备上的全部数据？包括人生进度、旧版存档和音效偏好，清除后无法恢复。',
+      )
+    ) {
+      return
+    }
+    reset()
+    try {
+      window.localStorage.removeItem('shiji-life:save:v1')
+      window.localStorage.removeItem('shiji-life:sound-muted')
+    } catch {
+      // 存储不可用时只影响本次清除
+    }
+    navigate('/')
+  }
+
   return (
     <main className="relative min-h-dvh overflow-hidden bg-cream-50 text-ink-900">
       <CinemaFrame />
@@ -190,6 +208,14 @@ export default function LifeReplayPage() {
                 回到首页
               </Link>
             </div>
+
+            <button
+              type="button"
+              onClick={handleClearData}
+              className="mt-7 text-[11px] text-ink-500 underline-offset-4 transition-colors hover:text-ink-900 hover:underline"
+            >
+              清除本地数据
+            </button>
           </div>
         )}
       </div>

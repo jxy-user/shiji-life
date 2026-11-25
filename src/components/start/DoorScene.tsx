@@ -91,6 +91,16 @@ export function DoorScene() {
           <stop offset="45%" stopColor="#0d1120" />
           <stop offset="100%" stopColor="#05070e" />
         </linearGradient>
+        <linearGradient id="door-water" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#12203a" />
+          <stop offset="38%" stopColor="#0c1528" />
+          <stop offset="100%" stopColor="#05070f" />
+        </linearGradient>
+        <linearGradient id="door-water-glow" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#ffe4a8" stopOpacity="0.5" />
+          <stop offset="55%" stopColor="#ffb96a" stopOpacity="0.12" />
+          <stop offset="100%" stopColor="#ffb96a" stopOpacity="0" />
+        </linearGradient>
         <radialGradient id="door-path" cx="50%" cy="0%" r="80%">
           <stop offset="0%" stopColor="#f6c078" stopOpacity="0.4" />
           <stop offset="55%" stopColor="#c98f52" stopOpacity="0.12" />
@@ -241,26 +251,11 @@ export function DoorScene() {
         <ellipse cx="1240" cy="610" rx="460" ry="100" fill="#9aa6d6" opacity="0.07" filter="url(#door-blur-lg)" />
       </g>
 
-      {/* —— 地面与门前石板路 —— */}
-      <rect y="600" width="1600" height="300" fill="url(#door-ground)" />
-      <path d="M770 900 L790 680 L810 680 L830 900 Z" fill="url(#door-path)" filter="url(#door-blur-md)" />
-      {/* 透视石板缝 */}
-      <g stroke="#2b3350" strokeOpacity="0.5" strokeWidth="2">
-        <path d="M640 900 L760 700" />
-        <path d="M720 900 L780 700" />
-        <path d="M880 900 L820 700" />
-        <path d="M960 900 L840 700" />
-        <path d="M560 900 L740 700" />
-        <path d="M1040 900 L860 700" />
-      </g>
-      <g stroke="#252c46" strokeOpacity="0.45" strokeWidth="2">
-        <path d="M560 780 Q800 760 1040 780" />
-        <path d="M500 840 Q800 816 1100 840" />
-      </g>
-      <ellipse cx="800" cy="700" rx="210" ry="46" fill="#ffc477" opacity="0.1" filter="url(#door-blur-lg)" />
+      {/* —— 远处水面（近处水面在门厅之后绘制） —— */}
+      <rect y="600" width="1600" height="340" fill="url(#door-water)" />
 
       {/* —— 门厅主体 —— */}
-      <g transform="translate(0 34)">
+      <g id="door-hall" transform="translate(0 34)">
         {/* 门缝体积光：光从一条竖缝透出，只向门前方投出一束窄光 */}
         <g style={{ mixBlendMode: 'screen' }}>
           {/* 辉光严格限制在门缝的竖直范围内，不越过缝顶 */}
@@ -292,27 +287,6 @@ export function DoorScene() {
           <rect x="770" y="450" width="19" height="236" fill="url(#door-gap)" opacity="0.08" filter="url(#door-blur-md)" />
           <rect x="811" y="450" width="19" height="236" fill="url(#door-gap)" opacity="0.08" filter="url(#door-blur-md)" />
 
-          {/* 地面光斑：外圈更宽更淡，模拟衰减 */}
-          <path
-            d="M776 690 L824 690 L918 900 L682 900 Z"
-            fill="url(#door-ray-main)"
-            opacity="0.2"
-            filter="url(#door-blur-lg)"
-          />
-          {/* 缝光落在地面的窄光带：只从门底往下，不悬浮在空中 */}
-          <path
-            d="M790 690 L810 690 L866 900 L734 900 Z"
-            fill="url(#door-ray-main)"
-            opacity="0.85"
-            filter="url(#door-blur-sm)"
-          />
-          {/* 光带亮核 */}
-          <path
-            d="M795 690 L805 690 L822 900 L778 900 Z"
-            fill="url(#door-ray-main)"
-            opacity="0.4"
-            filter="url(#door-blur-sm)"
-          />
         </g>
 
         {/* 门楣与雕饰 */}
@@ -595,47 +569,6 @@ export function DoorScene() {
           <ellipse cx="1052" cy="690" rx="20" ry="7" fill="#35523c" />
         </g>
 
-        {/* 台阶 */}
-        <path d="M600 690 L1000 690 L1032 728 L568 728 Z" fill="#2a3048" stroke="#3d445e" strokeOpacity="0.6" strokeWidth="2" />
-        <path d="M568 728 L1032 728 L1066 778 L534 778 Z" fill="#212740" stroke="#363d56" strokeOpacity="0.5" strokeWidth="2" />
-        <path d="M534 778 L1066 778 L1096 836 L504 836 Z" fill="#181c2e" stroke="#2e3450" strokeOpacity="0.45" strokeWidth="2" />
-        {/* 湿石板上的门光倒影 */}
-        <path
-          d="M780 700 L820 700 L878 900 L722 900 Z"
-          fill="url(#door-reflection)"
-          opacity="0.22"
-          filter="url(#door-blur-md)"
-          style={{ mixBlendMode: 'screen' }}
-        />
-        <g stroke="#e8b273" strokeOpacity="0.2" strokeWidth="2">
-          <path d="M600 690 L1000 690" />
-          <path d="M568 728 L1032 728" />
-          <path d="M534 778 L1066 778" />
-        </g>
-        {/* 台阶的磨损与裂缝 */}
-        <g stroke="#0f1220" strokeOpacity="0.55" strokeWidth="1.2">
-          <path d="M700 702 L742 726" />
-          <path d="M880 732 L912 776" />
-          <path d="M618 784 L662 832" />
-          <path d="M982 786 L948 832" />
-          <path d="M760 792 L790 830" />
-        </g>
-        {/* 台阶边缘的磨损缺口 */}
-        <g fill="#0f1220" opacity="0.5">
-          <path d="M640 690 L660 690 L656 697 L644 697 Z" />
-          <path d="M920 728 L944 728 L940 735 L926 735 Z" />
-          <path d="M600 778 L628 778 L624 785 L606 785 Z" />
-          <path d="M860 778 L884 778 L880 785 L864 785 Z" />
-        </g>
-        {/* 光落在台阶上 */}
-        <path
-          d="M690 728 L910 728 L986 836 L614 836 Z"
-          fill="#ffb96a"
-          opacity="0.09"
-          filter="url(#door-blur-md)"
-        />
-        <ellipse cx="800" cy="792" rx="150" ry="34" fill="#ffcf8a" opacity="0.12" filter="url(#door-blur-md)" />
-
         {/* 门框上的藤蔓 */}
         <g stroke="#33503f" strokeWidth="3" fill="none" opacity="0.75">
           <path d="M624 690 C616 620 630 570 622 510 C618 478 626 454 642 438" />
@@ -648,6 +581,72 @@ export function DoorScene() {
           <ellipse cx="972" cy="626" rx="10" ry="4" transform="rotate(20 972 626)" />
           <ellipse cx="980" cy="566" rx="11" ry="4" transform="rotate(-16 980 566)" />
           <ellipse cx="970" cy="514" rx="9" ry="4" transform="rotate(14 970 514)" />
+        </g>
+      </g>
+
+      {/* —— 水面：门的倒影、波纹与波光 —— */}
+      <g>
+        {/* 水体 */}
+        <rect y="724" width="1600" height="176" fill="url(#door-water)" />
+
+        {/* 门的倒影：垂直翻转、轻微模糊 */}
+        <g
+          opacity="0.36"
+          filter="url(#door-blur-sm)"
+          transform="translate(0 1448) scale(1 -1)"
+        >
+          <use href="#door-hall" />
+        </g>
+
+        {/* 门与水面的接触水线 */}
+        <path
+          d="M560 724 Q680 718 800 724 T1040 724"
+          fill="none"
+          stroke="#ffe4a8"
+          strokeOpacity="0.28"
+          strokeWidth="2"
+          filter="url(#door-blur-sm)"
+        />
+
+        {/* 水面波纹：缓慢水平漂移 */}
+        <g
+          className="water-ripple"
+          stroke="#3d4a6e"
+          strokeOpacity="0.45"
+          strokeWidth="1.6"
+          fill="none"
+        >
+          <path d="M-40 742 Q60 736 160 742 T360 742 T560 742 T760 742 T960 742 T1160 742 T1360 742 T1560 742 T1700 742" />
+          <path d="M-40 764 Q80 757 200 764 T440 764 T680 764 T920 764 T1160 764 T1400 764 T1640 764" />
+          <path d="M-40 788 Q100 780 240 788 T520 788 T800 788 T1080 788 T1360 788 T1640 788" />
+          <path d="M-40 818 Q100 808 240 818 T520 818 T800 818 T1080 818 T1360 818 T1640 818" />
+          <path d="M-40 848 Q120 840 280 848 T600 848 T920 848 T1240 848 T1560 848 T1700 848" />
+          <path d="M-40 878 Q120 868 280 878 T600 878 T920 878 T1240 878 T1560 878 T1700 878" />
+        </g>
+
+        {/* 缝光在水面形成的光带 */}
+        <g style={{ mixBlendMode: 'screen' }}>
+          <path
+            d="M792 724 L808 724 L878 900 L722 900 Z"
+            fill="url(#door-water-glow)"
+            opacity="0.6"
+            filter="url(#door-blur-sm)"
+          />
+          <path
+            d="M796 724 L804 724 L820 900 L780 900 Z"
+            fill="url(#door-water-glow)"
+            opacity="0.4"
+            filter="url(#door-blur-sm)"
+          />
+        </g>
+
+        {/* 波光：门光在水面碎开 */}
+        <g className="water-sparkle" fill="#ffd79a" opacity="0.55">
+          <ellipse cx="790" cy="752" rx="16" ry="2.2" />
+          <ellipse cx="812" cy="782" rx="12" ry="2" />
+          <ellipse cx="780" cy="812" rx="18" ry="2.4" />
+          <ellipse cx="820" cy="842" rx="10" ry="1.8" />
+          <ellipse cx="795" cy="874" rx="14" ry="2" />
         </g>
       </g>
 

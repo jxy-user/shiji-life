@@ -1,7 +1,9 @@
 # 技术 PRD｜拾己 · LIFE
 
 版本：0.1.0  
-定位：MVP 技术实现基线；先检查现有仓库，按需落地。
+定位：MVP 技术实现基线。
+
+> **部分过时（2026-11-25）**：本文包含旧版城市模式（游戏 store、Zod 存档、事件引擎、回顾系统、PostgreSQL/Prisma 设想）的描述，这些模块已移除或从未落地。当前技术结构见 `README.md`、`docs/PROJECT_CONTEXT.md` 与 `docs/PROGRESS_AND_HANDOFF.md`。
 
 ## 1. 技术目标
 

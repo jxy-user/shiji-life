@@ -16,7 +16,7 @@ export default defineConfig({
       manifest: {
         name: '拾己 · LIFE',
         short_name: '拾己',
-        description: '在未完成之城里自由生活，在阶段回顾里认识自己，并把发现带回现实。',
+        description: '从 18 岁走到 60 岁，做出 11 个重大抉择，最后回看这一生。',
         start_url: '/#/',
         scope: '/',
         display: 'standalone',

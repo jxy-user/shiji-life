@@ -52,7 +52,8 @@ export default function App() {
           <Route path="/" element={<StartPage />} />
           <Route path="/life" element={<LifePage />} />
           <Route path="/life/replay" element={<LifeReplayPage />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
+          {/* 旧路径（/city、/archive 等）已移除：回到门厅并提示一句 */}
+          <Route path="*" element={<Navigate to="/" replace state={{ unknownPath: true }} />} />
         </Routes>
       </Suspense>
 

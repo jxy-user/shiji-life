@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type MouseEvent as ReactMouseEvent } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 import ClickSpark, { type ClickSparkHandle } from '@/components/effects/ClickSpark'
 import { DoorScene } from '@/components/start/DoorScene'
@@ -29,12 +29,15 @@ function prefersReducedMotion() {
  * 门厅首屏
  *
  * 打开页面时镜头由远及近走向旧城门，抵达后标题与「轻触门扉」渐显；
- * 推门即进入当前的人生线（已走完则进入回放）。不再提供开始/继续的选择。
- * 旧版城市保留为页脚的小入口。
+ * 推门即进入当前的人生线（已走完则进入回放）。
  */
 export default function StartPage() {
   const lifeSave = useLifeStore((state) => state.save)
   const navigate = useNavigate()
+  const location = useLocation()
+  const unknownPath = Boolean(
+    (location.state as { unknownPath?: boolean } | null)?.unknownPath,
+  )
 
   const [reduced] = useState(prefersReducedMotion)
   const [phase, setPhase] = useState<Phase>(() => (reduced ? 'arrived' : 'approach'))
@@ -244,14 +247,6 @@ export default function StartPage() {
         >
           <span className="inline-block pl-[0.35em]">轻触门扉</span>
         </button>
-        <p
-          className={[
-            'pl-[0.3em] text-[10px] tracking-[0.3em] text-ink-500 transition-opacity delay-500 duration-1000',
-            arrived ? 'opacity-100' : 'opacity-0',
-          ].join(' ')}
-        >
-          推门，回到那一段还没走完的人生
-        </p>
       </div>
 
       <footer
@@ -261,7 +256,11 @@ export default function StartPage() {
         ].join(' ')}
       >
         <span>拾己 · LIFE</span>
-        <span className="text-center sm:text-right">不是心理测评，也不会给你贴标签</span>
+        {unknownPath ? (
+          <span role="status" className="text-ink-700">
+            这个地址已经不存在了，回到了门厅
+          </span>
+        ) : null}
       </footer>
 
       {/* 走进门内后，暖光继续涨满，最后融进白幕 */}
