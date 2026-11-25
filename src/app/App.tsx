@@ -1,5 +1,5 @@
 import { lazy, useEffect } from 'react'
-import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom'
+import { HashRouter, Route, Routes, useLocation } from 'react-router-dom'
 import { JourneyLayout, OnboardingLayout } from '../components/shell/Shell'
 import { ToastRegion } from '../components/feedback/Feedback'
 import { DialoguePanel } from '../features/dialogue/DialoguePanel'
@@ -47,7 +47,7 @@ export default function App() {
   }, [])
 
   return (
-    <BrowserRouter basename={import.meta.env.BASE_URL}>
+    <HashRouter>
       <RouteScroll />
       <Routes>
         <Route element={<OnboardingLayout />}>
@@ -71,6 +71,6 @@ export default function App() {
       <DialoguePanel />
       <ChapterCurtain />
       <IntroGate />
-    </BrowserRouter>
+    </HashRouter>
   )
 }
