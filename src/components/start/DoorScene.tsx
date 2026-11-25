@@ -118,6 +118,37 @@ export function DoorScene() {
           </feComponentTransfer>
           <feComposite in="faint" in2="SourceGraphic" operator="in" />
         </filter>
+
+        {/* 石材浮雕：噪声 + 定向光，产生凹凸明暗 */}
+        <filter id="door-stone-relief" x="-10%" y="-10%" width="120%" height="120%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="4" seed="7" result="noise" />
+          <feDiffuseLighting in="noise" lighting-color="#ffffff" surfaceScale="2.2" diffuseConstant="1" result="relief">
+            <feDistantLight azimuth="230" elevation="56" />
+          </feDiffuseLighting>
+          <feComposite in="SourceGraphic" in2="relief" operator="arithmetic" k1="0.9" k2="0.1" k3="0" k4="0" />
+        </filter>
+
+        {/* 木纹浮雕：横向细密纹理 */}
+        <filter id="door-wood-relief" x="-10%" y="-10%" width="120%" height="120%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.01 0.16" numOctaves="3" seed="3" result="grain" />
+          <feDiffuseLighting in="grain" lighting-color="#ffffff" surfaceScale="1.1" diffuseConstant="1" result="relief">
+            <feDistantLight azimuth="200" elevation="64" />
+          </feDiffuseLighting>
+          <feComposite in="SourceGraphic" in2="relief" operator="arithmetic" k1="0.85" k2="0.15" k3="0" k4="0" />
+        </filter>
+
+        {/* 镶板倒角 */}
+        <linearGradient id="door-panel-bevel" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#000000" stopOpacity="0.55" />
+          <stop offset="100%" stopColor="#9a7048" stopOpacity="0.4" />
+        </linearGradient>
+
+        {/* 地面反光 */}
+        <linearGradient id="door-reflection" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#ffd79a" stopOpacity="0.5" />
+          <stop offset="55%" stopColor="#c98f52" stopOpacity="0.12" />
+          <stop offset="100%" stopColor="#c98f52" stopOpacity="0" />
+        </linearGradient>
       </defs>
 
       {/* —— 天空与星 —— */}
@@ -141,6 +172,12 @@ export function DoorScene() {
         <path d="M0 560 L0 486 L58 486 L58 452 L128 452 L128 506 L206 506 L206 396 L268 396 L268 470 L340 470 L340 520 L420 520 L420 430 L486 430 L486 560 Z" />
         <path d="M1118 560 L1118 456 L1178 456 L1178 402 L1248 402 L1248 478 L1320 478 L1320 366 L1382 366 L1382 462 L1452 462 L1452 508 L1600 508 L1600 560 Z" />
       </g>
+      {/* 最远的一层城市：更暗、更虚，拉开纵深 */}
+      <g fill="#081020" opacity="0.42" filter="url(#door-blur-md)">
+        <path d="M0 548 L0 500 L118 500 L118 468 L238 468 L238 512 L356 512 L356 444 L458 444 L458 548 Z" />
+        <path d="M1140 548 L1140 488 L1258 488 L1258 454 L1378 454 L1378 502 L1498 502 L1498 468 L1600 468 L1600 548 Z" />
+      </g>
+
       <g fill="#111a33" opacity="0.85">
         <path d="M0 585 L0 520 L74 520 L74 488 L150 488 L150 536 L236 536 L236 470 L304 470 L304 528 L390 528 L390 500 L470 500 L470 585 Z" />
         <path d="M1120 585 L1120 514 L1192 514 L1192 472 L1262 472 L1262 540 L1340 540 L1340 486 L1412 486 L1412 528 L1492 528 L1492 585 Z" />
@@ -155,6 +192,8 @@ export function DoorScene() {
             width={index % 3 === 0 ? 5 : 3.4}
             height={index % 3 === 0 ? 5 : 3.4}
             opacity={0.28 + (index % 4) * 0.12}
+            className={index % 3 === 0 ? 'city-window' : undefined}
+            style={index % 3 === 0 ? { animationDelay: `${(index % 7) * 0.6}s` } : undefined}
           />
         ))}
       </g>
@@ -164,6 +203,19 @@ export function DoorScene() {
         <path d="M1350 450 L1350 352 M1350 388 L1378 372 M1350 414 L1324 400" />
         <path d="M740 520 L740 470 L760 470 L760 520" />
       </g>
+      {/* 屋顶轮廓：水塔、烟囱、尖顶 */}
+      <g stroke="#1c2747" strokeWidth="2" opacity="0.6" fill="none">
+        <path d="M300 470 L300 438 M312 470 L312 438 M298 438 h16" />
+        <path d="M294 438 L306 428 L318 438" />
+        <path d="M420 500 L420 456 M414 456 h12" />
+        <path d="M1180 480 L1180 432 M1174 432 h12" />
+        <path d="M1360 366 L1382 322 L1404 366" />
+        <path d="M236 470 L236 438 L254 424 L272 438 L272 470" />
+        <path d="M1040 500 L1040 462 M1034 462 h12" />
+      </g>
+      {/* 城市灯光映在低空的暖色 */}
+      <ellipse cx="300" cy="478" rx="230" ry="62" fill="#ffbf72" opacity="0.05" filter="url(#door-blur-lg)" />
+      <ellipse cx="1310" cy="478" rx="250" ry="64" fill="#ffbf72" opacity="0.05" filter="url(#door-blur-lg)" />
 
       {/* —— 两侧塔楼框景 —— */}
       <g filter="url(#door-blur-md)" opacity="0.75">
@@ -182,10 +234,12 @@ export function DoorScene() {
         <path d="M1560 330 L1410 330 M1560 380 L1410 380 M1560 430 L1350 430 M1600 480 L1350 480 M1600 530 L1350 530 M1600 580 L1350 580" />
       </g>
 
-      {/* —— 雾 —— */}
+      {/* —— 雾：整体静止，两层缓慢漂移 —— */}
       <ellipse cx="800" cy="590" rx="760" ry="120" fill="#8a93c4" opacity="0.1" filter="url(#door-blur-lg)" />
-      <ellipse cx="380" cy="620" rx="420" ry="90" fill="#9aa6d6" opacity="0.06" filter="url(#door-blur-lg)" />
-      <ellipse cx="1240" cy="610" rx="460" ry="100" fill="#9aa6d6" opacity="0.06" filter="url(#door-blur-lg)" />
+      <g className="door-mist">
+        <ellipse cx="380" cy="620" rx="420" ry="90" fill="#9aa6d6" opacity="0.08" filter="url(#door-blur-lg)" />
+        <ellipse cx="1240" cy="610" rx="460" ry="100" fill="#9aa6d6" opacity="0.07" filter="url(#door-blur-lg)" />
+      </g>
 
       {/* —— 地面与门前石板路 —— */}
       <rect y="600" width="1600" height="300" fill="url(#door-ground)" />
@@ -220,10 +274,31 @@ export function DoorScene() {
             filter="url(#door-blur-sm)"
           />
 
+          {/* 空气里的柔光：只在缝的两侧，竖直范围 */}
+          <ellipse
+            cx="800"
+            cy="560"
+            rx="44"
+            ry="140"
+            fill="url(#door-glow-core)"
+            opacity="0.13"
+            filter="url(#door-blur-md)"
+          />
+
           {/* 门缝两侧门板被光擦亮的窄边（竖直，不是圆形） */}
           <rect x="781" y="446" width="8" height="244" fill="url(#door-gap)" opacity="0.2" filter="url(#door-blur-sm)" />
           <rect x="811" y="446" width="8" height="244" fill="url(#door-gap)" opacity="0.2" filter="url(#door-blur-sm)" />
+          {/* 光从缝里溢到门板上的更宽一层 */}
+          <rect x="770" y="450" width="19" height="236" fill="url(#door-gap)" opacity="0.08" filter="url(#door-blur-md)" />
+          <rect x="811" y="450" width="19" height="236" fill="url(#door-gap)" opacity="0.08" filter="url(#door-blur-md)" />
 
+          {/* 地面光斑：外圈更宽更淡，模拟衰减 */}
+          <path
+            d="M776 690 L824 690 L918 900 L682 900 Z"
+            fill="url(#door-ray-main)"
+            opacity="0.2"
+            filter="url(#door-blur-lg)"
+          />
           {/* 缝光落在地面的窄光带：只从门底往下，不悬浮在空中 */}
           <path
             d="M790 690 L810 690 L866 900 L734 900 Z"
@@ -261,6 +336,13 @@ export function DoorScene() {
           {/* 柱头 */}
           <path d="M508 360 L592 360 L584 386 L516 386 Z" fill="#3a4158" stroke="#59627c" strokeOpacity="0.5" strokeWidth="2" />
           <path d="M1008 360 L1092 360 L1084 386 L1016 386 Z" fill="#3a4158" stroke="#59627c" strokeOpacity="0.5" strokeWidth="2" />
+          {/* 柱头回纹 */}
+          <g stroke="#6a7390" strokeOpacity="0.3" strokeWidth="1.4" fill="none">
+            <path d="M520 373 q8 -6 16 0 q-8 6 -16 0" />
+            <path d="M1020 373 q8 -6 16 0 q-8 6 -16 0" />
+            <path d="M548 373 q8 -6 16 0 q-8 6 -16 0" />
+            <path d="M1048 373 q8 -6 16 0 q-8 6 -16 0" />
+          </g>
           {/* 柱础 */}
           <path d="M512 690 L588 690 L596 714 L504 714 Z" fill="#262c42" stroke="#4a536c" strokeOpacity="0.45" strokeWidth="2" />
           <path d="M1012 690 L1088 690 L1096 714 L1004 714 Z" fill="#262c42" stroke="#4a536c" strokeOpacity="0.45" strokeWidth="2" />
@@ -289,6 +371,14 @@ export function DoorScene() {
           stroke="#5a637d"
           strokeOpacity="0.45"
           strokeWidth="2"
+        />
+        {/* 石面浮雕光照：凹凸、斑驳 */}
+        <path
+          d="M560 690 L560 402 A240 240 0 0 1 1040 402 L1040 690 Z"
+          fill="#8b93ab"
+          opacity="0.6"
+          filter="url(#door-stone-relief)"
+          style={{ mixBlendMode: 'soft-light' }}
         />
         {/* 拱石分块 */}
         <g stroke="#0f1320" strokeOpacity="0.65" strokeWidth="2.4">
@@ -349,9 +439,24 @@ export function DoorScene() {
           stroke="#0d0905"
           strokeWidth="3"
         />
+        {/* 木纹浮雕：板面的起伏与纹理 */}
+        <path
+          d="M656 690 L656 446 A146 146 0 0 1 791 444 L791 690 Z"
+          fill="#6b4b2e"
+          opacity="0.55"
+          filter="url(#door-wood-relief)"
+          style={{ mixBlendMode: 'soft-light' }}
+        />
+        <path
+          d="M944 690 L944 446 A146 146 0 0 0 809 444 L809 690 Z"
+          fill="#6b4b2e"
+          opacity="0.55"
+          filter="url(#door-wood-relief)"
+          style={{ mixBlendMode: 'soft-light' }}
+        />
 
         {/* 木门镶板：左门 */}
-        <g stroke="#0b0704" strokeOpacity="0.8" strokeWidth="2">
+        <g stroke="url(#door-panel-bevel)" strokeOpacity="0.9" strokeWidth="2">
           {[
             [668, 470, 56, 54], [732, 470, 50, 54],
             [668, 540, 56, 54], [732, 540, 50, 54],
@@ -370,7 +475,7 @@ export function DoorScene() {
           ))}
         </g>
         {/* 木门镶板：右门 */}
-        <g stroke="#0b0704" strokeOpacity="0.8" strokeWidth="2">
+        <g stroke="url(#door-panel-bevel)" strokeOpacity="0.9" strokeWidth="2">
           {[
             [818, 470, 50, 54], [878, 470, 56, 54],
             [818, 540, 50, 54], [878, 540, 56, 54],
@@ -400,6 +505,18 @@ export function DoorScene() {
           <path d="M888 690 C892 620 884 560 888 500 C890 470 886 452 878 442" />
           <path d="M840 690 C844 620 836 560 840 500 C842 470 838 452 830 442" />
         </g>
+        {/* 木门上的划痕 */}
+        <g stroke="#a07a52" strokeOpacity="0.24" strokeWidth="0.8">
+          <path d="M676 500 L712 512" />
+          <path d="M690 560 L726 548" />
+          <path d="M884 520 L920 534" />
+          <path d="M860 600 L896 588" />
+        </g>
+        <g stroke="#0a0603" strokeOpacity="0.4" strokeWidth="0.7">
+          <path d="M700 620 L724 612" />
+          <path d="M866 540 L890 532" />
+          <path d="M744 480 L770 476" />
+        </g>
 
         {/* 铁箍 */}
         <g>
@@ -407,6 +524,15 @@ export function DoorScene() {
           <rect x="809" y="528" width="135" height="14" rx="4" fill="url(#door-metal)" opacity="0.85" stroke="#14110d" strokeWidth="1.5" />
           <rect x="656" y="632" width="135" height="12" rx="4" fill="url(#door-metal)" opacity="0.7" stroke="#14110d" strokeWidth="1.5" />
           <rect x="809" y="632" width="135" height="12" rx="4" fill="url(#door-metal)" opacity="0.7" stroke="#14110d" strokeWidth="1.5" />
+          {/* 铁箍顶部的金属高光 */}
+          <rect x="660" y="529" width="127" height="1.5" fill="#d8c49a" opacity="0.3" />
+          <rect x="813" y="529" width="127" height="1.5" fill="#d8c49a" opacity="0.3" />
+          {/* 铆钉周围的锈迹 */}
+          <g fill="#7a4a2a" opacity="0.22">
+            {[676, 706, 736, 766, 826, 856, 886, 916].map((x) => (
+              <circle key={`rust-${x}`} cx={x} cy={535} r="4.5" />
+            ))}
+          </g>
           <g fill="#c9b48a" opacity="0.5">
             {[676, 706, 736, 766, 826, 856, 886, 916].map((x) => (
               <circle key={`rivet-${x}`} cx={x} cy={535} r="2.2" />
@@ -423,6 +549,9 @@ export function DoorScene() {
         </g>
 
         {/* 门缝与主光 */}
+        {/* 门缝两侧的门板厚度 */}
+        <rect x="788" y="444" width="3" height="246" fill="#0a0603" />
+        <rect x="809" y="444" width="3" height="246" fill="#0a0603" />
         <rect x="791" y="444" width="18" height="246" fill="url(#door-gap)" />
         <rect x="797" y="452" width="6" height="232" fill="#fffdf6" opacity="0.92" filter="url(#door-blur-sm)" />
         {/* 门缝本身的光晕也限制在缝的高度内 */}
@@ -449,15 +578,54 @@ export function DoorScene() {
           opacity="0.35"
           filter="url(#door-stone-grain)"
         />
+        {/* 石面上的水渍 */}
+        <g fill="#0f1424" opacity="0.16" filter="url(#door-blur-sm)">
+          <path d="M600 404 L607 406 L604 566 L598 564 Z" />
+          <path d="M622 392 L627 394 L624 524 L619 522 Z" />
+          <path d="M988 400 L995 402 L992 552 L986 550 Z" />
+          <path d="M1010 406 L1015 408 L1012 502 L1007 500 Z" />
+        </g>
+        {/* 石拱与壁柱底部的苔痕 */}
+        <g filter="url(#door-blur-sm)" opacity="0.32">
+          <ellipse cx="580" cy="672" rx="34" ry="12" fill="#2f4a38" />
+          <ellipse cx="612" cy="684" rx="22" ry="8" fill="#37583f" />
+          <ellipse cx="1008" cy="668" rx="30" ry="11" fill="#2f4a38" />
+          <ellipse cx="978" cy="682" rx="20" ry="7" fill="#37583f" />
+          <ellipse cx="548" cy="690" rx="18" ry="7" fill="#35523c" />
+          <ellipse cx="1052" cy="690" rx="20" ry="7" fill="#35523c" />
+        </g>
 
         {/* 台阶 */}
         <path d="M600 690 L1000 690 L1032 728 L568 728 Z" fill="#2a3048" stroke="#3d445e" strokeOpacity="0.6" strokeWidth="2" />
         <path d="M568 728 L1032 728 L1066 778 L534 778 Z" fill="#212740" stroke="#363d56" strokeOpacity="0.5" strokeWidth="2" />
         <path d="M534 778 L1066 778 L1096 836 L504 836 Z" fill="#181c2e" stroke="#2e3450" strokeOpacity="0.45" strokeWidth="2" />
+        {/* 湿石板上的门光倒影 */}
+        <path
+          d="M780 700 L820 700 L878 900 L722 900 Z"
+          fill="url(#door-reflection)"
+          opacity="0.22"
+          filter="url(#door-blur-md)"
+          style={{ mixBlendMode: 'screen' }}
+        />
         <g stroke="#e8b273" strokeOpacity="0.2" strokeWidth="2">
           <path d="M600 690 L1000 690" />
           <path d="M568 728 L1032 728" />
           <path d="M534 778 L1066 778" />
+        </g>
+        {/* 台阶的磨损与裂缝 */}
+        <g stroke="#0f1220" strokeOpacity="0.55" strokeWidth="1.2">
+          <path d="M700 702 L742 726" />
+          <path d="M880 732 L912 776" />
+          <path d="M618 784 L662 832" />
+          <path d="M982 786 L948 832" />
+          <path d="M760 792 L790 830" />
+        </g>
+        {/* 台阶边缘的磨损缺口 */}
+        <g fill="#0f1220" opacity="0.5">
+          <path d="M640 690 L660 690 L656 697 L644 697 Z" />
+          <path d="M920 728 L944 728 L940 735 L926 735 Z" />
+          <path d="M600 778 L628 778 L624 785 L606 785 Z" />
+          <path d="M860 778 L884 778 L880 785 L864 785 Z" />
         </g>
         {/* 光落在台阶上 */}
         <path
@@ -488,6 +656,25 @@ export function DoorScene() {
 
       {/* 暗角 */}
       <rect width="1600" height="900" fill="url(#door-vignette)" />
+
+      {/* 前景：虚化的门框暗部，拉开景深 */}
+      <g filter="url(#door-blur-md)" opacity="0.8">
+        <path d="M0 900 L0 640 Q70 660 100 750 Q118 820 126 900 Z" fill="#05070f" />
+        <path d="M1600 900 L1600 620 Q1522 650 1492 748 Q1474 820 1466 900 Z" fill="#05070f" />
+      </g>
+      {/* 前景虚化的大颗尘埃 */}
+      <g filter="url(#door-blur-sm)" fill="#ffdca8" opacity="0.22">
+        <circle cx="360" cy="640" r="5" />
+        <circle cx="1240" cy="700" r="6" />
+        <circle cx="480" cy="820" r="4" />
+        <circle cx="1120" cy="840" r="5" />
+      </g>
+      {/* 地面湿反射的波纹 */}
+      <g stroke="#ffd79a" strokeOpacity="0.1" strokeWidth="2" fill="none">
+        <path d="M762 758 Q800 750 844 758" />
+        <path d="M750 812 Q800 800 856 812" />
+        <path d="M738 866 Q800 852 868 866" />
+      </g>
 
       {/* 浮尘 */}
       <g fill="#ffdca8">

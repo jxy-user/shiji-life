@@ -1,10 +1,9 @@
 import { useEffect, useRef, useState, type MouseEvent as ReactMouseEvent } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 import ClickSpark, { type ClickSparkHandle } from '@/components/effects/ClickSpark'
 import { DoorScene } from '@/components/start/DoorScene'
 import { LIFE_NODES } from '@/data/lifeStory'
-import { hasPlayableSave } from '@/services/savePeek'
 import { useLifeStore } from '@/stores/useLifeStore'
 
 type Phase = 'approach' | 'arrived' | 'opening' | 'curtain'
@@ -34,14 +33,8 @@ function prefersReducedMotion() {
  * 旧版城市保留为页脚的小入口。
  */
 export default function StartPage() {
-  const [hasSave] = useState(() => hasPlayableSave())
   const lifeSave = useLifeStore((state) => state.save)
-  const location = useLocation()
   const navigate = useNavigate()
-  const saveBroken = Boolean(
-    (location.state as { saveBroken?: boolean } | null)?.saveBroken,
-  )
-  const canContinue = hasSave && !saveBroken
 
   const [reduced] = useState(prefersReducedMotion)
   const [phase, setPhase] = useState<Phase>(() => (reduced ? 'arrived' : 'approach'))
@@ -268,20 +261,6 @@ export default function StartPage() {
         ].join(' ')}
       >
         <span>拾己 · LIFE</span>
-        <span className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1">
-          <Link
-            to={canContinue ? '/city' : '/prologue'}
-            onClick={(clickEvent) => clickEvent.stopPropagation()}
-            className="underline-offset-4 transition-colors hover:text-ink-900 hover:underline"
-          >
-            进入未完成之城（旧版）
-          </Link>
-          {saveBroken ? (
-            <span role="status" className="text-ink-700">
-              上一份存档读不出来
-            </span>
-          ) : null}
-        </span>
         <span className="text-center sm:text-right">不是心理测评，也不会给你贴标签</span>
       </footer>
 

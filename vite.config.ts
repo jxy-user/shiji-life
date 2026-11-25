@@ -12,7 +12,7 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       injectRegister: false, // 完全由 hook 手动控制注册（仅生产环境）
-      includeAssets: ['favicon.svg', 'icons/*.png', 'icons/*.svg'],
+      includeAssets: ['favicon.svg', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/icon.svg'],
       manifest: {
         name: '拾己 · LIFE',
         short_name: '拾己',
@@ -23,13 +23,7 @@ export default defineConfig({
         background_color: '#fdfbf6',
         theme_color: '#c08f45',
         icons: [
-          { src: '/icons/icon-72.png', sizes: '72x72', type: 'image/png', purpose: 'any maskable' },
-          { src: '/icons/icon-96.png', sizes: '96x96', type: 'image/png', purpose: 'any maskable' },
-          { src: '/icons/icon-128.png', sizes: '128x128', type: 'image/png', purpose: 'any maskable' },
-          { src: '/icons/icon-144.png', sizes: '144x144', type: 'image/png', purpose: 'any maskable' },
-          { src: '/icons/icon-152.png', sizes: '152x152', type: 'image/png', purpose: 'any maskable' },
           { src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any maskable' },
-          { src: '/icons/icon-384.png', sizes: '384x384', type: 'image/png', purpose: 'any maskable' },
           { src: '/icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any maskable' },
         ],
         categories: ['games', 'lifestyle', 'education'],
@@ -78,7 +72,6 @@ export default defineConfig({
           if (!id.includes('node_modules')) return undefined
           if (id.includes('react-dom') || id.includes('/react/')) return 'vendor-react'
           if (id.includes('react-router')) return 'vendor-router'
-          if (id.includes('zod')) return 'vendor-validation'
           return 'vendor'
         },
       },

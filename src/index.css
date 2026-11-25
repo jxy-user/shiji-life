@@ -227,6 +227,16 @@
     animation-delay: 0.5s;
   }
 
+  /* 门前雾的缓慢漂移 */
+  .door-mist {
+    animation: door-mist-drift 28s ease-in-out infinite alternate;
+  }
+
+  /* 远处窗灯的缓慢明暗 */
+  .city-window {
+    animation: city-flicker 4.5s ease-in-out infinite;
+  }
+
   /* 门厅：由远及近的镜头 */
   .door-approach {
     animation: door-approach 2.6s cubic-bezier(0.22, 0.8, 0.3, 1) both;
@@ -506,5 +516,26 @@
   to {
     opacity: 1;
     transform: none;
+  }
+}
+
+@keyframes door-mist-drift {
+  from {
+    transform: translateX(-28px);
+    opacity: 0.85;
+  }
+  to {
+    transform: translateX(28px);
+    opacity: 1;
+  }
+}
+
+@keyframes city-flicker {
+  0%,
+  100% {
+    opacity: 0.32;
+  }
+  50% {
+    opacity: 0.9;
   }
 }

@@ -3,8 +3,6 @@ import { MemoryRouter, useLocation } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { LIFE_NODES } from '@/data/lifeStory'
-import { createInitialSave } from '@/game/saveSchema'
-import { SAVE_KEY } from '@/services/storage'
 import { useLifeStore } from '@/stores/useLifeStore'
 import StartPage from './StartPage'
 
@@ -160,35 +158,5 @@ describe('StartPage 门厅', () => {
     renderStart()
 
     expect(screen.getByText('18 岁 · 未完成之城')).toBeInTheDocument()
-  })
-
-  it('旧存档损坏时旧版入口退回序章', () => {
-    window.localStorage.setItem(SAVE_KEY, '{ broken json')
-
-    renderStart()
-
-    expect(
-      screen.getByRole('link', { name: '进入未完成之城（旧版）' }),
-    ).toHaveAttribute('href', '/prologue')
-  })
-
-  it('存在旧存档时旧版入口进入城市', () => {
-    window.localStorage.setItem(
-      SAVE_KEY,
-      JSON.stringify(
-        createInitialSave({
-          nickname: '小满',
-          avatarId: 'sun',
-          lifeStage: null,
-          explorationTopic: null,
-        }),
-      ),
-    )
-
-    renderStart()
-
-    expect(
-      screen.getByRole('link', { name: '进入未完成之城（旧版）' }),
-    ).toHaveAttribute('href', '/city')
   })
 })
