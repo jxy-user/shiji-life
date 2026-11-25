@@ -5,23 +5,17 @@ platform:
   target: desktop
   primary_input: pointer-keyboard
   orientation: landscape
-  minimum_width: 320
+  # 仅支持 PC：视口锁定 1280，移动端不做单独适配
+  minimum_width: 1280
   desktop_baseline: [1440, 900]
   reference_sizes:
     - [1440, 900]
     - [1280, 800]
     - [1024, 768]
-  fallback_sizes:
-    - [768, 900]
-    - [640, 480]
-    - [390, 844]
   zoom_percent: 200
   breakpoints:
     full_sidebar: 1200
     compact_sidebar: 960
-    top_navigation: 960
-    single_column: 720
-    compact_navigation: 600
 layout:
   sidebar_width: 224
   sidebar_compact_width: 72

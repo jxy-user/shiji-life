@@ -2,6 +2,7 @@
 
 > 状态：现行设计稿（2026-11-25）
 > 视觉语言：洛圣都日光 · 城市拼贴（`specs/gta-ui/style-contract-g.yaml`）
+> 编码：动效由 Qoder 使用 GSAP 落地，见 `docs/QODER_USAGE.md`。
 > 机器可读合同：`specs/gta-ui/motion-contract.yaml`
 > 调研依据：`MOTION_RESEARCH.md`
 

@@ -2,6 +2,10 @@
 
 一个以「洛圣都日光 · 城市拼贴」为视觉语言的 PC 桌面生活叙事应用。当前版本使用 React、Vite 与 TypeScript 完整重建，数据只保存在本机浏览器，不上传个人经历。
 
+## 用 Qoder 构建
+
+本项目的编码工作主要使用 **Qoder** 完成：页面、组件、动效、状态、测试与修复；构建与部署使用 **Qoder Sites**。完整说明见 [`docs/QODER_USAGE.md`](docs/QODER_USAGE.md)，可核验的提交与部署证据见 [`docs/QODER_EVIDENCE.md`](docs/QODER_EVIDENCE.md)。
+
 ## 运行
 
 要求 Node.js 20.19+，推荐 Node.js 24 LTS。
@@ -69,13 +73,12 @@ Playwright 会启动生产预览，并分别在 Chromium 与 Firefox 运行旅�
 - 每条经历独立保存授权状态，私人日记不进入城市周报或阶段回顾。
 - 存储状态明确区分为可读取、存档损坏与存储不可用。
 
-## 桌面布局
+## 桌面布局（仅 PC）
 
-- 内容最大宽度 1320px，上下文栏为 304px。
+- 视口锁定 `width=1280`，移动端不做单独适配。
+- 内容最大宽度 1320px；`≥1600px` 时放宽到 1480px。
 - `≥1200px`：224px 墨色侧栏。
 - `960–1199px`：72px 紧凑侧栏。
-- `<960px`：顶部导航。
-- `<720px`：单列回退；更窄视口进一步压缩导航。
 - 顶部档案条 64px，交互目标不小于 44px。
 
 ## 视觉与资产
@@ -113,7 +116,7 @@ scripts/
 
 ## 部署
 
-生产构建使用 BrowserRouter，`public/_redirects` 已提供 SPA 回退与缺失资源 404：
+生产构建使用 BrowserRouter，部署在 **Qoder Sites**（静态托管）。`public/_redirects` 已提供 SPA 回退与缺失资源 404：
 
 ```text
 /assets/* /404.html 404
@@ -139,7 +142,8 @@ MSYS_NO_PATHCONV=1 VITE_BASE_URL=/shiji/ npm run preview -- --port 4174
 
 ## 设计文档
 
+- `docs/QODER_USAGE.md`：Qoder 在项目中的使用方式与分工。
 - `GTA_UI_DIRECTION.md`：G 视觉方向与保留的 H 档案。
 - `GTA_G_UI_SPEC.md`：桌面信息架构、设计令牌与组件合同。
-- `GTA_G_RESTORE_PLAN.md`：PC 重建范围、迁移记录与交付检查。
+- `MOTION_SYSTEM.md`：动效系统与节拍规则。
 - `specs/gta-ui/style-contract-g.yaml`：机器可读的 G 视觉合同。
