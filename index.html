@@ -7,6 +7,41 @@
     <meta name="description" content="拾己 · LIFE：在未完成之城里，先生活，再认识自己。" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>拾己 · LIFE｜未完成之城</title>
+    <style>
+      /* 首访开屏要播：主包挂载前先用纯墨压住首绘，避免米色页面先闪出来 */
+      html[data-intro-boot='1'] {
+        background: #141414;
+      }
+      html[data-intro-boot='1'] body {
+        background: #141414;
+      }
+      html[data-intro-boot='1'] body::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        z-index: 190;
+        background: #141414;
+      }
+    </style>
+    <script>
+      (function () {
+        var seen = false
+        var reduced = false
+        try {
+          var raw = localStorage.getItem('shiji.motion.v1')
+          seen = Boolean(raw && JSON.parse(raw).introSeenAt)
+          reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+        } catch (err) { /* 读不到偏好时按首访处理，与 motionStore 的降级一致 */ }
+        if (seen || reduced) return
+        document.documentElement.setAttribute('data-intro-boot', '1')
+        // 兜底：主包 8s 内没挂上映片就撤掉墨层，避免一直压黑
+        setTimeout(function () {
+          if (!document.querySelector('.g-film-root')) {
+            document.documentElement.removeAttribute('data-intro-boot')
+          }
+        }, 8000)
+      })()
+    </script>
   </head>
   <body>
     <div id="root"></div>

@@ -25,6 +25,8 @@ import type {
   Settings,
 } from '../domain/types'
 import { clearSave, loadSave, SAVE_KEY, writeSave, type StorageStatus } from './persistence'
+import { audioEngine } from '../features/player/audioEngine'
+import { clearPlayerPrefs } from '../features/player/playerStore'
 
 const initialLoad = loadSave()
 
@@ -454,6 +456,8 @@ export const useGameStore = create<GameStore>((set, get) => {
 
     resetProgress: () => {
       const result = clearSave()
+      clearPlayerPrefs()
+      audioEngine.unload()
       set({ save: createEmptySave(), storageStatus: result.status, storageMessage: result.message })
     },
 

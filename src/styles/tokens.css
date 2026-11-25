@@ -60,6 +60,7 @@
   --g-halftone: radial-gradient(rgba(20, 20, 20, 0.2) 0.7px, transparent 0.8px);
   --g-halftone-size: 6px 6px;
   --g-z-header: 30;
+  --g-z-player: 80;
   --g-z-dialog: 100;
   --g-z-toast: 120;
   --g-z-film: 200;

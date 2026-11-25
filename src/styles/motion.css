@@ -115,6 +115,12 @@
 
 /* ---- 开屏影片 IntroGate（全局类名，供 GSAP 选择器稳定使用）---- */
 
+/* 开屏片场期间隐藏底层页面：影片与 StartPage 永不同时可见 */
+html[data-intro-holding='1'] #root > :not(.g-film-root),
+html[data-intro-holding='1'] #main-content {
+  visibility: hidden;
+}
+
 .g-film-root {
   position: fixed;
   inset: 0;
@@ -126,6 +132,12 @@
   position: absolute;
   inset: 0;
   overflow: hidden;
+}
+
+/* 对焦动机只作用于影像层；文字类元素一律不进入模糊合成层 */
+.g-film-map svg,
+.g-film-card .art {
+  will-change: filter;
 }
 
 .g-film-pin {
@@ -203,32 +215,46 @@
   position: absolute;
   top: 30%;
   left: 50%;
+  z-index: 2;
   display: grid;
   justify-items: center;
   gap: 2px;
   transform: translateX(-50%);
   margin: 0;
+  padding: 0.16em 0.6em 0.24em;
   color: var(--g-paper);
   font-weight: 900;
   line-height: 0.9;
   pointer-events: none;
 }
 
+/* 标题背后的墨色光晕：中心纯墨、向外渐隐，字面与地图色块分离但不留硬边黑板 */
+.g-film-title::before {
+  content: '';
+  position: absolute;
+  inset: -0.5em -1.4em;
+  z-index: -1;
+  background: radial-gradient(ellipse 58% 56% at 50% 48%, var(--g-ink) 0%, var(--g-ink) 62%, rgba(20, 20, 20, 0.72) 80%, rgba(20, 20, 20, 0) 100%);
+}
+
+/* 字符靠 yPercent 上浮入场，需要裁剪；用等量 padding + 负 margin 把裁剪窗口
+   撑到描边光晕之外，布局尺寸不变 */
 .g-film-title .char-row {
   display: flex;
   overflow: hidden;
-  padding-bottom: 0.26em;
+  padding: 0.34em 0.34em;
+  margin: -0.34em;
 }
 
 .g-film-title .char {
   display: block;
-  font-size: clamp(72px, 13vw, 150px);
+  font-size: clamp(60px, min(12vw, 17vh), 150px);
   letter-spacing: -0.06em;
 }
 
 .g-film-title .char-life {
   color: var(--g-sun);
-  font-size: clamp(46px, 8vw, 92px);
+  font-size: clamp(40px, min(7.4vw, 11vh), 92px);
   letter-spacing: 0.08em;
 }
 
@@ -240,23 +266,27 @@
   transform-origin: left center;
 }
 
+/* 刊号章贴在标题块右上角，随标题一起排布 */
 .g-film-stamp {
   position: absolute;
-  top: 24%;
-  right: 14%;
-  padding: 8px 14px;
+  top: -0.5em;
+  right: -2.2em;
+  padding: 6px 12px;
   border: 3px solid var(--g-sun);
+  background: var(--g-ink);
   color: var(--g-sun);
   font-family: var(--g-font-mono);
   font-size: var(--g-fs-13);
   font-weight: 800;
   letter-spacing: 0.14em;
+  white-space: nowrap;
 }
 
 .g-film-claim {
   position: absolute;
   bottom: 7%;
   left: 50%;
+  z-index: 2;
   margin: 0;
   transform: translateX(-50%);
   color: var(--g-paper);

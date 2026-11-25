@@ -132,4 +132,10 @@ describe('game store', () => {
     ids.forEach((id) => useGameStore.getState().setExperienceConsent(id, false))
     expect(useGameStore.getState().save.experiences.every((item) => !item.consent)).toBe(true)
   })
+
+  it('clears player preferences together with the save', () => {
+    localStorage.setItem('shiji.player.v1', JSON.stringify({ volume: 0.3, trackIndex: 2 }))
+    useGameStore.getState().resetProgress()
+    expect(localStorage.getItem('shiji.player.v1')).toBeNull()
+  })
 })

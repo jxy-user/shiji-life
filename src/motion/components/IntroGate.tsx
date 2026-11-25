@@ -37,9 +37,17 @@ export default function IntroGate() {
   useGSAP(
     () => {
       if (!shouldPlay) return
+      // 影片已经铺好墨底，撤掉 index.html 里的首绘防闪层
+      document.documentElement.removeAttribute('data-intro-boot')
       document.documentElement.style.overflow = 'hidden'
+      // 片场期间压住底层页面：两层永不同时可见，杜绝半透叠影
+      document.documentElement.setAttribute('data-intro-holding', '1')
       skipRef.current?.focus({ preventScroll: true })
-      const tl = createIntroTimeline(rootRef.current!, () => markIntroSeen())
+      const tl = createIntroTimeline(
+        rootRef.current!,
+        () => markIntroSeen(),
+        () => document.documentElement.removeAttribute('data-intro-holding'),
+      )
       tl.play()
       sfx.play('motif')
       const skipTimer = window.setTimeout(() => setSkipVisible(true), 700)
@@ -47,6 +55,8 @@ export default function IntroGate() {
         window.clearTimeout(skipTimer)
         tl.kill()
         document.documentElement.style.overflow = ''
+        document.documentElement.removeAttribute('data-intro-boot')
+        document.documentElement.removeAttribute('data-intro-holding')
       }
     },
     { scope: rootRef, dependencies: [shouldPlay], revertOnUpdate: true },
@@ -93,9 +103,8 @@ export default function IntroGate() {
             {'LIFE'.split('').map((char, index) => <span key={index} className="char char-life">{char}</span>)}
           </span>
           <span className="underline" />
+          <span className="g-film-stamp">城市周刊 001</span>
         </h1>
-
-        <span className="g-film-stamp">城市周刊 001</span>
 
         <p className="g-film-claim">先生活，再认识自己。</p>
         <span className="g-film-out">未完成之城 · LOCAL ONLY</span>

@@ -4,6 +4,7 @@ import { ArrowLeft, BatteryMedium, Sun } from 'lucide-react'
 import { primaryNavigation, routeMeta } from '../../data/navigation'
 import { useGameStore } from '../../store/gameStore'
 import { StorageNotice } from '../feedback/Feedback'
+import { PlayerDock } from '../../features/player/PlayerDock'
 import styles from './Shell.module.css'
 
 export function BrandMark({ compact = false }: { compact?: boolean }) {
@@ -100,6 +101,7 @@ export function JourneyLayout() {
           </main>
         </div>
       </div>
+      <PlayerDock />
     </>
   )
 }
