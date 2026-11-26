@@ -109,6 +109,20 @@ export default function IntroGate() {
 
         <p className="g-film-claim">先生活，再认识自己。</p>
         <span className="g-film-out">未完成之城 · LOCAL ONLY</span>
+
+        {/* 四周印刷点缀：裁切线、刊头小字与竖排 */}
+        <span className="g-film-marks" aria-hidden="true">
+          <span className="g-film-crop is-tl" />
+          <span className="g-film-crop is-tr" />
+          <span className="g-film-crop is-bl" />
+          <span className="g-film-crop is-br" />
+          <span className="g-film-kicker is-tl">CITY WEEKLY · NO.001</span>
+          <span className="g-film-kicker is-tr">LOCAL ONLY</span>
+          <span className="g-film-kicker is-bl">18:40 / SUNSET</span>
+          <span className="g-film-kicker is-br">PROLOGUE / 未完成之城</span>
+          <span className="g-film-side is-left">LOS SANTOS / AFTERNOON</span>
+          <span className="g-film-side is-right">本地生活实验</span>
+        </span>
       </div>
 
       <button ref={skipRef} type="button" className={`g-film-skip${skipVisible ? ' is-visible' : ''}`} onClick={dismiss}>

@@ -452,3 +452,110 @@ html[data-intro-holding='1'] #main-content {
   font-weight: 700;
   letter-spacing: 0.06em;
 }
+
+/* —— 开屏四周的印刷点缀：裁切线、刊头小字、竖排 —— */
+.g-film-marks {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  color: rgba(244, 235, 216, 0.42);
+  pointer-events: none;
+}
+
+.g-film-crop {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border-color: rgba(244, 235, 216, 0.3);
+}
+
+.g-film-crop.is-tl {
+  top: 30px;
+  left: 30px;
+  border-top: 1px solid;
+  border-left: 1px solid;
+}
+
+.g-film-crop.is-tr {
+  top: 30px;
+  right: 30px;
+  border-top: 1px solid;
+  border-right: 1px solid;
+}
+
+.g-film-crop.is-bl {
+  bottom: 30px;
+  left: 30px;
+  border-bottom: 1px solid;
+  border-left: 1px solid;
+}
+
+.g-film-crop.is-br {
+  bottom: 30px;
+  right: 30px;
+  border-bottom: 1px solid;
+  border-right: 1px solid;
+}
+
+.g-film-kicker {
+  position: absolute;
+  font-family: var(--g-font-mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  white-space: nowrap;
+}
+
+.g-film-kicker.is-tl {
+  top: 52px;
+  left: 52px;
+}
+
+.g-film-kicker.is-tr {
+  /* 避开右上角的「跳过」按钮 */
+  top: 96px;
+  right: 52px;
+}
+
+.g-film-kicker.is-bl {
+  bottom: 52px;
+  left: 52px;
+}
+
+.g-film-kicker.is-br {
+  bottom: 52px;
+  right: 52px;
+}
+
+.g-film-side {
+  position: absolute;
+  top: 50%;
+  font-family: var(--g-font-mono);
+  font-size: 10px;
+  letter-spacing: 0.24em;
+  writing-mode: vertical-rl;
+  opacity: 0.72;
+}
+
+.g-film-side.is-left {
+  left: 32px;
+  transform: translateY(-50%) rotate(180deg);
+}
+
+.g-film-side.is-right {
+  right: 32px;
+  transform: translateY(-50%);
+}
+
+/* 极淡的版心网格：只在四周显现，中心保持纯墨 */
+.g-film-frame::before {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image:
+    linear-gradient(rgba(244, 235, 216, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(244, 235, 216, 0.035) 1px, transparent 1px);
+  background-size: 48px 48px;
+  content: '';
+  pointer-events: none;
+  mask-image: radial-gradient(ellipse 70% 62% at 50% 50%, transparent 32%, #000 100%);
+}
