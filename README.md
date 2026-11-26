@@ -116,7 +116,7 @@ scripts/
 
 ## 部署
 
-生产构建使用 BrowserRouter，部署在 **Qoder Sites**（静态托管）。`public/_redirects` 已提供 SPA 回退与缺失资源 404：
+生产构建使用 **HashRouter**（路由形如 `#/city`），部署在 **Qoder Sites**（静态托管），不依赖服务端回退。`public/_redirects` 仅保留给需要 SPA 回退的其他静态托管平台：
 
 ```text
 /assets/* /404.html 404
@@ -138,7 +138,7 @@ MSYS_NO_PATHCONV=1 VITE_BASE_URL=/shiji/ npm run build
 MSYS_NO_PATHCONV=1 VITE_BASE_URL=/shiji/ npm run preview -- --port 4174
 ```
 
-预览地址为 `http://127.0.0.1:4174/shiji/`。构建和预览必须使用相同的 `VITE_BASE_URL`；Router basename、资源地址和深链接回退都依赖该值。其他托管平台需自行配置与 `public/_redirects` 等价的规则。
+预览地址为 `http://127.0.0.1:4174/shiji/`。构建和预览必须使用相同的 `VITE_BASE_URL`；资源地址与深链接都依赖该值。HashRouter 本身不依赖服务端回退，其他托管平台只需正常提供 `index.html`。
 
 ## 设计文档
 

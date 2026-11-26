@@ -14,12 +14,14 @@ export default function IntroGate() {
   const rootRef = useRef<HTMLDivElement>(null)
   const skipRef = useRef<HTMLButtonElement>(null)
   const [skipVisible, setSkipVisible] = useState(false)
+  const [dismissed, setDismissed] = useState(false)
   const reduced = useReducedMotion()
   const markIntroSeen = useMotionStore((state) => state.markIntroSeen)
 
-  const shouldPlay = !reduced
+  const shouldPlay = !reduced && !dismissed
 
   const dismiss = useCallback(() => {
+    setDismissed(true)
     markIntroSeen()
     document.getElementById('main-content')?.focus()
   }, [markIntroSeen])
@@ -44,7 +46,7 @@ export default function IntroGate() {
       skipRef.current?.focus({ preventScroll: true })
       const tl = createIntroTimeline(
         rootRef.current!,
-        () => markIntroSeen(),
+        dismiss,
         () => document.documentElement.removeAttribute('data-intro-holding'),
       )
       tl.play()
