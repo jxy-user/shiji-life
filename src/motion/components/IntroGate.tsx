@@ -7,18 +7,17 @@ import { sfx } from '../sound/SfxEngine'
 import { art } from '../../data/assets'
 
 /**
- * 首访开屏 sting：全屏覆盖层，播完或点「跳过」后标记 introSeenAt 并让位。
- * reduced-motion 或已看过时不渲染任何内容。
+ * 开屏 sting：全屏覆盖层，每次打开网站都播放；播完或点「跳过」后让位。
+ * reduced-motion 时不渲染任何内容。
  */
 export default function IntroGate() {
   const rootRef = useRef<HTMLDivElement>(null)
   const skipRef = useRef<HTMLButtonElement>(null)
   const [skipVisible, setSkipVisible] = useState(false)
   const reduced = useReducedMotion()
-  const introSeenAt = useMotionStore((state) => state.prefs.introSeenAt)
   const markIntroSeen = useMotionStore((state) => state.markIntroSeen)
 
-  const shouldPlay = !reduced && !introSeenAt
+  const shouldPlay = !reduced
 
   const dismiss = useCallback(() => {
     markIntroSeen()

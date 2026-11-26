@@ -9,7 +9,7 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>拾己 · LIFE｜未完成之城</title>
     <style>
-      /* 首访开屏要播：主包挂载前先用纯墨压住首绘，避免米色页面先闪出来 */
+      /* 开屏每次都要播：主包挂载前先用纯墨压住首绘，避免米色页面先闪出来 */
       html[data-intro-boot='1'] {
         background: #141414;
       }
@@ -26,14 +26,11 @@
     </style>
     <script>
       (function () {
-        var seen = false
         var reduced = false
         try {
-          var raw = localStorage.getItem('shiji.motion.v1')
-          seen = Boolean(raw && JSON.parse(raw).introSeenAt)
           reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-        } catch (err) { /* 读不到偏好时按首访处理，与 motionStore 的降级一致 */ }
-        if (seen || reduced) return
+        } catch (err) { /* 读不到偏好时按可播放处理 */ }
+        if (reduced) return
         document.documentElement.setAttribute('data-intro-boot', '1')
         // 兜底：主包 8s 内没挂上映片就撤掉墨层，避免一直压黑
         setTimeout(function () {
