@@ -52,7 +52,7 @@
   width: 100%;
   min-width: 0;
   max-width: 100%;
-  aspect-ratio: 1.45;
+  aspect-ratio: 900 / 620;
   min-height: 420px;
   overflow: hidden;
   background: var(--g-paper-deep);
@@ -66,11 +66,15 @@
   opacity: 0.55;
 }
 
-.mapArt {
+.canvas > svg {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
+}
+
+.canvas text {
+  font-family: var(--g-font-mono);
 }
 
 .canvas::after {
@@ -80,7 +84,7 @@
   background-size: var(--g-halftone-size);
   content: "";
   pointer-events: none;
-  opacity: 0.3;
+  opacity: 0.22;
 }
 
 .hotspot {
@@ -94,7 +98,7 @@
   padding: 5px 9px 5px 5px;
   border: 2px solid var(--g-ink);
   background: var(--g-paper);
-  box-shadow: var(--g-shadow-hover);
+  box-shadow: var(--g-shadow-hover), inset 0 0 0 3px var(--g-paper);
   transform: translate(-50%, -50%) rotate(-1deg);
   transition: transform var(--g-motion-fast) var(--g-ease-paper), background-color var(--g-motion-fast) var(--g-ease-paper);
   animation: hotspot-in var(--g-motion-cover) var(--g-ease-paper) both;
@@ -177,6 +181,36 @@
   font-weight: 900;
 }
 
+.exploredStamp {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  margin-left: 2px;
+  align-self: center;
+  padding: 0 4px;
+  border: 2px solid var(--g-grass-deep);
+  color: var(--g-grass-deep);
+  font-family: var(--g-font-mono);
+  font-size: var(--g-fs-11);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1.5;
+  white-space: nowrap;
+  transform: rotate(-6deg);
+}
+
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 .mapFooter {
   display: flex;
   min-height: 50px;
@@ -205,11 +239,85 @@
   background: var(--g-signal);
 }
 
-.legendPlace {
+.legendExplored {
+  background: var(--g-grass-deep);
+}
+
+.legendUnvisited {
   background: var(--g-paper-deep);
 }
 
 .scale {
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
   margin-left: auto;
   font-family: var(--g-font-mono);
+}
+
+.scale i {
+  width: 22px;
+  height: 10px;
+  border: 2px solid var(--g-ink);
+  border-radius: 0;
+  background: var(--g-paper);
+}
+
+.scale i:nth-of-type(odd) {
+  background: var(--g-ink);
+}
+
+.scale i + i {
+  border-left-width: 0;
+}
+
+.scale small {
+  margin-left: 8px;
+  font-size: var(--g-fs-11);
+  letter-spacing: 0.04em;
+}
+
+@media (max-width: 720px) {
+  .canvas {
+    aspect-ratio: 900 / 620;
+    min-height: 0;
+  }
+
+  .hotspot {
+    min-width: 50px;
+    min-height: 50px;
+    padding: 5px;
+    border-radius: 50%;
+  }
+
+  .hotspot[data-scene="studio"] {
+    margin-inline-start: -6px;
+  }
+
+  .hotspot[data-scene="far"] {
+    margin-block-start: 10px;
+  }
+
+  .hotspotPin {
+    width: 36px;
+    height: 36px;
+  }
+
+  .hotspotLabel,
+  .exploredStamp {
+    display: none;
+  }
+
+  .mapHeader {
+    padding-inline: 14px;
+  }
+
+  .mapFooter {
+    gap: 12px;
+    padding-inline: 12px;
+  }
+
+  .scale {
+    display: none !important;
+  }
 }

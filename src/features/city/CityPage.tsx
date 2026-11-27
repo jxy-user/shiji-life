@@ -91,7 +91,7 @@ export default function CityPage() {
 
       <div className={styles.cityGrid} data-motion>
         <div className={styles.mapColumn}>
-          <CityMap />
+          <CityMap exploredSceneIds={save.progress.exploredSceneIds} />
           <PaperSheet className={styles.index} aria-labelledby="scene-index-title">
             <header><div><span>地点索引</span><h2 id="scene-index-title">从哪一条路开始？</h2></div><Stamp tone="ink">已探索 {exploredCount} / {scenes.length}</Stamp></header>
             <ul>
