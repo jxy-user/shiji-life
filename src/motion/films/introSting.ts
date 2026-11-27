@@ -28,7 +28,7 @@ const blur = {
 
 /**
  * 开屏 sting timeline（约 10.6s）。
- * 从 huashu-motion motion-films/intro-sting 移植；此处是运行时唯一真相。
+ * 此处是运行时唯一真相。
  * 节奏（120 BPM ≈ 0.5s/拍）：
  *   0.0–1.5  hook：图钉砸落，撕纸揭示半张地图
  *   1.5–4.4  三栏拼贴 stagger 落纸 + Ken Burns 轻推

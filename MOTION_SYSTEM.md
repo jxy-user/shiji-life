@@ -49,7 +49,7 @@
 | **L4 章节过场** | `ChapterCurtain` | ≈2200ms（上限 2400） | 是（Esc/跳过按钮） | **否**（根 `pointer-events:none`） | 不渲染 |
 | **L5 开屏** | `IntroGate` | 首访 ≈10600ms / 复访 ≈1600ms | 是（跳过常驻） | 是（有意禁焦点） | 不渲染 |
 
-**与 huashu 节奏法的映射**：L4/L5 是 film 级，内部按 hook → burst → hero → stop → resolve 排 beat；L1–L3 是 UI 级，一拍（≈0.52s）内必须结束；同一页同时运行的 timeline 不超过 3 条。
+**节奏法映射**：L4/L5 是 film 级，内部按 hook → burst → hero → stop → resolve 排 beat；L1–L3 是 UI 级，一拍（≈0.52s）内必须结束；同一页同时运行的 timeline 不超过 3 条。
 
 ---
 
